@@ -13,47 +13,30 @@ class SwipePage extends StatefulWidget {
   State<SwipePage> createState() => _SwipePageState();
 }
 
-class _SwipePageState extends State<SwipePage>
-    with SingleTickerProviderStateMixin {
-  double x = 0;
+class _SwipePageState extends State<SwipePage> {
+  final Map<String, Uint8List> imageCache = {};
 
-  double y = 0;
+  double offsetX = 0;
 
-  double angle = 0;
+  double offsetY = 0;
 
-  bool flying = false;
+  double rotation = 0;
 
-  Offset start = Offset.zero;
+  Offset startOffset = Offset.zero;
 
-  late AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller = AnimationController(
-      vsync: this,
-
-      duration: const Duration(milliseconds: 350),
-    );
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-
-    super.dispose();
-  }
+  bool isFlying = false;
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<PhotoProvider>();
 
+    if (provider.photos.length > 1) {
+      preloadImage(provider.photos[1]);
+    }
+
     if (provider.photos.isEmpty) {
       return const Scaffold(body: Center(child: Text("整理完成")));
     }
-
-    final photo = provider.photos.first;
 
     return Scaffold(
       appBar: AppBar(title: const Text("整理照片")),
@@ -66,111 +49,75 @@ class _SwipePageState extends State<SwipePage>
                 alignment: Alignment.center,
 
                 children: [
-                  /// 后面的提示
-                  Positioned(
-                    left: 40,
+                  if (provider.photos.length > 1)
+                    AnimatedScale(
+                      duration: const Duration(milliseconds: 200),
 
-                    child: Opacity(
-                      opacity: (-x / 200).clamp(0, 1),
+                      scale: offsetX.abs() > 30 ? 1 : 0.93,
 
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.check_circle,
+                      child: Transform.translate(
+                        offset: const Offset(0, 25),
 
-                            size: 80,
-
-                            color: Colors.green,
-                          ),
-
-                          Text(
-                            "保留",
-
-                            style: TextStyle(
-                              fontSize: 25,
-
-                              color: Colors.green,
-
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                        child: buildCard(provider.photos[1], opacity: 0.8),
                       ),
                     ),
-                  ),
-
-                  Positioned(
-                    right: 40,
-
-                    child: Opacity(
-                      opacity: (x / 200).clamp(0, 1),
-
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.delete_forever,
-
-                            size: 80,
-
-                            color: Colors.red,
-                          ),
-
-                          Text(
-                            "删除",
-
-                            style: TextStyle(
-                              fontSize: 25,
-
-                              color: Colors.red,
-
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
 
                   GestureDetector(
-                    onPanStart: (d) {
-                      if (flying) return;
+                    onPanStart: (detail) {
+                      if (isFlying) {
+                        return;
+                      }
 
-                      start = d.globalPosition;
+                      startOffset = detail.globalPosition;
                     },
 
-                    onPanUpdate: (d) {
-                      if (flying) return;
+                    onPanUpdate: (detail) {
+                      if (isFlying) {
+                        return;
+                      }
+
+                      final current = detail.globalPosition;
 
                       setState(() {
-                        x = d.globalPosition.dx - start.dx;
+                        offsetX = current.dx - startOffset.dx;
 
-                        y = d.globalPosition.dy - start.dy;
+                        offsetY = current.dy - startOffset.dy;
 
-                        angle = x / 900;
+                        rotation = offsetX / 850;
                       });
                     },
 
-                    onPanEnd: (d) {
-                      if (flying) return;
+                    // 修改后的快速滑动判断
+                    onPanEnd: (detail) {
+                      if (isFlying) {
+                        return;
+                      }
 
-                      if (x > 100 && y.abs() < 120) {
-                        delete(provider);
-                      } else if (x < -100 && y.abs() < 120) {
-                        keep(provider);
-                      } else if (y > 120 && x.abs() < 80) {
-                        category(provider);
+                      final speedX = detail.velocity.pixelsPerSecond.dx;
+
+                      final speedY = detail.velocity.pixelsPerSecond.dy;
+
+                      if ((offsetX > 80 && offsetY.abs() < 50) ||
+                          speedX > 800) {
+                        deletePhoto(provider);
+                      } else if ((offsetX < -80 && offsetY.abs() < 50) ||
+                          speedX < -800) {
+                        keepPhoto(provider);
+                      } else if ((offsetY > 100 && offsetX.abs() < 50) ||
+                          (speedY > 900 && offsetX.abs() < 50)) {
+                        showCategory(provider);
                       } else {
-                        reset();
+                        resetCard();
                       }
                     },
 
                     child: Transform.translate(
-                      offset: Offset(x, y),
+                      offset: Offset(offsetX, offsetY),
 
                       child: Transform.rotate(
-                        angle: angle,
+                        angle: rotation,
 
-                        child: photoWidget(photo),
+                        child: buildCard(provider.photos[0]),
                       ),
                     ),
                   ),
@@ -178,118 +125,214 @@ class _SwipePageState extends State<SwipePage>
               ),
             ),
 
-            const SizedBox(height: 10),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-
-              children: [
-                const Icon(Icons.arrow_back, color: Colors.green),
-
-                const Text("左滑保留"),
-
-                const SizedBox(width: 40),
-
-                const Text("右滑删除"),
-
-                const Icon(Icons.arrow_forward, color: Colors.red),
-              ],
-            ),
-
-            const SizedBox(height: 20),
+            buildBottomButtons(),
           ],
         ),
       ),
     );
   }
 
-  Widget photoWidget(AssetEntity photo) {
+  Widget buildCard(AssetEntity photo, {double opacity = 1}) {
     return FutureBuilder<Uint8List?>(
-      future: photo.thumbnailDataWithSize(const ThumbnailSize(800, 800)),
+      future: loadThumbnail(photo),
 
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Container(width: 330, height: 480, color: Colors.grey);
-        }
-
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-
-          child: Image.memory(
-            snapshot.data!,
-
+          return Container(
             width: 330,
 
             height: 480,
 
-            fit: BoxFit.cover,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+
+              borderRadius: BorderRadius.circular(30),
+            ),
+          );
+        }
+
+        return Opacity(
+          opacity: opacity,
+
+          child: Container(
+            width: 330,
+
+            height: 480,
+
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+
+              boxShadow: [
+                const BoxShadow(
+                  blurRadius: 25,
+
+                  spreadRadius: 3,
+
+                  color: Colors.black26,
+                ),
+              ],
+            ),
+
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+
+              child: Image.memory(snapshot.data!, fit: BoxFit.cover),
+            ),
           ),
         );
       },
     );
   }
 
-  void keep(PhotoProvider provider) {
-    flying = true;
+  Future<Uint8List?> loadThumbnail(AssetEntity photo) async {
+    if (imageCache.containsKey(photo.id)) {
+      return imageCache[photo.id];
+    }
 
+    final data = await photo.thumbnailDataWithSize(
+      const ThumbnailSize(700, 700),
+    );
+
+    if (data != null) {
+      imageCache[photo.id] = data;
+    }
+
+    return data;
+  }
+
+  void preloadImage(AssetEntity photo) async {
+    if (imageCache.containsKey(photo.id)) {
+      return;
+    }
+
+    final data = await photo.thumbnailDataWithSize(
+      const ThumbnailSize(700, 700),
+    );
+
+    if (data != null) {
+      imageCache[photo.id] = data;
+    }
+  }
+
+  Widget buildBottomButtons() {
+    final keepScale = (-offsetX / 120).clamp(0.0, 1.0);
+
+    final deleteScale = (offsetX / 120).clamp(0.0, 1.0);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 25, top: 15),
+
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+        children: [
+          AnimatedScale(
+            scale: 1 + keepScale * 0.35,
+
+            duration: const Duration(milliseconds: 150),
+
+            child: Column(
+              children: [
+                const Icon(Icons.check_circle, size: 45, color: Colors.green),
+
+                const Text(
+                  "保留",
+
+                  style: TextStyle(
+                    color: Colors.green,
+
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          AnimatedScale(
+            scale: 1 + deleteScale * 0.35,
+
+            duration: const Duration(milliseconds: 150),
+
+            child: Column(
+              children: [
+                const Icon(Icons.delete_forever, size: 45, color: Colors.red),
+
+                const Text(
+                  "删除",
+
+                  style: TextStyle(
+                    color: Colors.red,
+
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void keepPhoto(PhotoProvider provider) {
+    flyOut(provider, -1);
+  }
+
+  void deletePhoto(PhotoProvider provider) {
+    flyOut(provider, 1);
+  }
+
+  void flyOut(PhotoProvider provider, int direction) {
     setState(() {
-      x = -600;
+      isFlying = true;
 
-      angle = -0.6;
+      offsetX = direction * MediaQuery.of(context).size.width * 1.3;
+
+      rotation = direction * 0.6;
     });
 
     Future.delayed(const Duration(milliseconds: 350), () {
-      next(provider);
+      if (!mounted) {
+        return;
+      }
+
+      provider.removeCurrentPhoto();
+
+      setState(() {
+        offsetX = 0;
+
+        offsetY = 0;
+
+        rotation = 0;
+
+        isFlying = false;
+      });
     });
   }
 
-  void delete(PhotoProvider provider) {
-    flying = true;
-
+  void resetCard() {
     setState(() {
-      x = 600;
+      offsetX = 0;
 
-      angle = 0.6;
-    });
+      offsetY = 0;
 
-    Future.delayed(const Duration(milliseconds: 350), () {
-      next(provider);
+      rotation = 0;
     });
   }
 
-  void next(PhotoProvider provider) {
-    provider.photos.removeAt(0);
-
-    provider.notifyListeners();
-
-    setState(() {
-      x = 0;
-
-      y = 0;
-
-      angle = 0;
-
-      flying = false;
-    });
-  }
-
-  void reset() {
-    setState(() {
-      x = 0;
-
-      y = 0;
-
-      angle = 0;
-    });
-  }
-
-  void category(PhotoProvider provider) {
+  void showCategory(PhotoProvider provider) {
     showModalBottomSheet(
       context: context,
 
+      backgroundColor: Colors.white,
+
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+
       builder: (context) {
         return SizedBox(
-          height: 250,
+          height: 300,
 
           child: Column(
             children: [
@@ -301,28 +344,44 @@ class _SwipePageState extends State<SwipePage>
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
 
-              ListTile(
-                title: const Text("💼 工作"),
+              categoryItem("💼", "工作", provider, context),
 
-                onTap: () {
-                  Navigator.pop(context);
+              categoryItem("🏠", "生活", provider, context),
 
-                  next(provider);
-                },
-              ),
-
-              ListTile(
-                title: const Text("🏠 生活"),
-
-                onTap: () {
-                  Navigator.pop(context);
-
-                  next(provider);
-                },
-              ),
+              categoryItem("✈️", "旅行", provider, context),
             ],
           ),
         );
+      },
+    );
+  }
+
+  Widget categoryItem(
+    String emoji,
+
+    String title,
+
+    PhotoProvider provider,
+
+    BuildContext context,
+  ) {
+    return ListTile(
+      leading: Text(emoji, style: const TextStyle(fontSize: 25)),
+
+      title: Text(title),
+
+      onTap: () {
+        Navigator.pop(context);
+
+        setState(() {
+          offsetX = 0;
+
+          offsetY = 0;
+
+          rotation = 0;
+        });
+
+        provider.removeCurrentPhoto();
       },
     );
   }

@@ -1,28 +1,49 @@
 import 'package:flutter/material.dart';
-
 import 'package:photo_manager/photo_manager.dart';
-
-import '../services/photo_service.dart';
 
 class PhotoProvider extends ChangeNotifier {
   List<AssetEntity> photos = [];
 
+  bool loading = false;
+
   int total = 0;
 
-  bool loading = false;
+  int get remaining => photos.length;
+
+  // 加载照片
 
   Future<void> loadPhotos() async {
     loading = true;
 
     notifyListeners();
 
-    photos = await PhotoService.getPhotos();
+    final permission = await PhotoManager.requestPermissionExtend();
 
-    total = photos.length;
+    if (permission.isAuth) {
+      final albums = await PhotoManager.getAssetPathList(
+        type: RequestType.image,
+      );
 
-    debugPrint("最终照片数量:$total");
+      if (albums.isNotEmpty) {
+        final list = await albums.first.getAssetListPaged(page: 0, size: 50);
+
+        photos = list;
+
+        total = list.length;
+      }
+    }
 
     loading = false;
+
+    notifyListeners();
+  }
+
+  // 删除当前照片（给滑动页面调用）
+
+  void removeCurrentPhoto() {
+    if (photos.isNotEmpty) {
+      photos.removeAt(0);
+    }
 
     notifyListeners();
   }

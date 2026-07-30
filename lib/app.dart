@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'features/home/home_page.dart';
+
 import 'providers/photo_provider.dart';
+import 'providers/category_provider.dart';
 
 class PhotoOrganizerApp extends StatelessWidget {
   const PhotoOrganizerApp({super.key});
@@ -10,7 +12,15 @@ class PhotoOrganizerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => PhotoProvider())],
+      providers: [
+        // 照片数据
+        ChangeNotifierProvider(create: (_) => PhotoProvider()),
+
+        // 分类数据
+        ChangeNotifierProvider(
+          create: (_) => CategoryProvider()..loadCategories(),
+        ),
+      ],
 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

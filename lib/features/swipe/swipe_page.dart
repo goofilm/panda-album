@@ -5,6 +5,7 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/photo_provider.dart';
+import '../../providers/category_provider.dart';
 
 class SwipePage extends StatefulWidget {
   const SwipePage({super.key});
@@ -87,7 +88,6 @@ class _SwipePageState extends State<SwipePage> {
                       });
                     },
 
-                    // 修改后的快速滑动判断
                     onPanEnd: (detail) {
                       if (isFlying) {
                         return;
@@ -321,6 +321,10 @@ class _SwipePageState extends State<SwipePage> {
   }
 
   void showCategory(PhotoProvider provider) {
+    final categoryProvider = context.read<CategoryProvider>();
+
+    final categories = categoryProvider.categories;
+
     showModalBottomSheet(
       context: context,
 
@@ -332,7 +336,7 @@ class _SwipePageState extends State<SwipePage> {
 
       builder: (context) {
         return SizedBox(
-          height: 300,
+          height: 450,
 
           child: Column(
             children: [
@@ -344,44 +348,42 @@ class _SwipePageState extends State<SwipePage> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
 
-              categoryItem("💼", "工作", provider, context),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: categories.length,
 
-              categoryItem("🏠", "生活", provider, context),
+                  itemBuilder: (context, index) {
+                    final item = categories[index];
 
-              categoryItem("✈️", "旅行", provider, context),
+                    return ListTile(
+                      leading: Text(
+                        item['icon'],
+
+                        style: const TextStyle(fontSize: 30),
+                      ),
+
+                      title: Text(item['name']),
+
+                      onTap: () {
+                        Navigator.pop(context);
+
+                        setState(() {
+                          offsetX = 0;
+
+                          offsetY = 0;
+
+                          rotation = 0;
+                        });
+
+                        provider.removeCurrentPhoto();
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         );
-      },
-    );
-  }
-
-  Widget categoryItem(
-    String emoji,
-
-    String title,
-
-    PhotoProvider provider,
-
-    BuildContext context,
-  ) {
-    return ListTile(
-      leading: Text(emoji, style: const TextStyle(fontSize: 25)),
-
-      title: Text(title),
-
-      onTap: () {
-        Navigator.pop(context);
-
-        setState(() {
-          offsetX = 0;
-
-          offsetY = 0;
-
-          rotation = 0;
-        });
-
-        provider.removeCurrentPhoto();
       },
     );
   }

@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'features/home/home_page.dart';
+import 'providers/photo_provider.dart';
 
 class PhotoOrganizerApp extends StatelessWidget {
   const PhotoOrganizerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => PhotoProvider())],
 
-      title: "照片整理",
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
 
-      theme: ThemeData(
-        useMaterial3: true,
+        title: "照片整理",
 
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        theme: ThemeData(
+          useMaterial3: true,
+
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        ),
+
+        home: const HomePage(),
       ),
-
-      home: const HomePage(),
     );
   }
 }

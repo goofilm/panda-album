@@ -5,9 +5,14 @@ import 'package:provider/provider.dart';
 
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
+import '../../providers/private_album_provider.dart';
 import '../swipe/swipe_page.dart';
 import '../categories/category_page.dart';
 import '../recycle/recycle_page.dart';
+import '../private/private_lock_page.dart';
+import '../search/search_page.dart';
+
+import '../../features/categories/kept_photos_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,6 +26,9 @@ class _HomePageState extends State<HomePage>
   late AnimationController _breathController;
 
   late Animation<double> _breathAnimation;
+
+  /// 0=照片整理, 1=视频整理
+  int _mode = 0;
 
   @override
   void initState() {
@@ -61,6 +69,8 @@ class _HomePageState extends State<HomePage>
 
     final categoryProvider = context.watch<CategoryProvider>();
 
+    final privateProvider = context.watch<PrivateAlbumProvider>();
+
     final w = MediaQuery.of(context).size.width;
 
     // 分别计算照片和视频统计
@@ -73,12 +83,6 @@ class _HomePageState extends State<HomePage>
 
     final videoOrganized = photoProvider.organizedVideoCount;
 
-    final totalAll = photoTotal + videoTotal;
-
-    final organizedAll = photoOrganized + videoOrganized;
-
-    final progress = totalAll == 0 ? 0.0 : organizedAll / totalAll;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -88,6 +92,16 @@ class _HomePageState extends State<HomePage>
         ),
 
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SearchPage()),
+              );
+            },
+          ),
+
           IconButton(icon: const Icon(Icons.language), onPressed: () {}),
 
           IconButton(
@@ -118,7 +132,7 @@ class _HomePageState extends State<HomePage>
             SizedBox(height: w * 0.02),
 
             Text(
-              "整理照片",
+              "熊猫相册",
 
               style: TextStyle(
                 fontSize: w * 0.065,
@@ -127,7 +141,11 @@ class _HomePageState extends State<HomePage>
               ),
             ),
 
-            SizedBox(height: w * 0.04),
+            // 照片/视频切换标签
+
+            _buildModeToggle(w, photoTotal, videoTotal),
+
+            SizedBox(height: w * 0.03),
 
             // 进度环
 
@@ -148,71 +166,51 @@ class _HomePageState extends State<HomePage>
                     child: CircularProgressIndicator(
                       strokeWidth: w * 0.025,
 
-                      value: totalAll == 0 ? 0 : progress,
+                      value: _mode == 0
+                          ? (photoTotal == 0 ? 0 : photoOrganized / photoTotal)
+                          : (videoTotal == 0 ? 0 : videoOrganized / videoTotal),
                     ),
                   ),
 
                   Text(
-                    totalAll == 0
-                        ? "0%"
-                        : "${(progress * 100).round()}%",
+                    _mode == 0
+                        ? (photoTotal == 0 ? "0%" : "${((photoOrganized / photoTotal) * 100).round()}%")
+                        : (videoTotal == 0 ? "0%" : "${((videoOrganized / videoTotal) * 100).round()}%"),
 
                     style: TextStyle(
                       fontSize: w * 0.055,
 
                       fontWeight: FontWeight.bold,
 
-                      color: Colors.blue,
+                      color: _mode == 0 ? Colors.blue : Colors.orange,
                     ),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(height: w * 0.03),
+            SizedBox(height: w * 0.025),
 
-            // 照片和视频分别统计
+            // 当前模式统计
 
-            if (!photoProvider.loading) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                children: [
-                  _statItem(Icons.photo, "照片", photoOrganized, photoTotal, w),
-
-                  SizedBox(width: w * 0.08),
-
-                  Container(
-                    width: 1,
-
-                    height: w * 0.08,
-
-                    color: Colors.grey.shade300,
-                  ),
-
-                  SizedBox(width: w * 0.08),
-
-                  _statItem(Icons.videocam, "视频", videoOrganized, videoTotal, w),
-                ],
-              ),
-
-              SizedBox(height: w * 0.02),
-
+            if (!photoProvider.loading)
               Text(
-                "已整理 $organizedAll 张 / 共 $totalAll 张",
+                _mode == 0
+                    ? "已整理 $photoOrganized 张 / 共 $photoTotal 张"
+                    : "已整理 $videoOrganized 个 / 共 $videoTotal 个",
 
                 style: TextStyle(
-                  fontSize: w * 0.038,
+                  fontSize: w * 0.035,
 
                   color: Colors.grey.shade600,
                 ),
-              ),
-            ] else
+              )
+            else
               const Text("正在扫描..."),
 
             SizedBox(height: w * 0.04),
 
-            // 开始整理按钮（居中，在统计下方）
+            // 开始整理按钮
 
             _breathingButton(),
 
@@ -230,11 +228,11 @@ class _HomePageState extends State<HomePage>
 
             const Spacer(),
 
-            // 底部毛玻璃导航按钮（3个：分类、整理视频、回收站）
+            // 底部毛玻璃导航按钮
 
             Container(
               padding: EdgeInsets.symmetric(
-                horizontal: w * 0.06,
+                horizontal: w * 0.04,
 
                 vertical: w * 0.03,
               ),
@@ -246,7 +244,7 @@ class _HomePageState extends State<HomePage>
                   _glassButton(
                     Icons.category,
 
-                    "我的分类",
+                    "分类",
 
                     categoryProvider.categories.length,
 
@@ -262,18 +260,38 @@ class _HomePageState extends State<HomePage>
                   ),
 
                   _glassButton(
-                    Icons.videocam,
+                    Icons.check_circle,
 
-                    "整理视频",
+                    "已保留",
 
-                    videoTotal,
+                    _mode == 0
+                        ? categoryProvider.photoKeptCount
+                        : categoryProvider.videoKeptCount,
 
                     () {
                       Navigator.push(
                         context,
 
                         MaterialPageRoute(
-                          builder: (_) => const SwipePage(isVideo: true),
+                          builder: (_) => KeptPhotosPage(mediaType: _mode),
+                        ),
+                      );
+                    },
+                  ),
+
+                  _glassButton(
+                    Icons.lock_outline,
+
+                    "私密",
+
+                    privateProvider.totalPrivateCount,
+
+                    () {
+                      Navigator.push(
+                        context,
+
+                        MaterialPageRoute(
+                          builder: (_) => const PrivateLockPage(),
                         ),
                       );
                     },
@@ -307,35 +325,77 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  Widget _statItem(IconData icon, String label, int organized, int total, double w) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+  // 照片/视频切换标签
 
-      children: [
-        Icon(icon, size: w * 0.055, color: Colors.blue),
+  Widget _buildModeToggle(double w, int photoTotal, int videoTotal) {
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _modeTab(Icons.photo, "照片", photoTotal, 0, w),
+          _modeTab(Icons.videocam, "视频", videoTotal, 1, w),
+        ],
+      ),
+    );
+  }
 
-        SizedBox(height: w * 0.01),
+  Widget _modeTab(IconData icon, String label, int total, int mode, double w) {
+    final isActive = _mode == mode;
+    final activeColor = mode == 0 ? Colors.blue : Colors.orange;
 
-        Text(
-          "$organized / $total",
-
-          style: TextStyle(
-            fontSize: w * 0.04,
-
-            fontWeight: FontWeight.bold,
-          ),
+    return GestureDetector(
+      onTap: () => setState(() => _mode = mode),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(
+          horizontal: w * 0.06,
+          vertical: w * 0.02,
         ),
-
-        Text(
-          label,
-
-          style: TextStyle(
-            fontSize: w * 0.03,
-
-            color: Colors.grey,
-          ),
+        decoration: BoxDecoration(
+          color: isActive ? activeColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(22),
         ),
-      ],
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: w * 0.04, color: isActive ? Colors.white : Colors.grey),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: w * 0.035,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                color: isActive ? Colors.white : Colors.grey.shade600,
+              ),
+            ),
+            if (total > 0) ...[
+              const SizedBox(width: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? Colors.white.withValues(alpha: 0.3)
+                      : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '$total',
+                  style: TextStyle(
+                    fontSize: w * 0.025,
+                    fontWeight: FontWeight.bold,
+                    color: isActive ? Colors.white : Colors.grey.shade600,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 
@@ -459,6 +519,8 @@ class _HomePageState extends State<HomePage>
   Widget _breathingButton() {
     final w = MediaQuery.of(context).size.width;
 
+    final color = _mode == 0 ? Colors.blue : Colors.orange;
+
     return AnimatedBuilder(
       animation: _breathAnimation,
 
@@ -475,7 +537,9 @@ class _HomePageState extends State<HomePage>
           Navigator.push(
             context,
 
-            MaterialPageRoute(builder: (_) => const SwipePage()),
+            MaterialPageRoute(
+              builder: (_) => SwipePage(isVideo: _mode == 1),
+            ),
           );
         },
 
@@ -485,7 +549,7 @@ class _HomePageState extends State<HomePage>
           height: w * 0.20,
 
           decoration: BoxDecoration(
-            color: Colors.blue,
+            color: color,
 
             shape: BoxShape.circle,
 
@@ -495,7 +559,7 @@ class _HomePageState extends State<HomePage>
 
                 spreadRadius: w * 0.01,
 
-                color: Colors.blue.withValues(alpha: 0.4),
+                color: color.withValues(alpha: 0.4),
               ),
             ],
           ),

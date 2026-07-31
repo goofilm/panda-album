@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: android_platform
+title: Android 原生宿主工程（Flutter 应用壳）
+scope:
+    - android/
+source_files: []
+depends_on: []
+related_to:
+    - path: ios_platform
+    - path: lib_application
+    - path: linux_platform
+    - path: macos_platform
+    - path: windows_platform

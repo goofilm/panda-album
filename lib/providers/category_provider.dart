@@ -21,6 +21,26 @@ class CategoryProvider extends ChangeNotifier {
 
   bool loading = false;
 
+  /// 各分类下的媒体数量
+
+  Map<int, int> categoryCounts = {};
+
+  /// 已保留未分类的照片数量（按类型）
+
+  int photoKeptCount = 0;
+
+  int videoKeptCount = 0;
+
+  /// 当前 tab 对应的已保留数量
+
+  int get keptCount => _selectedTab == 1 ? videoKeptCount : photoKeptCount;
+
+  int _selectedTab = 0;
+
+  void setSelectedTab(int tab) {
+    _selectedTab = tab;
+  }
+
   // 初始化加载分类
 
   Future<void> loadCategories() async {
@@ -30,9 +50,35 @@ class CategoryProvider extends ChangeNotifier {
 
     categories = await _db.getCategories();
 
+    await _loadAllCounts();
+
+    await _loadKeptCounts();
+
     loading = false;
 
     notifyListeners();
+  }
+
+  // 加载所有分类的媒体数量
+
+  Future<void> _loadAllCounts() async {
+    final counts = <int, int>{};
+
+    for (final cat in categories) {
+      final id = cat['id'] as int;
+
+      counts[id] = await _db.getCategoryPhotoCount(id);
+    }
+
+    categoryCounts = counts;
+  }
+
+  // 加载已保留未分类的数量
+
+  Future<void> _loadKeptCounts() async {
+    photoKeptCount = await _db.getKeptUncategorizedCount(mediaType: 0);
+
+    videoKeptCount = await _db.getKeptUncategorizedCount(mediaType: 1);
   }
 
   // 按类型加载分类

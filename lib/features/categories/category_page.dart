@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 
 import '../../data/database_helper.dart';
 import '../../providers/category_provider.dart';
+import '../../providers/private_album_provider.dart';
 import '../../widgets/morandi_color.dart';
+import '../private/private_lock_page.dart';
 import 'create_category_page.dart';
 import 'category_detail_page.dart';
+import 'kept_photos_page.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -39,6 +42,8 @@ class _CategoryPageState extends State<CategoryPage>
         setState(() {
           _selectedTab = _tabController.index;
         });
+
+        context.read<CategoryProvider>().setSelectedTab(_selectedTab);
       }
     });
   }
@@ -58,6 +63,11 @@ class _CategoryPageState extends State<CategoryPage>
     setState(() {
       _organizedCount = count;
     });
+
+    // 刷新分类统计和已保留数量
+    if (mounted) {
+      context.read<CategoryProvider>().loadCategories();
+    }
   }
 
   @override
@@ -168,6 +178,9 @@ class _CategoryPageState extends State<CategoryPage>
                 Expanded(
                   child: _buildCategoryGrid(provider),
                 ),
+
+                // 底部私密相册入口
+                _buildPrivateEntry(),
               ],
             ),
     );
@@ -189,17 +202,168 @@ class _CategoryPageState extends State<CategoryPage>
         mainAxisSpacing: 15,
       ),
 
-      itemCount: currentCategories.length + 1,
+      itemCount: currentCategories.length + 2,
 
       itemBuilder: (context, index) {
-        if (index == currentCategories.length) {
+        if (index == 0) {
+          return _buildKeptCard(provider);
+        }
+
+        if (index == currentCategories.length + 1) {
           return _buildAddCard();
         }
 
-        final item = currentCategories[index];
+        final item = currentCategories[index - 1];
 
         return _buildCategoryCard(item, provider);
       },
+    );
+  }
+
+  Widget _buildKeptCard(CategoryProvider provider) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final keptCount = provider.keptCount;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => KeptPhotosPage(mediaType: _selectedTab),
+          ),
+        ).then((_) {
+          _loadStats();
+          provider.loadCategories();
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.green.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.25),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.check_circle,
+                  size: screenWidth * 0.07,
+                  color: Colors.green.shade700,
+                ),
+              ),
+            ),
+            SizedBox(height: screenWidth * 0.02),
+            Text(
+              '已保留',
+              style: TextStyle(
+                fontSize: screenWidth * 0.035,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                '$keptCount 个',
+                style: TextStyle(
+                  fontSize: screenWidth * 0.028,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPrivateEntry() {
+    final privateProvider = context.watch<PrivateAlbumProvider>();
+
+    final count = privateProvider.totalPrivateCount;
+
+    final isVideo = _selectedTab == 1;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        border: Border(
+          top: BorderSide(color: Colors.grey.shade200),
+        ),
+      ),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PrivateLockPage()),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.blue.shade200,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.lock_outline,
+                  color: Colors.blue.shade700,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isVideo ? '私密视频相册' : '私密照片相册',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue.shade900,
+                      ),
+                    ),
+                    Text(
+                      count > 0
+                          ? '$count 个${isVideo ? "视频" : "照片"}已保护'
+                          : '点击进入私密空间',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.blue.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: Colors.blue.shade400,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -305,6 +469,28 @@ class _CategoryPageState extends State<CategoryPage>
                     ),
 
                     overflow: TextOverflow.ellipsis,
+                  ),
+
+                  // 已收纳数量
+
+                  Builder(
+                    builder: (context) {
+                      final count = provider.categoryCounts[item['id']] ?? 0;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 2),
+
+                        child: Text(
+                          '$count 个',
+
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.028,
+
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

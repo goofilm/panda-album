@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: ios_platform
+title: iOS 原生宿主应用（Runner）与 Flutter 引擎集成
+scope:
+    - ios/
+source_files: []
+depends_on: []
+related_to:
+    - path: android_platform
+    - path: lib_application
+    - path: linux_platform
+    - path: macos_platform
+    - path: windows_platform

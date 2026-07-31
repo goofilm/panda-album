@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../data/database_helper.dart';
@@ -142,6 +143,9 @@ class PhotoProvider extends ChangeNotifier {
     await refreshStats();
     loading = false;
     notifyListeners();
+
+    // 注册相册变化监听
+    startListeningToChanges();
   }
 
   // 加载指定类型的资产
@@ -338,13 +342,59 @@ class PhotoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 强制重新加载（用户手动触发）
+  /// 是否已注册的相册变化监听
+
+  bool _changeCallbackRegistered = false;
+
+  /// 防抖定时器
+
+  DateTime? _lastChangeTime;
+
+  /// 保存回调引用以便移除
+
+  ValueChanged<MethodCall>? _changeCallback;
+
+  /// 强制重新加载（用户手动触发）
 
   Future<void> forceReload() async {
     _photoInitialized = false;
     _videoInitialized = false;
     photos.clear();
     videos.clear();
+    _currentPage = 0;
+    hasMore = true;
     await loadPhotos();
+  }
+
+  /// 注册相册变化监听（拍照/删除等操作后自动刷新）
+
+  void startListeningToChanges() {
+    if (_changeCallbackRegistered) return;
+
+    _changeCallback = (MethodCall call) async {
+      // 防抖：2秒内只响应一次
+      final now = DateTime.now();
+      if (_lastChangeTime != null &&
+          now.difference(_lastChangeTime!) < const Duration(seconds: 2)) {
+        return;
+      }
+      _lastChangeTime = now;
+
+      debugPrint('检测到相册变化，自动刷新...');
+      await forceReload();
+    };
+
+    PhotoManager.addChangeCallback(_changeCallback!);
+    PhotoManager.startChangeNotify();
+    _changeCallbackRegistered = true;
+  }
+
+  /// 停止监听
+
+  void stopListeningToChanges() {
+    if (_changeCallbackRegistered && _changeCallback != null) {
+      PhotoManager.removeChangeCallback(_changeCallback!);
+      _changeCallbackRegistered = false;
+    }
   }
 }

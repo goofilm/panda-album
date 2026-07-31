@@ -1,13 +1,16 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../data/database_helper.dart';
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
+import '../../providers/private_album_provider.dart';
 
 class CategoryDetailPage extends StatefulWidget {
   final Map<String, dynamic> category;
@@ -102,6 +105,28 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                   children: [
                     Expanded(child: _buildWaterfallGrid()),
 
+                    // 操作提示
+                    if (!_multiSelectMode)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        color: Colors.grey.shade50,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.touch_app, size: 14, color: Colors.grey.shade400),
+                            const SizedBox(width: 4),
+                            Text(
+                              '点击查看 · 长按操作 · 全屏上下滑动切换',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
                     if (_multiSelectMode) _buildBottomToolbar(),
                   ],
                 ),
@@ -156,19 +181,15 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
             }
           });
         } else {
-          // 非多选模式，点击弹出操作菜单
-
-          _showSingleActionSheet(photo);
+          // 非多选模式，点击全屏放大查看
+          _showFullScreenViewer(photo);
         }
       },
 
       onLongPress: () {
         if (!_multiSelectMode) {
-          setState(() {
-            _multiSelectMode = true;
-
-            _selectedIds.add(photoId);
-          });
+          // 长按显示操作菜单
+          _showSingleActionSheet(photo);
         }
       },
 
@@ -193,6 +214,29 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
             children: [
               _buildThumbnailImage(assetId),
+
+              // 视频右下角小图标提示
+              if ((photo['media_type'] ?? 0) == 1)
+                Positioned(
+                  right: 6,
+                  bottom: 6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.videocam, color: Colors.white, size: 14),
+                      ],
+                    ),
+                  ),
+                ),
 
               // 多选勾选标记
 
@@ -285,64 +329,97 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
       builder: (sheetContext) {
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
 
-            children: [
-              const SizedBox(height: 16),
+              children: [
+                const SizedBox(height: 16),
 
-              // 缩略图预览
+                // 缩略图预览
 
-              SizedBox(
-                height: 120,
+                SizedBox(
+                  height: 120,
 
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
 
-                  child: _buildThumbnailImage(photo['asset_id'] as String),
+                    child: _buildThumbnailImage(photo['asset_id'] as String),
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              ListTile(
-                leading: const Icon(Icons.swap_horiz, color: Colors.blue),
+                ListTile(
+                  leading: const Icon(Icons.edit, color: Colors.green),
 
-                title: const Text("修改分类"),
+                  title: const Text("重命名"),
 
-                onTap: () {
-                  Navigator.pop(sheetContext);
+                  subtitle: Text(
+                    (photo['name'] as String?)?.isNotEmpty == true
+                        ? '当前: ${photo['name']}'
+                        : '未命名',
+                    style: const TextStyle(fontSize: 12),
+                  ),
 
-                  _showCategoryPicker([photoId]);
-                },
-              ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
 
-              ListTile(
-                leading: const Icon(Icons.folder_off, color: Colors.orange),
+                    _showRenameDialog(photo);
+                  },
+                ),
 
-                title: const Text("移出分类"),
+                ListTile(
+                  leading: const Icon(Icons.swap_horiz, color: Colors.blue),
 
-                onTap: () {
-                  Navigator.pop(sheetContext);
+                  title: const Text("修改分类"),
 
-                  _confirmRemoveFromCategory([photoId]);
-                },
-              ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
 
-              ListTile(
-                leading: const Icon(Icons.delete_forever, color: Colors.red),
+                    _showCategoryPicker([photoId]);
+                  },
+                ),
 
-                title: const Text("移到回收站"),
+                ListTile(
+                  leading: const Icon(Icons.lock_outline, color: Colors.purple),
 
-                onTap: () {
-                  Navigator.pop(sheetContext);
+                  title: const Text("移入私密相册"),
 
-                  _confirmMoveToRecycleBin([photoId]);
-                },
-              ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
 
-              const SizedBox(height: 8),
-            ],
+                    _showPrivateAlbumPicker(photo);
+                  },
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.folder_off, color: Colors.orange),
+
+                  title: const Text("移出分类"),
+
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+
+                    _confirmRemoveFromCategory([photoId]);
+                  },
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.delete_forever, color: Colors.red),
+
+                  title: const Text("移到回收站"),
+
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+
+                    _confirmMoveToRecycleBin([photoId]);
+                  },
+                ),
+
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
         );
       },
@@ -474,6 +551,68 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
           ],
         ),
       ),
+    );
+  }
+
+  // 全屏查看（支持左右滑动）
+
+  void _showFullScreenViewer(Map<String, dynamic> photo) {
+    final initialIndex = _photos.indexWhere(
+      (p) => p['id'] == photo['id'],
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _FullScreenMediaViewer(
+          mediaList: _photos,
+          initialIndex: initialIndex >= 0 ? initialIndex : 0,
+        ),
+      ),
+    );
+  }
+
+  // 重命名对话框
+
+  void _showRenameDialog(Map<String, dynamic> photo) {
+    final photoId = photo['id'] as int;
+
+    final currentName = photo['name'] as String? ?? '';
+
+    final nameController = TextEditingController(text: currentName);
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('重命名'),
+          content: TextField(
+            controller: nameController,
+            autofocus: true,
+            decoration: const InputDecoration(
+              hintText: '输入照片/视频名称',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('取消'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final newName = nameController.text.trim();
+                await _db.updatePhotoName(photoId, newName);
+                if (!dialogContext.mounted) return;
+                Navigator.pop(dialogContext);
+                // 刷新列表
+                await _loadPhotos();
+              },
+              child: const Text('保存'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -617,6 +756,126 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
     );
   }
 
+  // 移入私密相册选择器
+
+  void _showPrivateAlbumPicker(Map<String, dynamic> photo) async {
+    final privateProvider = context.read<PrivateAlbumProvider>();
+
+    // 先加载相册数据（确保重启后也能获取到）
+    await privateProvider.loadAlbums();
+
+    if (!mounted) return;
+
+    // 根据当前媒体的类型获取对应的私密相册
+    final mediaType = _mediaType;
+
+    final albums = mediaType == 1
+        ? privateProvider.videoAlbums
+        : privateProvider.photoAlbums;
+
+    if (albums.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            mediaType == 1 ? '请先创建私密视频相册' : '请先创建私密照片相册',
+          ),
+        ),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: SizedBox(
+            height: 400,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Text(
+                  '🔒 选择私密相册',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: albums.length,
+                    itemBuilder: (context, index) {
+                      final album = albums[index];
+                      final count =
+                          privateProvider.albumCounts[album['id']] ?? 0;
+                      return ListTile(
+                        leading: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: _parseColor(album['color'] as String)
+                                .withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              album['icon'] as String,
+                              style: const TextStyle(fontSize: 22),
+                            ),
+                          ),
+                        ),
+                        title: Text(album['name'] as String),
+                        subtitle: Text('$count 个已保护'),
+                        trailing:
+                            const Icon(Icons.lock, color: Colors.purple, size: 20),
+                        onTap: () async {
+                          final assetId = photo['asset_id'] as String;
+                          final albumId = album['id'] as int;
+
+                          // 添加到私密相册
+                          await privateProvider.addPhotoToAlbum(
+                            assetId: assetId,
+                            albumId: albumId,
+                            mediaType: mediaType,
+                          );
+
+                          // 从当前分类移除
+                          final photoId = photo['id'] as int;
+                          await _db.moveToPrivate(photoId);
+
+                          if (!sheetContext.mounted) return;
+                          Navigator.pop(sheetContext);
+
+                          await _loadPhotos();
+
+                          if (!mounted) return;
+                          this.context.read<PhotoProvider>().refreshStats();
+
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '已移入「${album['name']}」私密相册',
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   // 确认移出分类
 
   void _confirmRemoveFromCategory(List<int> photoIds) {
@@ -725,5 +984,238 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
     } catch (e) {
       return Colors.blue;
     }
+  }
+}
+
+// 全屏查看器（PageView 左右滑动，支持照片缩放和视频播放）
+class _FullScreenMediaViewer extends StatefulWidget {
+  final List<Map<String, dynamic>> mediaList;
+  final int initialIndex;
+
+  const _FullScreenMediaViewer({
+    required this.mediaList,
+    required this.initialIndex,
+  });
+
+  @override
+  State<_FullScreenMediaViewer> createState() =>
+      _FullScreenMediaViewerState();
+}
+
+class _FullScreenMediaViewerState extends State<_FullScreenMediaViewer> {
+  late PageController _pageController;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentMedia = widget.mediaList[_currentIndex];
+    final name = currentMedia['name'] as String? ?? '';
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Column(
+          children: [
+            Text(
+              name.isEmpty ? '预览' : name,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            Text(
+              '${_currentIndex + 1} / ${widget.mediaList.length}',
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+          ],
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: PageView.builder(
+        scrollDirection: Axis.vertical,
+        controller: _pageController,
+        itemCount: widget.mediaList.length,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        itemBuilder: (context, index) {
+          final media = widget.mediaList[index];
+          return _MediaPage(media: media);
+        },
+      ),
+    );
+  }
+}
+
+// 单个媒体页面（照片或视频）
+class _MediaPage extends StatefulWidget {
+  final Map<String, dynamic> media;
+
+  const _MediaPage({required this.media});
+
+  @override
+  State<_MediaPage> createState() => _MediaPageState();
+}
+
+class _MediaPageState extends State<_MediaPage> {
+  File? _file;
+  bool _loading = true;
+  bool _isVideo = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFile();
+  }
+
+  Future<void> _loadFile() async {
+    final assetId = widget.media['asset_id'] as String;
+    final entity = await AssetEntity.fromId(assetId);
+    if (entity == null) {
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
+    _isVideo = entity.type == AssetType.video;
+    final file = await entity.file;
+    if (mounted) {
+      setState(() {
+        _file = file;
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      );
+    }
+
+    if (_file == null) {
+      return const Center(
+        child: Icon(Icons.broken_image, color: Colors.white54, size: 64),
+      );
+    }
+
+    if (_isVideo) {
+      return _VideoPlayerPage(file: _file!);
+    }
+
+    // 照片：支持双指缩放
+    return Center(
+      child: InteractiveViewer(
+        minScale: 1.0,
+        maxScale: 5.0,
+        child: Image.file(_file!, fit: BoxFit.contain),
+      ),
+    );
+  }
+}
+
+// 视频播放页面
+class _VideoPlayerPage extends StatefulWidget {
+  final File file;
+
+  const _VideoPlayerPage({required this.file});
+
+  @override
+  State<_VideoPlayerPage> createState() => _VideoPlayerPageState();
+}
+
+class _VideoPlayerPageState extends State<_VideoPlayerPage> {
+  late VideoPlayerController _controller;
+  bool _initialized = false;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.file(widget.file);
+    _controller.initialize().then((_) {
+      if (mounted) {
+        setState(() {
+          _initialized = true;
+        });
+        _controller.play();
+      }
+    }).catchError((_) {
+      if (mounted) setState(() => _hasError = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasError) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, color: Colors.white54, size: 64),
+            SizedBox(height: 16),
+            Text('视频加载失败', style: TextStyle(color: Colors.white54)),
+          ],
+        ),
+      );
+    }
+
+    if (!_initialized) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      );
+    }
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (_controller.value.isPlaying) {
+            _controller.pause();
+          } else {
+            _controller.play();
+          }
+        });
+      },
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: _controller.value.aspectRatio,
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              VideoPlayer(_controller),
+              // 底部进度条
+              VideoProgressIndicator(
+                _controller,
+                allowScrubbing: true,
+                colors: const VideoProgressColors(
+                  playedColor: Colors.blue,
+                  bufferedColor: Colors.white30,
+                  backgroundColor: Colors.white12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

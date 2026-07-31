@@ -16,7 +16,7 @@
 
     <application
 
-        android:label="photo_organizer_ai"
+        android:label="熊猫相册"
 
         android:name="${applicationName}"
 

@@ -9,6 +9,7 @@ import 'package:video_player/video_player.dart';
 import '../../data/database_helper.dart';
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
+import '../../providers/private_album_provider.dart';
 import '../categories/category_page.dart';
 
 class SwipePage extends StatefulWidget {
@@ -42,6 +43,14 @@ class _SwipePageState extends State<SwipePage> {
   /// 上一次操作类型：keep / delete / category
 
   String? _lastAction;
+
+  /// 本次整理统计
+
+  int _keptCount = 0;
+
+  int _deletedCount = 0;
+
+  final Map<String, int> _categoryBreakdown = {};
 
   /// 获取当前列表
 
@@ -101,7 +110,7 @@ class _SwipePageState extends State<SwipePage> {
         ),
 
         body: Center(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 32),
 
             child: Column(
@@ -113,14 +122,14 @@ class _SwipePageState extends State<SwipePage> {
                 Image.asset(
                   'assets/images/mascot_panda.png',
 
-                  width: 160,
+                  width: 120,
 
-                  height: 160,
+                  height: 120,
 
                   fit: BoxFit.contain,
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
                 Text(
                   widget.isVideo ? "视频全部整理完成 🎉" : "照片全部整理完成 🎉",
@@ -132,23 +141,14 @@ class _SwipePageState extends State<SwipePage> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 24),
 
-                Text(
-                  widget.isVideo
-                      ? "所有视频已处理，可下方去视频分类查看"
-                      : "所有照片已处理，可下方去分类查看",
+                // 本次整理汇总
 
-                  style: TextStyle(
-                    fontSize: 15,
+                if (_keptCount + _deletedCount + _categoryBreakdown.values.fold(0, (a, b) => a + b) > 0)
+                  _buildSummaryCard(),
 
-                    color: Colors.grey.shade500,
-                  ),
-
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: 36),
+                const SizedBox(height: 28),
 
                 // 去分类管理
 
@@ -498,6 +498,190 @@ class _SwipePageState extends State<SwipePage> {
     }
   }
 
+  /// 整理汇总卡片
+
+  Widget _buildSummaryCard() {
+    final total = _keptCount +
+        _deletedCount +
+        _categoryBreakdown.values.fold(0, (a, b) => a + b);
+
+    return Container(
+      width: double.infinity,
+
+      padding: const EdgeInsets.all(20),
+
+      decoration: BoxDecoration(
+        color: Colors.blue.withValues(alpha: 0.06),
+
+        borderRadius: BorderRadius.circular(20),
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+          Text(
+            "本次整理",
+
+            style: TextStyle(
+              fontSize: 16,
+
+              fontWeight: FontWeight.bold,
+
+              color: Colors.grey.shade700,
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // 总数
+
+          Center(
+            child: Text(
+              "$total",
+
+              style: const TextStyle(
+                fontSize: 36,
+
+                fontWeight: FontWeight.bold,
+
+                color: Colors.blue,
+              ),
+            ),
+          ),
+
+          Center(
+            child: Text(
+              widget.isVideo ? "个视频已处理" : "张照片已处理",
+
+              style: TextStyle(
+                fontSize: 13,
+
+                color: Colors.grey.shade500,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          const Divider(),
+
+          const SizedBox(height: 12),
+
+          // 操作分布
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+            children: [
+              _summaryItem(
+                Icons.check_circle,
+
+                Colors.green,
+
+                "保留",
+
+                _keptCount,
+              ),
+
+              _summaryItem(
+                Icons.delete_forever,
+
+                Colors.red,
+
+                "删除",
+
+                _deletedCount,
+              ),
+
+              _summaryItem(
+                Icons.category,
+
+                Colors.blue,
+
+                "分类",
+
+                _categoryBreakdown.values.fold(0, (a, b) => a + b),
+              ),
+            ],
+          ),
+
+          // 分类明细
+
+          if (_categoryBreakdown.isNotEmpty) ...[
+            const SizedBox(height: 12),
+
+            const Divider(),
+
+            const SizedBox(height: 8),
+
+            Wrap(
+              spacing: 8,
+
+              runSpacing: 6,
+
+              children: _categoryBreakdown.entries.map((entry) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+
+                    vertical: 4,
+                  ),
+
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.1),
+
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+
+                  child: Text(
+                    "${entry.key} ${entry.value}",
+
+                    style: const TextStyle(
+                      fontSize: 12,
+
+                      color: Colors.blue,
+
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryItem(IconData icon, Color color, String label, int count) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 24),
+
+        const SizedBox(height: 4),
+
+        Text(
+          "$count",
+
+          style: TextStyle(
+            fontSize: 18,
+
+            fontWeight: FontWeight.bold,
+
+            color: color,
+          ),
+        ),
+
+        Text(
+          label,
+
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+        ),
+      ],
+    );
+  }
+
   Widget buildBottomButtons() {
     final keepScale = (-offsetX / 120).clamp(0.0, 1.0);
 
@@ -569,6 +753,8 @@ class _SwipePageState extends State<SwipePage> {
 
     _lastAction = 'keep';
 
+    _keptCount++;
+
     final mediaType = widget.isVideo ? 1 : 0;
 
     await _db.addPhoto(assetId: photo.id, status: 1, mediaType: mediaType);
@@ -586,6 +772,8 @@ class _SwipePageState extends State<SwipePage> {
     _lastRemovedPhoto = photo;
 
     _lastAction = 'delete';
+
+    _deletedCount++;
 
     final mediaType = widget.isVideo ? 1 : 0;
 
@@ -687,6 +875,20 @@ class _SwipePageState extends State<SwipePage> {
 
         mediaType: widget.isVideo ? 1 : 0,
       );
+    } else if (action == 'private') {
+      // 私密相册：从私密相册移除，恢复为待整理状态
+
+      await context
+          .read<PrivateAlbumProvider>()
+          .removePhotoFromAlbum(photo.id);
+
+      await _db.addPhoto(
+        assetId: photo.id,
+
+        status: 0,
+
+        mediaType: widget.isVideo ? 1 : 0,
+      );
     } else {
       // 保留或分类：重置为待整理状态
 
@@ -709,9 +911,15 @@ class _SwipePageState extends State<SwipePage> {
   void showCategory(PhotoProvider provider) {
     final categoryProvider = context.read<CategoryProvider>();
 
+    final privateProvider = context.read<PrivateAlbumProvider>();
+
     final categories = widget.isVideo
         ? categoryProvider.videoCategories
         : categoryProvider.photoCategories;
+
+    final privateAlbums = widget.isVideo
+        ? privateProvider.videoAlbums
+        : privateProvider.photoAlbums;
 
     final mediaType = widget.isVideo ? 1 : 0;
 
@@ -726,7 +934,7 @@ class _SwipePageState extends State<SwipePage> {
 
       builder: (context) {
         return SizedBox(
-          height: 450,
+          height: 500,
 
           child: Column(
             children: [
@@ -743,62 +951,144 @@ class _SwipePageState extends State<SwipePage> {
               ),
 
               Expanded(
-                child: ListView.builder(
-                  itemCount: categories.length,
+                child: ListView(
+                  children: [
+                    // 普通分类列表
+                    ...categories.map((item) {
+                      return ListTile(
+                        leading: Text(
+                          item['icon'],
 
-                  itemBuilder: (context, index) {
-                    final item = categories[index];
+                          style: const TextStyle(fontSize: 30),
+                        ),
 
-                    return ListTile(
-                      leading: Text(
-                        item['icon'],
+                        title: Text(item['name']),
 
-                        style: const TextStyle(fontSize: 30),
+                        onTap: () async {
+                          final list = _getList(provider);
+
+                          if (list.isEmpty) return;
+
+                          final photo = list.first;
+
+                          _lastRemovedPhoto = photo;
+
+                          _lastAction = 'category';
+
+                          final categoryName = item['name'] as String;
+
+                          _categoryBreakdown[categoryName] =
+                              (_categoryBreakdown[categoryName] ?? 0) + 1;
+
+                          await _db.addPhoto(
+                            assetId: photo.id,
+
+                            categoryId: item['id'],
+
+                            status: 1,
+
+                            mediaType: mediaType,
+                          );
+
+                          if (!context.mounted) return;
+
+                          Navigator.pop(context);
+
+                          setState(() {
+                            offsetX = 0;
+
+                            offsetY = 0;
+
+                            rotation = 0;
+                          });
+
+                          await provider.removeCurrentPhoto(
+                            isVideo: widget.isVideo,
+                          );
+
+                          await provider.refreshStats();
+                        },
+                      );
+                    }),
+
+                    // 私密相册分隔线
+                    if (privateAlbums.isNotEmpty) ...[
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Divider(),
                       ),
 
-                      title: Text(item['name']),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        child: Text(
+                          '🔒 私密相册',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
 
-                      onTap: () async {
-                        final list = _getList(provider);
+                    // 私密相册列表
+                    ...privateAlbums.map((album) {
+                      return ListTile(
+                        leading: Text(
+                          album['icon'],
+                          style: const TextStyle(fontSize: 30),
+                        ),
+                        title: Text(album['name']),
+                        trailing: const Icon(
+                          Icons.lock_outline,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        onTap: () async {
+                          final list = _getList(provider);
 
-                        if (list.isEmpty) return;
+                          if (list.isEmpty) return;
 
-                        final photo = list.first;
+                          final photo = list.first;
 
-                        _lastRemovedPhoto = photo;
+                          _lastRemovedPhoto = photo;
 
-                        _lastAction = 'category';
+                          _lastAction = 'private';
 
-                        await _db.addPhoto(
-                          assetId: photo.id,
+                          final albumName = album['name'] as String;
+                          final albumId = album['id'] as int;
 
-                          categoryId: item['id'],
+                          _categoryBreakdown['🔒$albumName'] =
+                              (_categoryBreakdown['🔒$albumName'] ?? 0) + 1;
 
-                          status: 1,
+                          await privateProvider.addPhotoToAlbum(
+                            assetId: photo.id,
+                            albumId: albumId,
+                            mediaType: mediaType,
+                          );
 
-                          mediaType: mediaType,
-                        );
+                          if (!context.mounted) return;
 
-                        if (!context.mounted) return;
+                          Navigator.pop(context);
 
-                        Navigator.pop(context);
+                          setState(() {
+                            offsetX = 0;
+                            offsetY = 0;
+                            rotation = 0;
+                          });
 
-                        setState(() {
-                          offsetX = 0;
+                          await provider.removeCurrentPhoto(
+                            isVideo: widget.isVideo,
+                          );
 
-                          offsetY = 0;
-
-                          rotation = 0;
-                        });
-
-                        await provider.removeCurrentPhoto(
-                          isVideo: widget.isVideo,
-                        );
-
-                        await provider.refreshStats();
-                      },
-                    );
-                  },
+                          await provider.refreshStats();
+                        },
+                      );
+                    }),
+                  ],
                 ),
               ),
             ],

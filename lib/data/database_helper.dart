@@ -26,7 +26,7 @@ class DatabaseHelper {
     return await openDatabase(
       path,
 
-      version: 4,
+      version: 6,
 
       onCreate: _createDB,
 
@@ -56,6 +56,17 @@ class DatabaseHelper {
 
       await db.execute(
         'ALTER TABLE photos ADD COLUMN media_type INTEGER NOT NULL DEFAULT 0',
+      );
+    }
+
+    if (oldVersion < 5) {
+      await _createPrivateTables(db);
+    }
+
+    if (oldVersion < 6) {
+      // photos表添加 name 字段（用户自定义名称）
+      await db.execute(
+        'ALTER TABLE photos ADD COLUMN name TEXT DEFAULT ""',
       );
     }
   }
@@ -97,6 +108,8 @@ class DatabaseHelper {
 
       media_type INTEGER NOT NULL DEFAULT 0,
 
+      name TEXT DEFAULT '',
+
       delete_time INTEGER,
 
       create_time INTEGER NOT NULL,
@@ -112,6 +125,41 @@ class DatabaseHelper {
     await _insertDefaultCategories(db);
 
     await _insertDefaultVideoCategories(db);
+
+    await _createPrivateTables(db);
+  }
+
+  Future<void> _createPrivateTables(Database db) async {
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS private_albums (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      icon TEXT NOT NULL,
+      color TEXT NOT NULL,
+      media_type INTEGER NOT NULL DEFAULT 0,
+      create_time INTEGER NOT NULL
+    )
+    ''');
+
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS private_photos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      asset_id TEXT NOT NULL,
+      album_id INTEGER NOT NULL,
+      media_type INTEGER NOT NULL DEFAULT 0,
+      create_time INTEGER NOT NULL,
+      FOREIGN KEY(album_id) REFERENCES private_albums(id)
+    )
+    ''');
+
+    // PIN 码存储表（只存一条记录）
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS private_lock (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      pin_hash TEXT NOT NULL,
+      create_time INTEGER NOT NULL
+    )
+    ''');
   }
 
   Future<void> _insertDefaultVideoCategories(Database db) async {
@@ -510,6 +558,56 @@ class DatabaseHelper {
     );
   }
 
+  // 获取已保留但未分类的照片
+
+  Future<List<Map<String, dynamic>>> getKeptUncategorizedPhotos({int? mediaType}) async {
+    final db = await database;
+
+    String where = 'status=? AND category_id IS NULL';
+
+    List<dynamic> whereArgs = [1];
+
+    if (mediaType != null) {
+      where += ' AND media_type=?';
+
+      whereArgs.add(mediaType);
+    }
+
+    return await db.query(
+      'photos',
+
+      where: where,
+
+      whereArgs: whereArgs,
+
+      orderBy: 'create_time DESC',
+    );
+  }
+
+  // 获取已保留未分类的照片数量
+
+  Future<int> getKeptUncategorizedCount({int? mediaType}) async {
+    final db = await database;
+
+    String where = 'status=? AND category_id IS NULL';
+
+    List<dynamic> whereArgs = [1];
+
+    if (mediaType != null) {
+      where += ' AND media_type=?';
+
+      whereArgs.add(mediaType);
+    }
+
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as cnt FROM photos WHERE $where',
+
+      whereArgs,
+    );
+
+    return result.first['cnt'] as int? ?? 0;
+  }
+
   // 获取某分类的照片数量
 
   Future<int> getCategoryPhotoCount(int categoryId) async {
@@ -552,7 +650,7 @@ class DatabaseHelper {
     return result.first['cnt'] as int? ?? 0;
   }
 
-  // 获取已处理的 asset_id 集合（避免重复加载）
+  // 获取已处理的 asset_id 集合（避免重复加载，包含私密照片）
 
   Future<Set<String>> getProcessedAssetIds() async {
     final db = await database;
@@ -567,7 +665,14 @@ class DatabaseHelper {
       whereArgs: [1, 2],
     );
 
-    return result.map((r) => r['asset_id'] as String).toSet();
+    // 同时获取私密相册中的 asset_id
+    final privateResult = await db.query('private_photos', columns: ['asset_id']);
+
+    final ids = result.map((r) => r['asset_id'] as String).toSet();
+
+    ids.addAll(privateResult.map((r) => r['asset_id'] as String));
+
+    return ids;
   }
 
   // 获取回收站照片数量
@@ -647,6 +752,334 @@ class DatabaseHelper {
       where: 'id IN ($placeholders)',
 
       whereArgs: photoIds,
+    );
+  }
+
+  // ==================== 私密相册相关 ====================
+
+  // 获取所有私密相册
+
+  Future<List<Map<String, dynamic>>> getPrivateAlbums({int? mediaType}) async {
+    final db = await database;
+
+    if (mediaType != null) {
+      return await db.query(
+        'private_albums',
+
+        where: 'media_type=?',
+
+        whereArgs: [mediaType],
+
+        orderBy: 'create_time DESC',
+      );
+    }
+
+    return await db.query('private_albums', orderBy: 'create_time DESC');
+  }
+
+  // 创建私密相册
+
+  Future<int> addPrivateAlbum({
+    required String name,
+
+    required String icon,
+
+    required String color,
+
+    int mediaType = 0,
+  }) async {
+    final db = await database;
+
+    return await db.insert('private_albums', {
+      'name': name,
+
+      'icon': icon,
+
+      'color': color,
+
+      'media_type': mediaType,
+
+      'create_time': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
+  // 删除私密相册（同时删除关联照片记录）
+
+  Future<int> deletePrivateAlbum(int id) async {
+    final db = await database;
+
+    await db.delete('private_photos', where: 'album_id=?', whereArgs: [id]);
+
+    return await db.delete('private_albums', where: 'id=?', whereArgs: [id]);
+  }
+
+  // 修改私密相册
+
+  Future<int> updatePrivateAlbum({
+    required int id,
+
+    required String name,
+
+    required String icon,
+
+    required String color,
+  }) async {
+    final db = await database;
+
+    return await db.update(
+      'private_albums',
+
+      {'name': name, 'icon': icon, 'color': color},
+
+      where: 'id=?',
+
+      whereArgs: [id],
+    );
+  }
+
+  // 添加照片到私密相册
+
+  Future<int> addPhotoToPrivateAlbum({
+    required String assetId,
+
+    required int albumId,
+
+    int mediaType = 0,
+  }) async {
+    final db = await database;
+
+    // 检查是否已在私密相册中
+    final existing = await db.query(
+      'private_photos',
+
+      where: 'asset_id=?',
+
+      whereArgs: [assetId],
+    );
+
+    if (existing.isNotEmpty) {
+      // 已存在则更新
+      await db.update(
+        'private_photos',
+
+        {'album_id': albumId},
+
+        where: 'asset_id=?',
+
+        whereArgs: [assetId],
+      );
+
+      return existing.first['id'] as int;
+    }
+
+    return await db.insert('private_photos', {
+      'asset_id': assetId,
+
+      'album_id': albumId,
+
+      'media_type': mediaType,
+
+      'create_time': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
+  // 从私密相册移除照片
+
+  Future<int> removePhotoFromPrivateAlbum(String assetId) async {
+    final db = await database;
+
+    return await db.delete('private_photos', where: 'asset_id=?', whereArgs: [assetId]);
+  }
+
+  // 获取私密相册中的照片
+
+  Future<List<Map<String, dynamic>>> getPrivatePhotos(int albumId) async {
+    final db = await database;
+
+    return await db.query(
+      'private_photos',
+
+      where: 'album_id=?',
+
+      whereArgs: [albumId],
+
+      orderBy: 'create_time DESC',
+    );
+  }
+
+  // 获取私密相册中的照片数量
+
+  Future<int> getPrivatePhotoCount(int albumId) async {
+    final db = await database;
+
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as cnt FROM private_photos WHERE album_id=?',
+
+      [albumId],
+    );
+
+    return result.first['cnt'] as int? ?? 0;
+  }
+
+  // 获取所有私密照片的 asset_id 集合
+
+  Future<Set<String>> getPrivateAssetIds() async {
+    final db = await database;
+
+    final result = await db.query('private_photos', columns: ['asset_id']);
+
+    return result.map((r) => r['asset_id'] as String).toSet();
+  }
+
+  // 检查 asset_id 是否在私密相册中
+
+  Future<bool> isPrivatePhoto(String assetId) async {
+    final db = await database;
+
+    final result = await db.query(
+      'private_photos',
+
+      where: 'asset_id=?',
+
+      whereArgs: [assetId],
+    );
+
+    return result.isNotEmpty;
+  }
+
+  // ==================== PIN 锁相关 ====================
+
+  // 保存 PIN 码（存储简单 hash）
+
+  Future<void> savePin(String pin) async {
+    final db = await database;
+
+    final hash = _simpleHash(pin);
+
+    final existing = await db.query('private_lock', where: 'id=1');
+
+    if (existing.isNotEmpty) {
+      await db.update(
+        'private_lock',
+
+        {'pin_hash': hash, 'create_time': DateTime.now().millisecondsSinceEpoch},
+
+        where: 'id=1',
+      );
+    } else {
+      await db.insert('private_lock', {
+        'id': 1,
+
+        'pin_hash': hash,
+
+        'create_time': DateTime.now().millisecondsSinceEpoch,
+      });
+    }
+  }
+
+  // 验证 PIN 码
+
+  Future<bool> verifyPin(String pin) async {
+    final db = await database;
+
+    final result = await db.query('private_lock', where: 'id=1');
+
+    if (result.isEmpty) return false;
+
+    final storedHash = result.first['pin_hash'] as String;
+
+    return storedHash == _simpleHash(pin);
+  }
+
+  // 是否已设置 PIN
+
+  Future<bool> hasPinSet() async {
+    final db = await database;
+
+    final result = await db.query('private_lock', where: 'id=1');
+
+    return result.isNotEmpty;
+  }
+
+  // 删除 PIN
+
+  Future<void> deletePin() async {
+    final db = await database;
+
+    await db.delete('private_lock', where: 'id=1');
+  }
+
+  // 简单 hash（生产环境建议用 bcrypt 等）
+
+  String _simpleHash(String input) {
+    int hash = 0;
+
+    for (int i = 0; i < input.length; i++) {
+      hash = (hash * 31 + input.codeUnitAt(i)) & 0x7FFFFFFF;
+    }
+
+    return hash.toRadixString(16);
+  }
+
+  // 根据名称搜索照片（模糊匹配）
+
+  Future<List<Map<String, dynamic>>> searchPhotosByName(String keyword) async {
+    final db = await database;
+
+    return await db.query(
+      'photos',
+
+      where: 'name LIKE ? AND status = 1',
+
+      whereArgs: ['%$keyword%'],
+
+      orderBy: 'create_time DESC',
+    );
+  }
+
+  // 更新照片名称
+
+  Future<void> updatePhotoName(int photoId, String name) async {
+    final db = await database;
+
+    await db.update(
+      'photos',
+
+      {'name': name},
+
+      where: 'id=?',
+
+      whereArgs: [photoId],
+    );
+  }
+
+  // 将照片从分类移到私密相册（清除分类关联，标记为已处理）
+
+  Future<void> moveToPrivate(int photoId) async {
+    final db = await database;
+
+    await db.update(
+      'photos',
+
+      {'category_id': null, 'status': 1},
+
+      where: 'id=?',
+
+      whereArgs: [photoId],
+    );
+  }
+
+  // 获取有名称的照片（用于搜索展示）
+
+  Future<List<Map<String, dynamic>>> getNamedPhotos() async {
+    final db = await database;
+
+    return await db.query(
+      'photos',
+
+      where: "name != '' AND name IS NOT NULL AND status = 1",
+
+      orderBy: 'create_time DESC',
     );
   }
 }

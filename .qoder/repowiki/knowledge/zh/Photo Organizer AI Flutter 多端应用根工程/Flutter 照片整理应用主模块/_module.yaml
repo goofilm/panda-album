@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: lib_application
+title: Flutter 照片整理应用主模块
+scope:
+    - lib/
+source_files: []
+depends_on: []
+related_to:
+    - path: android_platform
+    - path: ios_platform
+    - path: linux_platform
+    - path: macos_platform
+    - path: windows_platform

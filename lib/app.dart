@@ -5,6 +5,7 @@ import 'features/home/home_page.dart';
 
 import 'providers/photo_provider.dart';
 import 'providers/category_provider.dart';
+import 'providers/private_album_provider.dart';
 
 class PhotoOrganizerApp extends StatelessWidget {
   const PhotoOrganizerApp({super.key});
@@ -20,12 +21,15 @@ class PhotoOrganizerApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => CategoryProvider()..loadCategories(),
         ),
+
+        // 私密相册数据
+        ChangeNotifierProvider(create: (_) => PrivateAlbumProvider()),
       ],
 
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
 
-        title: "照片整理",
+        title: "熊猫相册",
 
         theme: ThemeData(
           useMaterial3: true,

@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../../providers/category_provider.dart';
 
 class CreateCategoryPage extends StatefulWidget {
-  const CreateCategoryPage({super.key});
+  final int mediaType;
+
+  const CreateCategoryPage({super.key, this.mediaType = 0});
 
   @override
   State<CreateCategoryPage> createState() => _CreateCategoryPageState();
@@ -13,28 +15,29 @@ class CreateCategoryPage extends StatefulWidget {
 class _CreateCategoryPageState extends State<CreateCategoryPage> {
   final TextEditingController nameController = TextEditingController();
 
-  String selectedIcon = "📷";
+  String selectedIcon = "";
 
   String selectedColor = "4A90D9";
 
-  final List<String> icons = [
-    "📷",
-    "👶",
-    "🐶",
-    "🐱",
-    "🚗",
-    "🏠",
-    "💼",
-    "✈️",
-    "🍔",
-    "🎮",
-    "📚",
-    "🎵",
-    "❤️",
-    "⭐",
-    "🌈",
-    "📱",
+  final List<String> photoIcons = [
+    "📷", "👶", "🐶", "🐱", "🚗", "🏠",
+    "💼", "✈️", "🍔", "🎮", "📚", "🎵",
+    "❤️", "⭐", "🌈", "📱",
   ];
+
+  final List<String> videoIcons = [
+    "🎬", "📝", "🐾", "⚽", "🎵", "📹",
+    "🎤", "🎮", "👶", "🏖️", "🚗", "🍳",
+  ];
+
+  List<String> get icons => widget.mediaType == 1 ? videoIcons : photoIcons;
+
+  @override
+  void initState() {
+    super.initState();
+
+    selectedIcon = icons.first;
+  }
 
   final List<String> colors = [
     "4A90D9",
@@ -50,9 +53,9 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("创建分类")),
+      appBar: AppBar(title: Text(widget.mediaType == 1 ? "创建视频分类" : "创建分类")),
 
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
 
         child: Column(
@@ -111,8 +114,8 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
 
                     decoration: BoxDecoration(
                       color: selected
-                          ? Colors.blue.withOpacity(0.2)
-                          : Colors.grey.withOpacity(0.1),
+                          ? Colors.blue.withValues(alpha: 0.2)
+                          : Colors.grey.withValues(alpha: 0.1),
 
                       borderRadius: BorderRadius.circular(12),
 
@@ -169,7 +172,7 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
               }).toList(),
             ),
 
-            const Spacer(),
+            const SizedBox(height: 30),
 
             SizedBox(
               width: double.infinity,
@@ -205,6 +208,8 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
       icon: selectedIcon,
 
       color: selectedColor,
+
+      mediaType: widget.mediaType,
     );
 
     Navigator.pop(context);

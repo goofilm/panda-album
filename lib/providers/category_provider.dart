@@ -5,7 +5,19 @@ import '../data/database_helper.dart';
 class CategoryProvider extends ChangeNotifier {
   final DatabaseHelper _db = DatabaseHelper.instance;
 
+  /// 所有分类
+
   List<Map<String, dynamic>> categories = [];
+
+  /// 照片分类
+
+  List<Map<String, dynamic>> get photoCategories =>
+      categories.where((c) => (c['media_type'] ?? 0) == 0).toList();
+
+  /// 视频分类
+
+  List<Map<String, dynamic>> get videoCategories =>
+      categories.where((c) => (c['media_type'] ?? 0) == 1).toList();
 
   bool loading = false;
 
@@ -23,6 +35,12 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 按类型加载分类
+
+  Future<List<Map<String, dynamic>>> loadCategoriesByType(int mediaType) async {
+    return await _db.getCategories(mediaType: mediaType);
+  }
+
   // 添加用户分类
 
   Future<void> addCategory({
@@ -31,8 +49,18 @@ class CategoryProvider extends ChangeNotifier {
     required String icon,
 
     required String color,
+
+    int mediaType = 0,
   }) async {
-    await _db.addCategory(name: name, icon: icon, color: color);
+    await _db.addCategory(
+      name: name,
+
+      icon: icon,
+
+      color: color,
+
+      mediaType: mediaType,
+    );
 
     await loadCategories();
   }
@@ -57,6 +85,14 @@ class CategoryProvider extends ChangeNotifier {
 
   Future<void> deleteCategory(int id) async {
     await _db.deleteCategory(id);
+
+    await loadCategories();
+  }
+
+  // 合并分类
+
+  Future<void> mergeCategory(int fromId, int toId) async {
+    await _db.mergeCategories(fromId, toId);
 
     await loadCategories();
   }

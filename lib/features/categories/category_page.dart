@@ -1,150 +1,721 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../data/database_helper.dart';
 import '../../providers/category_provider.dart';
+import '../../widgets/morandi_color.dart';
 import 'create_category_page.dart';
+import 'category_detail_page.dart';
 
-class CategoryPage extends StatelessWidget {
+class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
+
+  @override
+  State<CategoryPage> createState() => _CategoryPageState();
+}
+
+class _CategoryPageState extends State<CategoryPage>
+    with SingleTickerProviderStateMixin {
+  final DatabaseHelper _db = DatabaseHelper.instance;
+
+  int _organizedCount = 0;
+
+  int _selectedTab = 0;
+
+  late final TabController _tabController = TabController(
+    length: 2,
+
+    vsync: this,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadStats();
+
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        setState(() {
+          _selectedTab = _tabController.index;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+
+    super.dispose();
+  }
+
+  Future<void> _loadStats() async {
+    final count = await _db.getOrganizedCount();
+
+    if (!mounted) return;
+
+    setState(() {
+      _organizedCount = count;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CategoryProvider>();
 
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("我的分类")),
+      appBar: AppBar(
+        title: const Text("我的分类"),
+
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+
+                  MaterialPageRoute(
+                    builder: (_) => CreateCategoryPage(
+                      mediaType: _selectedTab,
+                    ),
+                  ),
+                ).then((_) => _loadStats());
+              },
+
+              child: Container(
+                width: 36,
+
+                height: 36,
+
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+
+                  shape: BoxShape.circle,
+                ),
+
+                child: const Icon(Icons.add, color: Colors.white, size: 22),
+              ),
+            ),
+          ),
+        ],
+      ),
 
       body: provider.loading
           ? const Center(child: CircularProgressIndicator())
-          : GridView.builder(
-              padding: const EdgeInsets.all(16),
+          : Column(
+              children: [
+                // 顶部 TabBar
 
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
 
-                crossAxisSpacing: 15,
+                  color: Colors.white,
 
-                mainAxisSpacing: 15,
-              ),
+                  child: TabBar(
+                    controller: _tabController,
 
-              itemCount: provider.categories.length + 1,
+                    labelColor: Colors.blue,
 
-              itemBuilder: (context, index) {
-                // 最后一个按钮 = 创建分类
+                    unselectedLabelColor: Colors.grey,
 
-                if (index == provider.categories.length) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
+                    indicatorColor: Colors.blue,
 
-                        MaterialPageRoute(
-                          builder: (_) => const CreateCategoryPage(),
-                        ),
-                      );
-                    },
+                    tabs: [
+                      Tab(text: "照片分类 (${provider.photoCategories.length})"),
 
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-
-                        border: Border.all(color: Colors.blue, width: 2),
-                      ),
-
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-
-                        children: [
-                          Icon(Icons.add, size: 40, color: Colors.blue),
-
-                          Text("新建分类", style: TextStyle(color: Colors.blue)),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-
-                final item = provider.categories[index];
-
-                return GestureDetector(
-                  onLongPress: () {
-                    if (item['is_default'] == 0) {
-                      showDeleteDialog(context, provider, item);
-                    }
-                  },
-
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Color(
-                        int.parse("FF${item['color']}", radix: 16),
-                      ).withValues(alpha: 0.15),
-
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-
-                      children: [
-                        Text(
-                          item['icon'],
-
-                          style: const TextStyle(fontSize: 40),
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        Text(
-                          item['name'],
-
-                          style: const TextStyle(
-                            fontSize: 16,
-
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
+                      Tab(text: "视频分类 (${provider.videoCategories.length})"),
+                    ],
                   ),
-                );
-              },
+                ),
+
+                // 顶部统计条
+
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+
+                    vertical: 10,
+                  ),
+
+                  color: Colors.blue.withValues(alpha: 0.05),
+
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+
+                    children: [
+                      Text(
+                        _selectedTab == 0
+                            ? "照片分类 ${provider.photoCategories.length} 个 · 已收纳 $_organizedCount 张"
+                            : "视频分类 ${provider.videoCategories.length} 个",
+
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.035,
+
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // 分类网格
+
+                Expanded(
+                  child: _buildCategoryGrid(provider),
+                ),
+              ],
             ),
     );
   }
 
-  void showDeleteDialog(
-    BuildContext context,
+  Widget _buildCategoryGrid(CategoryProvider provider) {
+    final currentCategories = _selectedTab == 0
+        ? provider.photoCategories
+        : provider.videoCategories;
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+
+        crossAxisSpacing: 15,
+
+        mainAxisSpacing: 15,
+      ),
+
+      itemCount: currentCategories.length + 1,
+
+      itemBuilder: (context, index) {
+        if (index == currentCategories.length) {
+          return _buildAddCard();
+        }
+
+        final item = currentCategories[index];
+
+        return _buildCategoryCard(item, provider);
+      },
+    );
+  }
+
+  Widget _buildAddCard() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+
+          MaterialPageRoute(
+            builder: (_) => CreateCategoryPage(mediaType: _selectedTab),
+          ),
+        ).then((_) => _loadStats());
+      },
+
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+
+          border: Border.all(color: Colors.blue, width: 2),
+        ),
+
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+
+          children: [
+            Icon(Icons.add, size: 40, color: Colors.blue),
+
+            Text("新建分类", style: TextStyle(color: Colors.blue)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(
+    Map<String, dynamic> item,
 
     CategoryProvider provider,
-
-    Map<String, dynamic> item,
   ) {
+    final color = morandiFromHex(item['color']);
+
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+
+          MaterialPageRoute(
+            builder: (_) => CategoryDetailPage(category: item),
+          ),
+        ).then((_) => _loadStats());
+      },
+
+      child: Container(
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+
+          borderRadius: BorderRadius.circular(20),
+        ),
+
+        child: Stack(
+          children: [
+            // 主体内容
+
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+
+                children: [
+                  // 圆形彩色背景 + Emoji
+
+                  Container(
+                    width: 52,
+
+                    height: 52,
+
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.3),
+
+                      shape: BoxShape.circle,
+                    ),
+
+                    child: Center(
+                      child: Text(
+                        item['icon'],
+
+                        style: TextStyle(fontSize: screenWidth * 0.07),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: screenWidth * 0.02),
+
+                  Text(
+                    item['name'],
+
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.035,
+
+                      fontWeight: FontWeight.bold,
+                    ),
+
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+
+            // 右上角溢出菜单（非默认分类）
+
+            if (item['is_default'] == 0)
+              Positioned(
+                right: 0,
+
+                top: 0,
+
+                child: PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+
+                    size: screenWidth * 0.045,
+
+                    color: Colors.grey,
+                  ),
+
+                  padding: EdgeInsets.zero,
+
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'rename':
+                        _showEditDialog(item);
+
+                        break;
+
+                      case 'delete':
+                        _showDeleteDialog(provider, item);
+
+                        break;
+
+                      case 'merge':
+                        _showMergeDialog(provider, item);
+
+                        break;
+                    }
+                  },
+
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'rename',
+
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, size: 18),
+
+                          SizedBox(width: 8),
+
+                          Text("重命名"),
+                        ],
+                      ),
+                    ),
+
+                    const PopupMenuItem(
+                      value: 'merge',
+
+                      child: Row(
+                        children: [
+                          Icon(Icons.merge, size: 18),
+
+                          SizedBox(width: 8),
+
+                          Text("合并到..."),
+                        ],
+                      ),
+                    ),
+
+                    const PopupMenuItem(
+                      value: 'delete',
+
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, size: 18, color: Colors.red),
+
+                          SizedBox(width: 8),
+
+                          Text("删除", style: TextStyle(color: Colors.red)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditDialog(Map<String, dynamic> item) {
+    final nameController = TextEditingController(text: item['name']);
+
+    String selectedIcon = item['icon'];
+
+    String selectedColor = item['color'];
+
+    final icons = [
+      "📷", "👶", "🐶", "🐱", "🚗", "🏠",
+      "💼", "✈️", "🍔", "🎮", "📚", "🎵",
+    ];
+
+    final colors = [
+      "4A90D9", "2ECC71", "FF6B6B", "F39C12",
+      "9B59B6", "E67E22", "1ABC9C", "34495E",
+    ];
+
+    final provider = context.read<CategoryProvider>();
+
     showDialog(
       context: context,
 
-      builder: (context) {
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text("编辑分类"),
+
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+
+                  children: [
+                    TextField(
+                      controller: nameController,
+
+                      decoration: const InputDecoration(
+                        hintText: "分类名称",
+
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    const Align(
+                      alignment: Alignment.centerLeft,
+
+                      child: Text(
+                        "图标",
+
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Wrap(
+                      spacing: 10,
+
+                      runSpacing: 10,
+
+                      children: icons.map((icon) {
+                        final sel = selectedIcon == icon;
+
+                        return GestureDetector(
+                          onTap: () {
+                            setDialogState(() {
+                              selectedIcon = icon;
+                            });
+                          },
+
+                          child: Container(
+                            width: 40,
+
+                            height: 40,
+
+                            alignment: Alignment.center,
+
+                            decoration: BoxDecoration(
+                              color: sel
+                                  ? Colors.blue.withValues(alpha: 0.2)
+                                  : Colors.grey.withValues(alpha: 0.1),
+
+                              borderRadius: BorderRadius.circular(10),
+
+                              border: sel
+                                  ? Border.all(color: Colors.blue, width: 2)
+                                  : null,
+                            ),
+
+                            child: Text(
+                              icon,
+
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    const Align(
+                      alignment: Alignment.centerLeft,
+
+                      child: Text(
+                        "颜色",
+
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Wrap(
+                      spacing: 10,
+
+                      children: colors.map((c) {
+                        final sel = selectedColor == c;
+
+                        return GestureDetector(
+                          onTap: () {
+                            setDialogState(() {
+                              selectedColor = c;
+                            });
+                          },
+
+                          child: Container(
+                            width: 36,
+
+                            height: 36,
+
+                            decoration: BoxDecoration(
+                              color: Color(int.parse("FF$c", radix: 16)),
+
+                              shape: BoxShape.circle,
+
+                              border: sel
+                                  ? Border.all(
+                                      color: Colors.black,
+
+                                      width: 3,
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+
+                  child: const Text("取消"),
+                ),
+
+                ElevatedButton(
+                  onPressed: () async {
+                    final name = nameController.text.trim();
+
+                    if (name.isEmpty) return;
+
+                    await provider.updateCategory(
+                      id: item['id'],
+
+                      name: name,
+
+                      icon: selectedIcon,
+
+                      color: selectedColor,
+                    );
+
+                    if (!dialogContext.mounted) return;
+
+                    Navigator.pop(dialogContext);
+
+                    await _loadStats();
+                  },
+
+                  child: const Text("保存"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showDeleteDialog(
+    CategoryProvider provider,
+
+    Map<String, dynamic> item,
+  ) async {
+    // 先查询该分类下有多少照片
+
+    final count = await _db.getCategoryPhotoCount(item['id']);
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+
+      builder: (dialogContext) {
         return AlertDialog(
           title: const Text("删除分类"),
 
-          content: Text("确定删除 ${item['name']} ?"),
+          content: Text(
+            count > 0
+                ? "确定删除「${item['name']}」？\n该分类下 $count 张照片将回到待整理状态，需要重新分类。"
+                : "确定删除「${item['name']}」？",
+          ),
 
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(dialogContext),
 
               child: const Text("取消"),
             ),
 
             TextButton(
-              onPressed: () {
-                provider.deleteCategory(item['id']);
+              onPressed: () async {
+                await provider.deleteCategory(item['id']);
 
-                Navigator.pop(context);
+                if (!dialogContext.mounted) return;
+
+                Navigator.pop(dialogContext);
+
+                await _loadStats();
               },
 
-              child: const Text("删除"),
+              child: const Text("删除", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showMergeDialog(
+    CategoryProvider provider,
+
+    Map<String, dynamic> item,
+  ) {
+    final currentCategories = _selectedTab == 0
+        ? provider.photoCategories
+        : provider.videoCategories;
+
+    final otherCategories = currentCategories
+        .where((c) => c['id'] != item['id'])
+        .toList();
+
+    showDialog(
+      context: context,
+
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text("将「${item['name']}」合并到..."),
+
+          content: SizedBox(
+            width: double.maxFinite,
+
+            child: ListView.builder(
+              shrinkWrap: true,
+
+              itemCount: otherCategories.length,
+
+              itemBuilder: (context, index) {
+                final target = otherCategories[index];
+
+                return ListTile(
+                  leading: Text(
+                    target['icon'],
+
+                    style: const TextStyle(fontSize: 24),
+                  ),
+
+                  title: Text(target['name']),
+
+                  onTap: () async {
+                    final targetName = target['name'];
+
+                    await provider.mergeCategory(
+                      item['id'],
+
+                      target['id'],
+                    );
+
+                    if (!dialogContext.mounted) return;
+
+                    Navigator.pop(dialogContext);
+
+                    await _loadStats();
+
+                    if (!context.mounted) return;
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("已合并到「$targetName」"),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+
+              child: const Text("取消"),
             ),
           ],
         );

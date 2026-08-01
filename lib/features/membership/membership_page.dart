@@ -196,7 +196,6 @@ class _MembershipPageState extends State<MembershipPage> {
       {'icon': Icons.category_outlined, 'title': '无限分类', 'desc': '自由创建任意数量分类'},
       {'icon': Icons.lock_outline, 'title': '无限私密', 'desc': '私密相册不再受限'},
       {'icon': Icons.delete_sweep_outlined, 'title': '永久回收站', 'desc': '回收站照片不会被自动清理'},
-      {'icon': Icons.select_all_outlined, 'title': '批量操作', 'desc': '高效整理大量照片'},
       {'icon': Icons.headset_outlined, 'title': '优先客服', 'desc': '专属客服快速响应'},
     ];
 

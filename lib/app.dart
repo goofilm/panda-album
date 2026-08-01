@@ -9,6 +9,7 @@ import 'providers/photo_provider.dart';
 import 'providers/category_provider.dart';
 import 'providers/private_album_provider.dart';
 import 'providers/membership_provider.dart';
+import 'providers/locale_provider.dart';
 
 class PhotoOrganizerApp extends StatelessWidget {
   const PhotoOrganizerApp({super.key});
@@ -17,6 +18,9 @@ class PhotoOrganizerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // 语言设置
+        ChangeNotifierProvider(create: (_) => LocaleProvider()..init()),
+
         // 照片数据
         ChangeNotifierProvider(create: (_) => PhotoProvider()),
 
@@ -32,30 +36,37 @@ class PhotoOrganizerApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MembershipProvider()..init()),
       ],
 
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
+      child: Consumer<LocaleProvider>(
+        builder: (context, localeProvider, _) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
 
-        title: "熊猫相册",
+            title: "熊猫相册",
 
-        // 多语言配置
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('zh', 'CN'),
-          Locale('en', 'US'),
-        ],
+            // 动态切换语言
+            locale: localeProvider.locale,
 
-        theme: ThemeData(
-          useMaterial3: true,
+            // 多语言配置
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('zh', 'CN'),
+              Locale('en', 'US'),
+            ],
 
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        ),
+            theme: ThemeData(
+              useMaterial3: true,
 
-        home: const HomePage(),
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+            ),
+
+            home: const HomePage(),
+          );
+        },
       ),
     );
   }

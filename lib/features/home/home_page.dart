@@ -8,6 +8,7 @@ import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
 import '../../providers/membership_provider.dart';
+import '../../providers/locale_provider.dart';
 import '../swipe/swipe_page.dart';
 import '../categories/category_page.dart';
 import '../recycle/recycle_page.dart';
@@ -105,7 +106,10 @@ class _HomePageState extends State<HomePage>
             },
           ),
 
-          IconButton(icon: const Icon(Icons.language), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: () => _showLanguagePicker(context),
+          ),
 
           // 会员入口
           Consumer<MembershipProvider>(
@@ -588,6 +592,65 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
+    );
+  }
+
+  void _showLanguagePicker(BuildContext context) {
+    final localeProvider = context.read<LocaleProvider>();
+    final currentLocale = localeProvider.locale;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return SimpleDialog(
+          title: Text(AppLocalizations.of(context)!.settings),
+          children: [
+            _buildLanguageOption(
+              dialogContext,
+              localeProvider,
+              currentLocale,
+              const Locale('zh', 'CN'),
+              '中文',
+              'Chinese',
+            ),
+            _buildLanguageOption(
+              dialogContext,
+              localeProvider,
+              currentLocale,
+              const Locale('en', 'US'),
+              'English',
+              'English',
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageOption(
+    BuildContext dialogContext,
+    LocaleProvider localeProvider,
+    Locale currentLocale,
+    Locale locale,
+    String nativeName,
+    String englishName,
+  ) {
+    final isSelected = currentLocale.languageCode == locale.languageCode;
+    return ListTile(
+      leading: Icon(
+        isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+        color: isSelected ? Colors.blue : Colors.grey,
+      ),
+      title: Text(
+        '$nativeName ($englishName)',
+        style: TextStyle(
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      onTap: () {
+        localeProvider.setLocale(locale);
+        Navigator.pop(dialogContext);
+      },
     );
   }
 }

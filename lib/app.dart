@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 import 'features/home/home_page.dart';
 
@@ -34,6 +36,18 @@ class PhotoOrganizerApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
 
         title: "熊猫相册",
+
+        // 多语言配置
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('zh', 'CN'),
+          Locale('en', 'US'),
+        ],
 
         theme: ThemeData(
           useMaterial3: true,

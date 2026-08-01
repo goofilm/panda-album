@@ -565,4 +565,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get videoLoadFailed => '视频加载失败';
+
+  @override
+  String get defaultCatWork => '工作';
+
+  @override
+  String get defaultCatLife => '生活';
+
+  @override
+  String get defaultCatTravel => '旅行';
+
+  @override
+  String get defaultCatFood => '美食';
+
+  @override
+  String get defaultCatScreenshot => '截图';
+
+  @override
+  String get defaultCatPortrait => '人像';
+
+  @override
+  String get defaultCatVlog => 'Vlog';
+
+  @override
+  String get defaultCatTutorial => '教程';
+
+  @override
+  String get defaultCatPet => '宠物';
+
+  @override
+  String get defaultCatSports => '运动';
+
+  @override
+  String get defaultCatMusic => '音乐';
+
+  @override
+  String get defaultCatScreenRecord => '录屏';
 }

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../data/database_helper.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
@@ -962,7 +963,7 @@ class _SwipePageState extends State<SwipePage> {
                           style: const TextStyle(fontSize: 30),
                         ),
 
-                        title: Text(item['name']),
+                        title: Text(DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!)),
 
                         onTap: () async {
                           final list = _getList(provider);
@@ -975,7 +976,7 @@ class _SwipePageState extends State<SwipePage> {
 
                           _lastAction = 'category';
 
-                          final categoryName = item['name'] as String;
+                          final categoryName = DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!);
 
                           _categoryBreakdown[categoryName] =
                               (_categoryBreakdown[categoryName] ?? 0) + 1;

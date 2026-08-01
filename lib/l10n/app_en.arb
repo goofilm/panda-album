@@ -164,5 +164,17 @@
   "confirmRemoveFromCategory": "Remove {count} selected items from this category?\nYou'll need to reorganize them.",
   "confirmMoveToRecycleBinDetail": "Move {count} selected items to Recycle Bin?\nThey will be permanently deleted after 30 days.",
   "preview": "Preview",
-  "videoLoadFailed": "Video load failed"
+  "videoLoadFailed": "Video load failed",
+  "defaultCatWork": "Work",
+  "defaultCatLife": "Life",
+  "defaultCatTravel": "Travel",
+  "defaultCatFood": "Food",
+  "defaultCatScreenshot": "Screenshots",
+  "defaultCatPortrait": "Portrait",
+  "defaultCatVlog": "Vlog",
+  "defaultCatTutorial": "Tutorial",
+  "defaultCatPet": "Pet",
+  "defaultCatSports": "Sports",
+  "defaultCatMusic": "Music",
+  "defaultCatScreenRecord": "Screen Record"
 }

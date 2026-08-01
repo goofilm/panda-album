@@ -164,5 +164,17 @@
   "confirmRemoveFromCategory": "确定将选中的 {count} 张移出当前分类？\n移出后需要重新整理。",
   "confirmMoveToRecycleBinDetail": "确定将选中的 {count} 张移到回收站？\n30天后将自动永久删除。",
   "preview": "预览",
-  "videoLoadFailed": "视频加载失败"
+  "videoLoadFailed": "视频加载失败",
+  "defaultCatWork": "工作",
+  "defaultCatLife": "生活",
+  "defaultCatTravel": "旅行",
+  "defaultCatFood": "美食",
+  "defaultCatScreenshot": "截图",
+  "defaultCatPortrait": "人像",
+  "defaultCatVlog": "Vlog",
+  "defaultCatTutorial": "教程",
+  "defaultCatPet": "宠物",
+  "defaultCatSports": "运动",
+  "defaultCatMusic": "音乐",
+  "defaultCatScreenRecord": "录屏"
 }

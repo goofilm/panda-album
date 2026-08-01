@@ -1,5 +1,6 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import '../l10n/app_localizations.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -26,7 +27,7 @@ class DatabaseHelper {
     return await openDatabase(
       path,
 
-      version: 6,
+      version: 7,
 
       onCreate: _createDB,
 
@@ -69,6 +70,15 @@ class DatabaseHelper {
         'ALTER TABLE photos ADD COLUMN name TEXT DEFAULT ""',
       );
     }
+
+    if (oldVersion < 7) {
+      // categories表添加 name_key 字段（用于默认分类的多语言翻译）
+      await db.execute(
+        'ALTER TABLE categories ADD COLUMN name_key TEXT DEFAULT ""',
+      );
+      // 为已有的默认分类设置 name_key
+      await _setDefaultCategoryNameKeys(db);
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -87,6 +97,8 @@ class DatabaseHelper {
       is_default INTEGER NOT NULL DEFAULT 0,
 
       media_type INTEGER NOT NULL DEFAULT 0,
+
+      name_key TEXT DEFAULT '',
 
       create_time INTEGER NOT NULL
 
@@ -162,21 +174,42 @@ class DatabaseHelper {
     ''');
   }
 
+  // 为已有的默认分类设置 name_key（数据库升级用）
+  Future<void> _setDefaultCategoryNameKeys(Database db) async {
+    final mapping = {
+      '工作': 'defaultCatWork',
+      '生活': 'defaultCatLife',
+      '旅行': 'defaultCatTravel',
+      '美食': 'defaultCatFood',
+      '截图': 'defaultCatScreenshot',
+      '人像': 'defaultCatPortrait',
+      'Vlog': 'defaultCatVlog',
+      '教程': 'defaultCatTutorial',
+      '宠物': 'defaultCatPet',
+      '运动': 'defaultCatSports',
+      '音乐': 'defaultCatMusic',
+      '录屏': 'defaultCatScreenRecord',
+    };
+    for (final entry in mapping.entries) {
+      await db.update(
+        'categories',
+        {'name_key': entry.value},
+        where: 'name=? AND is_default=1',
+        whereArgs: [entry.key],
+      );
+    }
+  }
+
   Future<void> _insertDefaultVideoCategories(Database db) async {
     final now = DateTime.now().millisecondsSinceEpoch;
 
     final defaults = [
-      {'name': 'Vlog', 'icon': '🎬', 'color': 'E74C3C'},
-
-      {'name': '教程', 'icon': '📝', 'color': '3498DB'},
-
-      {'name': '宠物', 'icon': '🐾', 'color': 'F39C12'},
-
-      {'name': '运动', 'icon': '⚽', 'color': '2ECC71'},
-
-      {'name': '音乐', 'icon': '🎵', 'color': '9B59B6'},
-
-      {'name': '录屏', 'icon': '📹', 'color': '1ABC9C'},
+      {'name': 'Vlog', 'icon': '🎬', 'color': 'E74C3C', 'name_key': 'defaultCatVlog'},
+      {'name': '教程', 'icon': '📝', 'color': '3498DB', 'name_key': 'defaultCatTutorial'},
+      {'name': '宠物', 'icon': '🐾', 'color': 'F39C12', 'name_key': 'defaultCatPet'},
+      {'name': '运动', 'icon': '⚽', 'color': '2ECC71', 'name_key': 'defaultCatSports'},
+      {'name': '音乐', 'icon': '🎵', 'color': '9B59B6', 'name_key': 'defaultCatMusic'},
+      {'name': '录屏', 'icon': '📹', 'color': '1ABC9C', 'name_key': 'defaultCatScreenRecord'},
     ];
 
     for (final item in defaults) {
@@ -200,6 +233,8 @@ class DatabaseHelper {
 
           'media_type': 1,
 
+          'name_key': item['name_key'],
+
           'create_time': now,
         });
       }
@@ -210,17 +245,12 @@ class DatabaseHelper {
     final now = DateTime.now().millisecondsSinceEpoch;
 
     final defaults = [
-      {'name': '工作', 'icon': '💼', 'color': '4A90D9'},
-
-      {'name': '生活', 'icon': '🏠', 'color': 'FF6B6B'},
-
-      {'name': '旅行', 'icon': '✈️', 'color': '2ECC71'},
-
-      {'name': '美食', 'icon': '🍣', 'color': 'F39C12'},
-
-      {'name': '截图', 'icon': '📱', 'color': '9B59B6'},
-
-      {'name': '人像', 'icon': '👤', 'color': 'E67E22'},
+      {'name': '工作', 'icon': '💼', 'color': '4A90D9', 'name_key': 'defaultCatWork'},
+      {'name': '生活', 'icon': '🏠', 'color': 'FF6B6B', 'name_key': 'defaultCatLife'},
+      {'name': '旅行', 'icon': '✈️', 'color': '2ECC71', 'name_key': 'defaultCatTravel'},
+      {'name': '美食', 'icon': '🍣', 'color': 'F39C12', 'name_key': 'defaultCatFood'},
+      {'name': '截图', 'icon': '📱', 'color': '9B59B6', 'name_key': 'defaultCatScreenshot'},
+      {'name': '人像', 'icon': '👤', 'color': 'E67E22', 'name_key': 'defaultCatPortrait'},
     ];
 
     for (final item in defaults) {
@@ -243,6 +273,8 @@ class DatabaseHelper {
           'is_default': 1,
 
           'media_type': 0,
+
+          'name_key': item['name_key'],
 
           'create_time': now,
         });
@@ -308,7 +340,7 @@ class DatabaseHelper {
     return await db.update(
       'categories',
 
-      {'name': name, 'icon': icon, 'color': color},
+      {'name': name, 'icon': icon, 'color': color, 'name_key': ''},
 
       where: 'id=?',
 
@@ -1019,6 +1051,27 @@ class DatabaseHelper {
     }
 
     return hash.toRadixString(16);
+  }
+
+  // 获取分类的显示名称（默认分类根据语言翻译）
+  static String getCategoryName(Map<String, dynamic> category, AppLocalizations l10n) {
+    final nameKey = category['name_key'] as String? ?? '';
+    if (nameKey.isEmpty) return category['name'] as String;
+    switch (nameKey) {
+      case 'defaultCatWork': return l10n.defaultCatWork;
+      case 'defaultCatLife': return l10n.defaultCatLife;
+      case 'defaultCatTravel': return l10n.defaultCatTravel;
+      case 'defaultCatFood': return l10n.defaultCatFood;
+      case 'defaultCatScreenshot': return l10n.defaultCatScreenshot;
+      case 'defaultCatPortrait': return l10n.defaultCatPortrait;
+      case 'defaultCatVlog': return l10n.defaultCatVlog;
+      case 'defaultCatTutorial': return l10n.defaultCatTutorial;
+      case 'defaultCatPet': return l10n.defaultCatPet;
+      case 'defaultCatSports': return l10n.defaultCatSports;
+      case 'defaultCatMusic': return l10n.defaultCatMusic;
+      case 'defaultCatScreenRecord': return l10n.defaultCatScreenRecord;
+      default: return category['name'] as String;
+    }
   }
 
   // 根据名称搜索照片（模糊匹配）

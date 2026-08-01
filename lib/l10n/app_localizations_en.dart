@@ -574,4 +574,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get videoLoadFailed => 'Video load failed';
+
+  @override
+  String get defaultCatWork => 'Work';
+
+  @override
+  String get defaultCatLife => 'Life';
+
+  @override
+  String get defaultCatTravel => 'Travel';
+
+  @override
+  String get defaultCatFood => 'Food';
+
+  @override
+  String get defaultCatScreenshot => 'Screenshots';
+
+  @override
+  String get defaultCatPortrait => 'Portrait';
+
+  @override
+  String get defaultCatVlog => 'Vlog';
+
+  @override
+  String get defaultCatTutorial => 'Tutorial';
+
+  @override
+  String get defaultCatPet => 'Pet';
+
+  @override
+  String get defaultCatSports => 'Sports';
+
+  @override
+  String get defaultCatMusic => 'Music';
+
+  @override
+  String get defaultCatScreenRecord => 'Screen Record';
 }

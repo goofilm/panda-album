@@ -1087,6 +1087,78 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'视频加载失败'**
   String get videoLoadFailed;
+
+  /// No description provided for @defaultCatWork.
+  ///
+  /// In zh, this message translates to:
+  /// **'工作'**
+  String get defaultCatWork;
+
+  /// No description provided for @defaultCatLife.
+  ///
+  /// In zh, this message translates to:
+  /// **'生活'**
+  String get defaultCatLife;
+
+  /// No description provided for @defaultCatTravel.
+  ///
+  /// In zh, this message translates to:
+  /// **'旅行'**
+  String get defaultCatTravel;
+
+  /// No description provided for @defaultCatFood.
+  ///
+  /// In zh, this message translates to:
+  /// **'美食'**
+  String get defaultCatFood;
+
+  /// No description provided for @defaultCatScreenshot.
+  ///
+  /// In zh, this message translates to:
+  /// **'截图'**
+  String get defaultCatScreenshot;
+
+  /// No description provided for @defaultCatPortrait.
+  ///
+  /// In zh, this message translates to:
+  /// **'人像'**
+  String get defaultCatPortrait;
+
+  /// No description provided for @defaultCatVlog.
+  ///
+  /// In zh, this message translates to:
+  /// **'Vlog'**
+  String get defaultCatVlog;
+
+  /// No description provided for @defaultCatTutorial.
+  ///
+  /// In zh, this message translates to:
+  /// **'教程'**
+  String get defaultCatTutorial;
+
+  /// No description provided for @defaultCatPet.
+  ///
+  /// In zh, this message translates to:
+  /// **'宠物'**
+  String get defaultCatPet;
+
+  /// No description provided for @defaultCatSports.
+  ///
+  /// In zh, this message translates to:
+  /// **'运动'**
+  String get defaultCatSports;
+
+  /// No description provided for @defaultCatMusic.
+  ///
+  /// In zh, this message translates to:
+  /// **'音乐'**
+  String get defaultCatMusic;
+
+  /// No description provided for @defaultCatScreenRecord.
+  ///
+  /// In zh, this message translates to:
+  /// **'录屏'**
+  String get defaultCatScreenRecord;
 }
 
 class _AppLocalizationsDelegate

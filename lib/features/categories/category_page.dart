@@ -503,7 +503,7 @@ class _CategoryPageState extends State<CategoryPage>
                   SizedBox(height: screenWidth * 0.02),
 
                   Text(
-                    item['name'],
+                    DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!),
 
                     style: TextStyle(
                       fontSize: screenWidth * 0.035,
@@ -629,7 +629,7 @@ class _CategoryPageState extends State<CategoryPage>
   }
 
   void _showEditDialog(Map<String, dynamic> item) {
-    final nameController = TextEditingController(text: item['name']);
+    final nameController = TextEditingController(text: DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!));
 
     String selectedIcon = item['icon'];
 
@@ -842,8 +842,8 @@ class _CategoryPageState extends State<CategoryPage>
 
           content: Text(
             count > 0
-                ? AppLocalizations.of(context)!.confirmDeleteCategoryWithPhotos(item['name'], count.toString())
-                : AppLocalizations.of(context)!.confirmDeleteCategory(item['name']),
+                ? AppLocalizations.of(context)!.confirmDeleteCategoryWithPhotos(DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!), count.toString())
+                : AppLocalizations.of(context)!.confirmDeleteCategory(DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!)),
           ),
 
           actions: [
@@ -910,10 +910,10 @@ class _CategoryPageState extends State<CategoryPage>
                     style: const TextStyle(fontSize: 24),
                   ),
 
-                  title: Text(target['name']),
+                  title: Text(DatabaseHelper.getCategoryName(target, AppLocalizations.of(context)!)),
 
                   onTap: () async {
-                    final targetName = target['name'];
+                    final targetName = DatabaseHelper.getCategoryName(target, AppLocalizations.of(context)!);
 
                     await provider.mergeCategory(
                       item['id'],

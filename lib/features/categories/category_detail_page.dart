@@ -62,7 +62,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryName = widget.category['name'] as String;
+    final categoryName = DatabaseHelper.getCategoryName(widget.category, AppLocalizations.of(context)!);
 
     final icon = widget.category['icon'] as String;
 
@@ -708,7 +708,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                           ),
                         ),
 
-                        title: Text(item['name'] as String),
+                        title: Text(DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!)),
 
                         trailing: const Icon(Icons.chevron_right, color: Colors.grey),
 

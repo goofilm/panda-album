@@ -138,5 +138,10 @@
   "deselectAll": "Deselect All",
   "confirmPermanentDeleteSelected": "Permanently delete {count} selected photos?",
   "confirmClearRecycleBin": "Clear recycle bin? This cannot be undone.",
-  "clear": "Clear"
+  "clear": "Clear",
+  "createVideoCategory": "Create Video Category",
+  "createCategoryTitle": "Create Category",
+  "categoryNameHint": "e.g. Baby, Pet, Car",
+  "saveCategory": "Save Category",
+  "enterCategoryName": "Please enter a category name"
 }

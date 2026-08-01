@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../providers/category_provider.dart';
 
@@ -53,7 +54,7 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.mediaType == 1 ? "创建视频分类" : "创建分类")),
+      appBar: AppBar(title: Text(widget.mediaType == 1 ? AppLocalizations.of(context)!.createVideoCategory : AppLocalizations.of(context)!.createCategoryTitle)),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -62,8 +63,8 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
-            const Text(
-              "分类名称",
+            Text(
+              AppLocalizations.of(context)!.categoryName,
 
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -73,8 +74,8 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
             TextField(
               controller: nameController,
 
-              decoration: const InputDecoration(
-                hintText: "例如：宝宝、宠物、汽车",
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.categoryNameHint,
 
                 border: OutlineInputBorder(),
               ),
@@ -82,8 +83,8 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
 
             const SizedBox(height: 25),
 
-            const Text(
-              "选择图标",
+            Text(
+              AppLocalizations.of(context)!.selectIcon,
 
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -132,8 +133,8 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
 
             const SizedBox(height: 25),
 
-            const Text(
-              "选择颜色",
+            Text(
+              AppLocalizations.of(context)!.selectColor,
 
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -182,7 +183,7 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
               child: ElevatedButton(
                 onPressed: saveCategory,
 
-                child: const Text("保存分类", style: TextStyle(fontSize: 18)),
+                child: Text(AppLocalizations.of(context)!.saveCategory, style: const TextStyle(fontSize: 18)),
               ),
             ),
           ],
@@ -197,7 +198,7 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
     if (name.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("请输入分类名称")));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.enterCategoryName)));
 
       return;
     }

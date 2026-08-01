@@ -476,4 +476,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clear => 'Clear';
+
+  @override
+  String get createVideoCategory => 'Create Video Category';
+
+  @override
+  String get createCategoryTitle => 'Create Category';
+
+  @override
+  String get categoryNameHint => 'e.g. Baby, Pet, Car';
+
+  @override
+  String get saveCategory => 'Save Category';
+
+  @override
+  String get enterCategoryName => 'Please enter a category name';
 }

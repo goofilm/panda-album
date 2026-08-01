@@ -138,5 +138,10 @@
   "deselectAll": "取消全选",
   "confirmPermanentDeleteSelected": "确定永久删除选中的 {count} 张照片？",
   "confirmClearRecycleBin": "确定清空回收站？此操作不可恢复。",
-  "clear": "清空"
+  "clear": "清空",
+  "createVideoCategory": "创建视频分类",
+  "createCategoryTitle": "创建分类",
+  "categoryNameHint": "例如：宝宝、宠物、汽车",
+  "saveCategory": "保存分类",
+  "enterCategoryName": "请输入分类名称"
 }

@@ -471,4 +471,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get clear => '清空';
+
+  @override
+  String get createVideoCategory => '创建视频分类';
+
+  @override
+  String get createCategoryTitle => '创建分类';
+
+  @override
+  String get categoryNameHint => '例如：宝宝、宠物、汽车';
+
+  @override
+  String get saveCategory => '保存分类';
+
+  @override
+  String get enterCategoryName => '请输入分类名称';
 }

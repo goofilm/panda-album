@@ -931,6 +931,36 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'清空'**
   String get clear;
+
+  /// No description provided for @createVideoCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建视频分类'**
+  String get createVideoCategory;
+
+  /// No description provided for @createCategoryTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建分类'**
+  String get createCategoryTitle;
+
+  /// No description provided for @categoryNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'例如：宝宝、宠物、汽车'**
+  String get categoryNameHint;
+
+  /// No description provided for @saveCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存分类'**
+  String get saveCategory;
+
+  /// No description provided for @enterCategoryName.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入分类名称'**
+  String get enterCategoryName;
 }
 
 class _AppLocalizationsDelegate

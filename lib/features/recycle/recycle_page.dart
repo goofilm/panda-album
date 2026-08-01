@@ -5,6 +5,7 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/photo_provider.dart';
+import '../../providers/membership_provider.dart';
 
 class RecyclePage extends StatefulWidget {
   const RecyclePage({super.key});
@@ -181,15 +182,18 @@ class _RecyclePageState extends State<RecyclePage> {
 
     final photoId = photo['id'] as int;
 
-    // 计算剩余天数（30天保留期）
+    // 获取会员状态
+    final isPremium = context.watch<MembershipProvider>().isPremium;
 
+    // 计算剩余天数
     final deleteDate = DateTime.fromMillisecondsSinceEpoch(deleteTime);
-
     final expireDate = deleteDate.add(const Duration(days: 30));
-
     final remainDays = expireDate.difference(DateTime.now()).inDays;
 
-    final remainText = remainDays < 0 ? "已过期" : "剩余$remainDays天";
+    // 会员显示永久保留，非会员显示剩余天数
+    final remainText = isPremium 
+        ? "永久保留" 
+        : (remainDays < 0 ? "已过期" : "剩余$remainDays天");
 
     final isSelected = _selectedIds.contains(photoId);
 

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../data/database_helper.dart';
+import '../services/membership_service.dart';
 
 /// 媒体类型筛选
 enum MediaTypeFilter { all, image, video }
@@ -110,8 +111,11 @@ class PhotoProvider extends ChangeNotifier {
     mediaFilter = filter;
     notifyListeners();
 
-    // 启动时自动清理超过30天的回收站记录
-    await _db.deleteExpiredPhotos(30);
+    // 启动时自动清理超过30天的回收站记录（会员跳过）
+    final isPremium = await MembershipService().isPremium();
+    if (!isPremium) {
+      await _db.deleteExpiredPhotos(30);
+    }
 
     // 获取已处理的 asset_id
     _processedIds = await _db.getProcessedAssetIds();

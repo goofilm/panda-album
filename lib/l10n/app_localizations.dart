@@ -673,6 +673,264 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'暂无照片'**
   String get noPhotos;
+
+  /// No description provided for @organizedProgress.
+  ///
+  /// In zh, this message translates to:
+  /// **'已整理 {organized} 张 / 共 {total} 张'**
+  String organizedProgress(Object organized, Object total);
+
+  /// No description provided for @organizedVideoProgress.
+  ///
+  /// In zh, this message translates to:
+  /// **'已整理 {organized} 个 / 共 {total} 个'**
+  String organizedVideoProgress(Object organized, Object total);
+
+  /// No description provided for @scanningEllipsis.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在扫描...'**
+  String get scanningEllipsis;
+
+  /// No description provided for @expireDate.
+  ///
+  /// In zh, this message translates to:
+  /// **'到期时间: {date}'**
+  String expireDate(Object date);
+
+  /// No description provided for @purchaseSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'恭喜！{level}会员开通成功'**
+  String purchaseSuccess(Object level);
+
+  /// No description provided for @purchaseFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'购买失败，请稍后重试'**
+  String get purchaseFailed;
+
+  /// No description provided for @restoreSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复购买成功'**
+  String get restoreSuccess;
+
+  /// No description provided for @restoreFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'未找到可恢复的购买记录'**
+  String get restoreFailed;
+
+  /// No description provided for @yearly.
+  ///
+  /// In zh, this message translates to:
+  /// **'年度'**
+  String get yearly;
+
+  /// No description provided for @monthly.
+  ///
+  /// In zh, this message translates to:
+  /// **'月度'**
+  String get monthly;
+
+  /// No description provided for @myCategories.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的分类'**
+  String get myCategories;
+
+  /// No description provided for @photoCategoryCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'照片分类 {count} 个 · 已收纳 {organized} 张'**
+  String photoCategoryCount(Object count, Object organized);
+
+  /// No description provided for @videoCategoryCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'视频分类 {count} 个'**
+  String videoCategoryCount(Object count);
+
+  /// No description provided for @photoCategoryTab.
+  ///
+  /// In zh, this message translates to:
+  /// **'照片分类 ({count})'**
+  String photoCategoryTab(Object count);
+
+  /// No description provided for @videoCategoryTab.
+  ///
+  /// In zh, this message translates to:
+  /// **'视频分类 ({count})'**
+  String videoCategoryTab(Object count);
+
+  /// No description provided for @privateVideoAlbum.
+  ///
+  /// In zh, this message translates to:
+  /// **'私密视频相册'**
+  String get privateVideoAlbum;
+
+  /// No description provided for @privatePhotoAlbum.
+  ///
+  /// In zh, this message translates to:
+  /// **'私密照片相册'**
+  String get privatePhotoAlbum;
+
+  /// No description provided for @privateProtected.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个{type}已保护'**
+  String privateProtected(Object count, Object type);
+
+  /// No description provided for @enterPrivateSpace.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击进入私密空间'**
+  String get enterPrivateSpace;
+
+  /// No description provided for @rename.
+  ///
+  /// In zh, this message translates to:
+  /// **'重命名'**
+  String get rename;
+
+  /// No description provided for @mergeTo.
+  ///
+  /// In zh, this message translates to:
+  /// **'合并到...'**
+  String get mergeTo;
+
+  /// No description provided for @editCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑分类'**
+  String get editCategory;
+
+  /// No description provided for @iconLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'图标'**
+  String get iconLabel;
+
+  /// No description provided for @colorLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'颜色'**
+  String get colorLabel;
+
+  /// No description provided for @save.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存'**
+  String get save;
+
+  /// No description provided for @deleteCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除分类'**
+  String get deleteCategory;
+
+  /// No description provided for @confirmDeleteCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除「{name}」？'**
+  String confirmDeleteCategory(Object name);
+
+  /// No description provided for @confirmDeleteCategoryWithPhotos.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除「{name}」？\n该分类下 {count} 张照片将回到待整理状态，需要重新分类。'**
+  String confirmDeleteCategoryWithPhotos(Object count, Object name);
+
+  /// No description provided for @mergedTo.
+  ///
+  /// In zh, this message translates to:
+  /// **'已合并到「{name}」'**
+  String mergedTo(Object name);
+
+  /// No description provided for @itemsCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个'**
+  String itemsCount(Object count);
+
+  /// No description provided for @recycleBinEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'回收站是空的'**
+  String get recycleBinEmpty;
+
+  /// No description provided for @today.
+  ///
+  /// In zh, this message translates to:
+  /// **'今天'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In zh, this message translates to:
+  /// **'昨天'**
+  String get yesterday;
+
+  /// No description provided for @dateMonthDay.
+  ///
+  /// In zh, this message translates to:
+  /// **'{month}月{day}日'**
+  String dateMonthDay(Object day, Object month);
+
+  /// No description provided for @groupItemCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{label} · {count} 张'**
+  String groupItemCount(Object count, Object label);
+
+  /// No description provided for @confirmPermanentDeletePhoto.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定永久删除此照片？此操作不可恢复。'**
+  String get confirmPermanentDeletePhoto;
+
+  /// No description provided for @restoreAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部恢复'**
+  String get restoreAll;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'清空所有'**
+  String get clearAll;
+
+  /// No description provided for @selectAllText.
+  ///
+  /// In zh, this message translates to:
+  /// **'全选'**
+  String get selectAllText;
+
+  /// No description provided for @deselectAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消全选'**
+  String get deselectAll;
+
+  /// No description provided for @confirmPermanentDeleteSelected.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定永久删除选中的 {count} 张照片？'**
+  String confirmPermanentDeleteSelected(Object count);
+
+  /// No description provided for @confirmClearRecycleBin.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定清空回收站？此操作不可恢复。'**
+  String get confirmClearRecycleBin;
+
+  /// No description provided for @clear.
+  ///
+  /// In zh, this message translates to:
+  /// **'清空'**
+  String get clear;
 }
 
 class _AppLocalizationsDelegate

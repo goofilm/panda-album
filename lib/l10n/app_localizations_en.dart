@@ -313,4 +313,167 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPhotos => 'No photos';
+
+  @override
+  String organizedProgress(Object organized, Object total) {
+    return '$organized of $total organized';
+  }
+
+  @override
+  String organizedVideoProgress(Object organized, Object total) {
+    return '$organized of $total organized';
+  }
+
+  @override
+  String get scanningEllipsis => 'Scanning...';
+
+  @override
+  String expireDate(Object date) {
+    return 'Expires: $date';
+  }
+
+  @override
+  String purchaseSuccess(Object level) {
+    return 'Success! $level membership activated';
+  }
+
+  @override
+  String get purchaseFailed => 'Purchase failed, please try again';
+
+  @override
+  String get restoreSuccess => 'Purchase restored successfully';
+
+  @override
+  String get restoreFailed => 'No restorable purchases found';
+
+  @override
+  String get yearly => 'Yearly';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get myCategories => 'My Categories';
+
+  @override
+  String photoCategoryCount(Object count, Object organized) {
+    return '$count photo categories · $organized organized';
+  }
+
+  @override
+  String videoCategoryCount(Object count) {
+    return '$count video categories';
+  }
+
+  @override
+  String photoCategoryTab(Object count) {
+    return 'Photos ($count)';
+  }
+
+  @override
+  String videoCategoryTab(Object count) {
+    return 'Videos ($count)';
+  }
+
+  @override
+  String get privateVideoAlbum => 'Private Video Album';
+
+  @override
+  String get privatePhotoAlbum => 'Private Photo Album';
+
+  @override
+  String privateProtected(Object count, Object type) {
+    return '$count $type protected';
+  }
+
+  @override
+  String get enterPrivateSpace => 'Tap to enter private space';
+
+  @override
+  String get rename => 'Rename';
+
+  @override
+  String get mergeTo => 'Merge to...';
+
+  @override
+  String get editCategory => 'Edit Category';
+
+  @override
+  String get iconLabel => 'Icon';
+
+  @override
+  String get colorLabel => 'Color';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get deleteCategory => 'Delete Category';
+
+  @override
+  String confirmDeleteCategory(Object name) {
+    return 'Delete \'$name\'?';
+  }
+
+  @override
+  String confirmDeleteCategoryWithPhotos(Object count, Object name) {
+    return 'Delete \'$name\'?\n$count photos will return to unorganized status.';
+  }
+
+  @override
+  String mergedTo(Object name) {
+    return 'Merged to \'$name\'';
+  }
+
+  @override
+  String itemsCount(Object count) {
+    return '$count items';
+  }
+
+  @override
+  String get recycleBinEmpty => 'Recycle bin is empty';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String dateMonthDay(Object day, Object month) {
+    return '$month/$day';
+  }
+
+  @override
+  String groupItemCount(Object count, Object label) {
+    return '$label · $count';
+  }
+
+  @override
+  String get confirmPermanentDeletePhoto =>
+      'Permanently delete this photo? This cannot be undone.';
+
+  @override
+  String get restoreAll => 'Restore All';
+
+  @override
+  String get clearAll => 'Clear All';
+
+  @override
+  String get selectAllText => 'Select All';
+
+  @override
+  String get deselectAll => 'Deselect All';
+
+  @override
+  String confirmPermanentDeleteSelected(Object count) {
+    return 'Permanently delete $count selected photos?';
+  }
+
+  @override
+  String get confirmClearRecycleBin =>
+      'Clear recycle bin? This cannot be undone.';
+
+  @override
+  String get clear => 'Clear';
 }

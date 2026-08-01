@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../providers/membership_provider.dart';
 import '../../services/membership_service.dart';
@@ -30,12 +31,12 @@ class _MembershipPageState extends State<MembershipPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isPremium ? '会员中心' : '开通会员'),
+        title: Text(isPremium ? AppLocalizations.of(context)!.membershipCenter : AppLocalizations.of(context)!.openMembership),
         actions: [
           if (!isPremium)
             TextButton(
               onPressed: _restorePurchases,
-              child: const Text('恢复购买'),
+              child: Text(AppLocalizations.of(context)!.restorePurchase),
             ),
         ],
       ),
@@ -61,10 +62,10 @@ class _MembershipPageState extends State<MembershipPage> {
             if (!isPremium) ...[
               _buildPlanCard(
                 w,
-                title: '年度会员',
-                price: '¥98',
-                period: '/年',
-                badge: '省 38%',
+                title: AppLocalizations.of(context)!.yearlyPlan,
+                price: AppLocalizations.of(context)!.yearlyPrice,
+                period: AppLocalizations.of(context)!.perYear,
+                badge: AppLocalizations.of(context)!.savePercent,
                 badgeColor: Colors.orange,
                 selected: true,
                 onTap: () => _purchase(MembershipLevel.premiumYearly),
@@ -72,9 +73,9 @@ class _MembershipPageState extends State<MembershipPage> {
               SizedBox(height: w * 0.03),
               _buildPlanCard(
                 w,
-                title: '月度会员',
-                price: '¥12',
-                period: '/月',
+                title: AppLocalizations.of(context)!.monthlyPlan,
+                price: AppLocalizations.of(context)!.monthlyPrice,
+                period: AppLocalizations.of(context)!.perMonth,
                 badge: null,
                 badgeColor: Colors.blue,
                 selected: false,
@@ -108,7 +109,7 @@ class _MembershipPageState extends State<MembershipPage> {
                             ),
                           )
                         : Text(
-                            '立即开通',
+                            AppLocalizations.of(context)!.subscribeNow,
                             style: TextStyle(
                               fontSize: w * 0.045,
                               fontWeight: FontWeight.bold,
@@ -123,7 +124,7 @@ class _MembershipPageState extends State<MembershipPage> {
               TextButton(
                 onPressed: _restorePurchases,
                 child: Text(
-                  '恢复购买',
+                  AppLocalizations.of(context)!.restorePurchase,
                   style: TextStyle(fontSize: w * 0.035, color: Colors.grey.shade500),
                 ),
               ),
@@ -172,7 +173,7 @@ class _MembershipPageState extends State<MembershipPage> {
         ),
         SizedBox(height: w * 0.04),
         Text(
-          isPremium ? '尊贵的会员' : '熊猫相册 VIP',
+          isPremium ? AppLocalizations.of(context)!.premiumMember : AppLocalizations.of(context)!.pandaVip,
           style: TextStyle(
             fontSize: w * 0.06,
             fontWeight: FontWeight.bold,
@@ -181,7 +182,7 @@ class _MembershipPageState extends State<MembershipPage> {
         ),
         SizedBox(height: w * 0.02),
         Text(
-          isPremium ? '感谢您的支持' : '解锁全部功能，畅享完整体验',
+          isPremium ? AppLocalizations.of(context)!.thankSupport : AppLocalizations.of(context)!.unlockAll,
           style: TextStyle(
             fontSize: w * 0.035,
             color: Colors.grey.shade600,
@@ -192,11 +193,12 @@ class _MembershipPageState extends State<MembershipPage> {
   }
 
   Widget _buildBenefits(double w) {
+    final l10n = AppLocalizations.of(context)!;
     final benefits = [
-      {'icon': Icons.category_outlined, 'title': '无限分类', 'desc': '自由创建任意数量分类'},
-      {'icon': Icons.lock_outline, 'title': '无限私密', 'desc': '私密相册不再受限'},
-      {'icon': Icons.delete_sweep_outlined, 'title': '永久回收站', 'desc': '回收站照片不会被自动清理'},
-      {'icon': Icons.headset_outlined, 'title': '优先客服', 'desc': '专属客服快速响应'},
+      {'icon': Icons.category_outlined, 'title': l10n.unlimitedCategory, 'desc': l10n.unlimitedCategoryDesc},
+      {'icon': Icons.lock_outline, 'title': l10n.unlimitedPrivate, 'desc': l10n.unlimitedPrivateDesc},
+      {'icon': Icons.delete_sweep_outlined, 'title': l10n.permanentRecycle, 'desc': l10n.permanentRecycleDesc},
+      {'icon': Icons.headset_outlined, 'title': l10n.prioritySupport, 'desc': l10n.prioritySupportDesc},
     ];
 
     return Padding(
@@ -205,7 +207,7 @@ class _MembershipPageState extends State<MembershipPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '会员专享权益',
+            AppLocalizations.of(context)!.premiumBenefits,
             style: TextStyle(
               fontSize: w * 0.045,
               fontWeight: FontWeight.bold,
@@ -291,7 +293,7 @@ class _MembershipPageState extends State<MembershipPage> {
             SizedBox(height: w * 0.03),
             if (membership.remainingDays > 0)
               Text(
-                '剩余 ${membership.remainingDays} 天',
+                AppLocalizations.of(context)!.daysRemaining(membership.remainingDays.toString()),
                 style: TextStyle(
                   fontSize: w * 0.04,
                   color: Colors.amber.shade800,
@@ -300,7 +302,7 @@ class _MembershipPageState extends State<MembershipPage> {
               ),
             if (membership.expireTime != null)
               Text(
-                '到期时间: ${membership.expireTime!.toString().substring(0, 10)}',
+                AppLocalizations.of(context)!.expireDate(membership.expireTime!.toString().substring(0, 10)),
                 style: TextStyle(
                   fontSize: w * 0.03,
                   color: Colors.grey.shade600,
@@ -372,7 +374,7 @@ class _MembershipPageState extends State<MembershipPage> {
                   ),
                   SizedBox(height: w * 0.01),
                   Text(
-                    '自动续费，随时取消',
+                    AppLocalizations.of(context)!.autoRenew,
                     style: TextStyle(
                       fontSize: w * 0.028,
                       color: Colors.grey.shade500,
@@ -412,11 +414,7 @@ class _MembershipPageState extends State<MembershipPage> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: w * 0.08),
       child: Text(
-        '订阅说明：\n'
-        '• 订阅到期后自动续费，可在应用商店随时取消\n'
-        '• 取消后当前周期内仍可使用会员功能\n'
-        '• 到期后未续费将恢复免费版\n'
-        '• 所有价格均含税',
+        AppLocalizations.of(context)!.subscriptionNote,
         style: TextStyle(
           fontSize: w * 0.028,
           color: Colors.grey.shade400,
@@ -443,17 +441,19 @@ class _MembershipPageState extends State<MembershipPage> {
       if (!mounted) return;
 
       if (success) {
+        final l10n = AppLocalizations.of(context)!;
+        final levelName = level == MembershipLevel.premiumYearly ? l10n.yearly : l10n.monthly;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('恭喜！${level == MembershipLevel.premiumYearly ? "年度" : "月度"}会员开通成功'),
+            content: Text(l10n.purchaseSuccess(levelName)),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('购买失败，请稍后重试'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.purchaseFailed),
             backgroundColor: Colors.red,
           ),
         );
@@ -474,15 +474,15 @@ class _MembershipPageState extends State<MembershipPage> {
 
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('恢复购买成功'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.restoreSuccess),
             backgroundColor: Colors.green,
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('未找到可恢复的购买记录'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.restoreFailed),
             backgroundColor: Colors.orange,
           ),
         );

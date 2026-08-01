@@ -310,4 +310,165 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noPhotos => '暂无照片';
+
+  @override
+  String organizedProgress(Object organized, Object total) {
+    return '已整理 $organized 张 / 共 $total 张';
+  }
+
+  @override
+  String organizedVideoProgress(Object organized, Object total) {
+    return '已整理 $organized 个 / 共 $total 个';
+  }
+
+  @override
+  String get scanningEllipsis => '正在扫描...';
+
+  @override
+  String expireDate(Object date) {
+    return '到期时间: $date';
+  }
+
+  @override
+  String purchaseSuccess(Object level) {
+    return '恭喜！$level会员开通成功';
+  }
+
+  @override
+  String get purchaseFailed => '购买失败，请稍后重试';
+
+  @override
+  String get restoreSuccess => '恢复购买成功';
+
+  @override
+  String get restoreFailed => '未找到可恢复的购买记录';
+
+  @override
+  String get yearly => '年度';
+
+  @override
+  String get monthly => '月度';
+
+  @override
+  String get myCategories => '我的分类';
+
+  @override
+  String photoCategoryCount(Object count, Object organized) {
+    return '照片分类 $count 个 · 已收纳 $organized 张';
+  }
+
+  @override
+  String videoCategoryCount(Object count) {
+    return '视频分类 $count 个';
+  }
+
+  @override
+  String photoCategoryTab(Object count) {
+    return '照片分类 ($count)';
+  }
+
+  @override
+  String videoCategoryTab(Object count) {
+    return '视频分类 ($count)';
+  }
+
+  @override
+  String get privateVideoAlbum => '私密视频相册';
+
+  @override
+  String get privatePhotoAlbum => '私密照片相册';
+
+  @override
+  String privateProtected(Object count, Object type) {
+    return '$count 个$type已保护';
+  }
+
+  @override
+  String get enterPrivateSpace => '点击进入私密空间';
+
+  @override
+  String get rename => '重命名';
+
+  @override
+  String get mergeTo => '合并到...';
+
+  @override
+  String get editCategory => '编辑分类';
+
+  @override
+  String get iconLabel => '图标';
+
+  @override
+  String get colorLabel => '颜色';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get deleteCategory => '删除分类';
+
+  @override
+  String confirmDeleteCategory(Object name) {
+    return '确定删除「$name」？';
+  }
+
+  @override
+  String confirmDeleteCategoryWithPhotos(Object count, Object name) {
+    return '确定删除「$name」？\n该分类下 $count 张照片将回到待整理状态，需要重新分类。';
+  }
+
+  @override
+  String mergedTo(Object name) {
+    return '已合并到「$name」';
+  }
+
+  @override
+  String itemsCount(Object count) {
+    return '$count 个';
+  }
+
+  @override
+  String get recycleBinEmpty => '回收站是空的';
+
+  @override
+  String get today => '今天';
+
+  @override
+  String get yesterday => '昨天';
+
+  @override
+  String dateMonthDay(Object day, Object month) {
+    return '$month月$day日';
+  }
+
+  @override
+  String groupItemCount(Object count, Object label) {
+    return '$label · $count 张';
+  }
+
+  @override
+  String get confirmPermanentDeletePhoto => '确定永久删除此照片？此操作不可恢复。';
+
+  @override
+  String get restoreAll => '全部恢复';
+
+  @override
+  String get clearAll => '清空所有';
+
+  @override
+  String get selectAllText => '全选';
+
+  @override
+  String get deselectAll => '取消全选';
+
+  @override
+  String confirmPermanentDeleteSelected(Object count) {
+    return '确定永久删除选中的 $count 张照片？';
+  }
+
+  @override
+  String get confirmClearRecycleBin => '确定清空回收站？此操作不可恢复。';
+
+  @override
+  String get clear => '清空';
 }

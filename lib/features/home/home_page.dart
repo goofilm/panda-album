@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "照片整理",
+          AppLocalizations.of(context)!.photoOrganize,
 
           style: TextStyle(fontSize: w * 0.048),
         ),
@@ -146,7 +147,7 @@ class _HomePageState extends State<HomePage>
             SizedBox(height: w * 0.02),
 
             Text(
-              "熊猫相册",
+              AppLocalizations.of(context)!.appTitle,
 
               style: TextStyle(
                 fontSize: w * 0.065,
@@ -210,8 +211,8 @@ class _HomePageState extends State<HomePage>
             if (!photoProvider.loading)
               Text(
                 _mode == 0
-                    ? "已整理 $photoOrganized 张 / 共 $photoTotal 张"
-                    : "已整理 $videoOrganized 个 / 共 $videoTotal 个",
+                    ? AppLocalizations.of(context)!.organizedProgress(photoOrganized.toString(), photoTotal.toString())
+                    : AppLocalizations.of(context)!.organizedVideoProgress(videoOrganized.toString(), videoTotal.toString()),
 
                 style: TextStyle(
                   fontSize: w * 0.035,
@@ -220,7 +221,7 @@ class _HomePageState extends State<HomePage>
                 ),
               )
             else
-              const Text("正在扫描..."),
+              Text(AppLocalizations.of(context)!.scanningEllipsis),
 
             SizedBox(height: w * 0.04),
 
@@ -231,7 +232,7 @@ class _HomePageState extends State<HomePage>
             SizedBox(height: w * 0.02),
 
             Text(
-              "左滑保留 · 右滑删除 · 下滑分类",
+              AppLocalizations.of(context)!.swipeHint,
 
               style: TextStyle(
                 fontSize: w * 0.03,
@@ -258,7 +259,7 @@ class _HomePageState extends State<HomePage>
                   _glassButton(
                     Icons.category,
 
-                    "分类",
+                    AppLocalizations.of(context)!.category,
 
                     categoryProvider.categories.length,
 
@@ -276,7 +277,7 @@ class _HomePageState extends State<HomePage>
                   _glassButton(
                     Icons.check_circle,
 
-                    "已保留",
+                    AppLocalizations.of(context)!.kept,
 
                     _mode == 0
                         ? categoryProvider.photoKeptCount
@@ -296,7 +297,7 @@ class _HomePageState extends State<HomePage>
                   _glassButton(
                     Icons.lock_outline,
 
-                    "私密",
+                    AppLocalizations.of(context)!.private,
 
                     privateProvider.totalPrivateCount,
 
@@ -314,7 +315,7 @@ class _HomePageState extends State<HomePage>
                   _glassButton(
                     Icons.delete,
 
-                    "回收站",
+                    AppLocalizations.of(context)!.recycleBin,
 
                     photoProvider.recycleBinCount,
 
@@ -351,8 +352,8 @@ class _HomePageState extends State<HomePage>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _modeTab(Icons.photo, "照片", photoTotal, 0, w),
-          _modeTab(Icons.videocam, "视频", videoTotal, 1, w),
+          _modeTab(Icons.photo, AppLocalizations.of(context)!.photo, photoTotal, 0, w),
+          _modeTab(Icons.videocam, AppLocalizations.of(context)!.video, videoTotal, 1, w),
         ],
       ),
     );

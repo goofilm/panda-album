@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../data/database_helper.dart';
 import '../../providers/category_provider.dart';
@@ -81,7 +82,7 @@ class _CategoryPageState extends State<CategoryPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("我的分类"),
+        title: Text(AppLocalizations.of(context)!.myCategories),
 
         actions: [
           Padding(
@@ -139,9 +140,9 @@ class _CategoryPageState extends State<CategoryPage>
                     indicatorColor: Colors.blue,
 
                     tabs: [
-                      Tab(text: "照片分类 (${provider.photoCategories.length})"),
+                      Tab(text: AppLocalizations.of(context)!.photoCategoryTab(provider.photoCategories.length.toString())),
 
-                      Tab(text: "视频分类 (${provider.videoCategories.length})"),
+                      Tab(text: AppLocalizations.of(context)!.videoCategoryTab(provider.videoCategories.length.toString())),
                     ],
                   ),
                 ),
@@ -163,8 +164,8 @@ class _CategoryPageState extends State<CategoryPage>
                     children: [
                       Text(
                         _selectedTab == 0
-                            ? "照片分类 ${provider.photoCategories.length} 个 · 已收纳 $_organizedCount 张"
-                            : "视频分类 ${provider.videoCategories.length} 个",
+                            ? AppLocalizations.of(context)!.photoCategoryCount(provider.photoCategories.length.toString(), _organizedCount.toString())
+                            : AppLocalizations.of(context)!.videoCategoryCount(provider.videoCategories.length.toString()),
 
                         style: TextStyle(
                           fontSize: screenWidth * 0.035,
@@ -266,7 +267,7 @@ class _CategoryPageState extends State<CategoryPage>
             ),
             SizedBox(height: screenWidth * 0.02),
             Text(
-              '已保留',
+              AppLocalizations.of(context)!.kept,
               style: TextStyle(
                 fontSize: screenWidth * 0.035,
                 fontWeight: FontWeight.bold,
@@ -275,7 +276,7 @@ class _CategoryPageState extends State<CategoryPage>
             Padding(
               padding: const EdgeInsets.only(top: 2),
               child: Text(
-                '$keptCount 个',
+                AppLocalizations.of(context)!.itemsCount(keptCount.toString()),
                 style: TextStyle(
                   fontSize: screenWidth * 0.028,
                   color: Colors.grey.shade500,
@@ -340,7 +341,7 @@ class _CategoryPageState extends State<CategoryPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isVideo ? '私密视频相册' : '私密照片相册',
+                      isVideo ? AppLocalizations.of(context)!.privateVideoAlbum : AppLocalizations.of(context)!.privatePhotoAlbum,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -349,8 +350,8 @@ class _CategoryPageState extends State<CategoryPage>
                     ),
                     Text(
                       count > 0
-                          ? '$count 个${isVideo ? "视频" : "照片"}已保护'
-                          : '点击进入私密空间',
+                          ? AppLocalizations.of(context)!.privateProtected(count.toString(), isVideo ? AppLocalizations.of(context)!.video : AppLocalizations.of(context)!.photo)
+                          : AppLocalizations.of(context)!.enterPrivateSpace,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.blue.shade600,
@@ -385,12 +386,12 @@ class _CategoryPageState extends State<CategoryPage>
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('免费版限制'),
-              content: Text('免费版最多创建 ${MembershipBenefits.freeCategoryLimit} 个分类\n\n开通会员可创建无限分类'),
+              title: Text(AppLocalizations.of(context)!.freeLimit),
+              content: Text('${AppLocalizations.of(context)!.freeCategoryLimit(MembershipBenefits.freeCategoryLimit.toString())}\n\n${AppLocalizations.of(context)!.upgradeToPremium}'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text('取消'),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -404,7 +405,7 @@ class _CategoryPageState extends State<CategoryPage>
                     backgroundColor: Colors.amber.shade700,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('开通会员'),
+                  child: Text(AppLocalizations.of(context)!.openMembership),
                 ),
               ],
             ),
@@ -428,13 +429,13 @@ class _CategoryPageState extends State<CategoryPage>
           border: Border.all(color: Colors.blue, width: 2),
         ),
 
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
             Icon(Icons.add, size: 40, color: Colors.blue),
 
-            Text("新建分类", style: TextStyle(color: Colors.blue)),
+            Text(AppLocalizations.of(context)!.createCategory, style: const TextStyle(color: Colors.blue)),
           ],
         ),
       ),
@@ -523,7 +524,7 @@ class _CategoryPageState extends State<CategoryPage>
                         padding: const EdgeInsets.only(top: 2),
 
                         child: Text(
-                          '$count 个',
+                          AppLocalizations.of(context)!.itemsCount(count.toString()),
 
                           style: TextStyle(
                             fontSize: screenWidth * 0.028,
@@ -577,44 +578,44 @@ class _CategoryPageState extends State<CategoryPage>
                   },
 
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'rename',
 
                       child: Row(
                         children: [
-                          Icon(Icons.edit, size: 18),
+                          const Icon(Icons.edit, size: 18),
 
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
 
-                          Text("重命名"),
+                          Text(AppLocalizations.of(context)!.rename),
                         ],
                       ),
                     ),
 
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'merge',
 
                       child: Row(
                         children: [
-                          Icon(Icons.merge, size: 18),
+                          const Icon(Icons.merge, size: 18),
 
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
 
-                          Text("合并到..."),
+                          Text(AppLocalizations.of(context)!.mergeTo),
                         ],
                       ),
                     ),
 
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'delete',
 
                       child: Row(
                         children: [
-                          Icon(Icons.delete, size: 18, color: Colors.red),
+                          const Icon(Icons.delete, size: 18, color: Colors.red),
 
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
 
-                          Text("删除", style: TextStyle(color: Colors.red)),
+                          Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
                         ],
                       ),
                     ),
@@ -653,7 +654,7 @@ class _CategoryPageState extends State<CategoryPage>
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text("编辑分类"),
+              title: Text(AppLocalizations.of(context)!.editCategory),
 
               content: SingleChildScrollView(
                 child: Column(
@@ -663,8 +664,8 @@ class _CategoryPageState extends State<CategoryPage>
                     TextField(
                       controller: nameController,
 
-                      decoration: const InputDecoration(
-                        hintText: "分类名称",
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.categoryName,
 
                         border: OutlineInputBorder(),
                       ),
@@ -672,13 +673,13 @@ class _CategoryPageState extends State<CategoryPage>
 
                     const SizedBox(height: 16),
 
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
 
                       child: Text(
-                        "图标",
+                        AppLocalizations.of(context)!.iconLabel,
 
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
 
@@ -730,13 +731,13 @@ class _CategoryPageState extends State<CategoryPage>
 
                     const SizedBox(height: 16),
 
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
 
                       child: Text(
-                        "颜色",
+                        AppLocalizations.of(context)!.colorLabel,
 
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
 
@@ -785,7 +786,7 @@ class _CategoryPageState extends State<CategoryPage>
                 TextButton(
                   onPressed: () => Navigator.pop(dialogContext),
 
-                  child: const Text("取消"),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
 
                 ElevatedButton(
@@ -811,7 +812,7 @@ class _CategoryPageState extends State<CategoryPage>
                     await _loadStats();
                   },
 
-                  child: const Text("保存"),
+                  child: Text(AppLocalizations.of(context)!.save),
                 ),
               ],
             );
@@ -837,19 +838,19 @@ class _CategoryPageState extends State<CategoryPage>
 
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text("删除分类"),
+          title: Text(AppLocalizations.of(context)!.deleteCategory),
 
           content: Text(
             count > 0
-                ? "确定删除「${item['name']}」？\n该分类下 $count 张照片将回到待整理状态，需要重新分类。"
-                : "确定删除「${item['name']}」？",
+                ? AppLocalizations.of(context)!.confirmDeleteCategoryWithPhotos(item['name'], count.toString())
+                : AppLocalizations.of(context)!.confirmDeleteCategory(item['name']),
           ),
 
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
 
-              child: const Text("取消"),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
 
             TextButton(
@@ -863,7 +864,7 @@ class _CategoryPageState extends State<CategoryPage>
                 await _loadStats();
               },
 
-              child: const Text("删除", style: TextStyle(color: Colors.red)),
+              child: Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -889,7 +890,7 @@ class _CategoryPageState extends State<CategoryPage>
 
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text("将「${item['name']}」合并到..."),
+          title: Text(AppLocalizations.of(context)!.mergeTo),
 
           content: SizedBox(
             width: double.maxFinite,
@@ -930,7 +931,7 @@ class _CategoryPageState extends State<CategoryPage>
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text("已合并到「$targetName」"),
+                        content: Text(AppLocalizations.of(context)!.mergedTo(targetName)),
                       ),
                     );
                   },
@@ -943,7 +944,7 @@ class _CategoryPageState extends State<CategoryPage>
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
 
-              child: const Text("取消"),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
           ],
         );

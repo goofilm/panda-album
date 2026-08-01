@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../providers/photo_provider.dart';
 import '../../providers/membership_provider.dart';
@@ -40,7 +41,7 @@ class _RecyclePageState extends State<RecyclePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("回收站"),
+        title: Text(AppLocalizations.of(context)!.recycleBin),
 
         actions: [
           if (photos.isNotEmpty)
@@ -52,22 +53,22 @@ class _RecyclePageState extends State<RecyclePage> {
                   _selectedIds.clear();
                 });
               },
-              child: Text(_multiSelectMode ? "取消" : "选择"),
+              child: Text(_multiSelectMode ? AppLocalizations.of(context)!.cancel : AppLocalizations.of(context)!.select),
             ),
         ],
       ),
 
       body: photos.isEmpty
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
 
                 children: [
-                  Icon(Icons.delete_outline, size: 80, color: Colors.grey),
+                  const Icon(Icons.delete_outline, size: 80, color: Colors.grey),
 
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                  Text("回收站是空的", style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text(AppLocalizations.of(context)!.recycleBinEmpty, style: const TextStyle(fontSize: 18, color: Colors.grey)),
                 ],
               ),
             )
@@ -118,11 +119,11 @@ class _RecyclePageState extends State<RecyclePage> {
       String label;
 
       if (day == today) {
-        label = "今天";
+        label = AppLocalizations.of(context)!.today;
       } else if (day == yesterday) {
-        label = "昨天";
+        label = AppLocalizations.of(context)!.yesterday;
       } else {
-        label = "${date.month}月${date.day}日";
+        label = AppLocalizations.of(context)!.dateMonthDay(date.month.toString(), date.day.toString());
       }
 
       groups.putIfAbsent(label, () => []);
@@ -142,7 +143,7 @@ class _RecyclePageState extends State<RecyclePage> {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
 
           child: Text(
-            "$label · ${photos.length} 张",
+            AppLocalizations.of(context)!.groupItemCount(label, photos.length.toString()),
 
             style: const TextStyle(
               fontSize: 16,
@@ -192,8 +193,8 @@ class _RecyclePageState extends State<RecyclePage> {
 
     // 会员显示永久保留，非会员显示剩余天数
     final remainText = isPremium 
-        ? "永久保留" 
-        : (remainDays < 0 ? "已过期" : "剩余$remainDays天");
+        ? AppLocalizations.of(context)!.permanentlyKept 
+        : (remainDays < 0 ? AppLocalizations.of(context)!.expired : AppLocalizations.of(context)!.daysRemaining(remainDays.toString()));
 
     final isSelected = _selectedIds.contains(photoId);
 
@@ -422,7 +423,7 @@ class _RecyclePageState extends State<RecyclePage> {
 
                         icon: const Icon(Icons.restore),
 
-                        label: const Text("恢复"),
+                        label: Text(AppLocalizations.of(context)!.restore),
 
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
@@ -438,7 +439,7 @@ class _RecyclePageState extends State<RecyclePage> {
 
                         icon: const Icon(Icons.delete_forever),
 
-                        label: const Text("永久删除"),
+                        label: Text(AppLocalizations.of(context)!.permanentlyDelete),
 
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -469,15 +470,15 @@ class _RecyclePageState extends State<RecyclePage> {
 
       builder: (confirmContext) {
         return AlertDialog(
-          title: const Text("永久删除"),
+          title: Text(AppLocalizations.of(context)!.permanentlyDelete),
 
-          content: const Text("确定永久删除此照片？此操作不可恢复。"),
+          content: Text(AppLocalizations.of(context)!.confirmPermanentDeletePhoto),
 
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(confirmContext),
 
-              child: const Text("取消"),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
 
             TextButton(
@@ -491,7 +492,7 @@ class _RecyclePageState extends State<RecyclePage> {
                 Navigator.pop(dialogContext);
               },
 
-              child: const Text("删除", style: TextStyle(color: Colors.red)),
+              child: Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -532,8 +533,8 @@ class _RecyclePageState extends State<RecyclePage> {
 
                 icon: const Icon(Icons.restore, color: Colors.green),
 
-                label: const Text(
-                  "全部恢复",
+                label: Text(
+                  AppLocalizations.of(context)!.restoreAll,
 
                   style: TextStyle(color: Colors.green),
                 ),
@@ -544,8 +545,8 @@ class _RecyclePageState extends State<RecyclePage> {
 
                 icon: const Icon(Icons.delete_forever, color: Colors.red),
 
-                label: const Text(
-                  "清空所有",
+                label: Text(
+                  AppLocalizations.of(context)!.clearAll,
 
                   style: TextStyle(color: Colors.red),
                 ),
@@ -597,8 +598,8 @@ class _RecyclePageState extends State<RecyclePage> {
 
               child: Text(
                 _selectedIds.length == provider.recyclePhotos.length
-                    ? "取消全选"
-                    : "全选",
+                    ? AppLocalizations.of(context)!.deselectAll
+                    : AppLocalizations.of(context)!.selectAllText,
               ),
             ),
 
@@ -631,10 +632,10 @@ class _RecyclePageState extends State<RecyclePage> {
 
                         builder: (confirmContext) {
                           return AlertDialog(
-                            title: const Text("永久删除"),
+                            title: Text(AppLocalizations.of(context)!.permanentlyDelete),
 
                             content: Text(
-                              "确定永久删除选中的 ${_selectedIds.length} 张照片？",
+                              AppLocalizations.of(context)!.confirmPermanentDeleteSelected(_selectedIds.length.toString()),
                             ),
 
                             actions: [
@@ -642,7 +643,7 @@ class _RecyclePageState extends State<RecyclePage> {
                                 onPressed: () =>
                                     Navigator.pop(confirmContext),
 
-                                child: const Text("取消"),
+                                child: Text(AppLocalizations.of(context)!.cancel),
                               ),
 
                               TextButton(
@@ -676,10 +677,10 @@ class _RecyclePageState extends State<RecyclePage> {
 
               icon: const Icon(Icons.delete_forever, color: Colors.red),
 
-              label: const Text(
-                "删除",
+              label: Text(
+                AppLocalizations.of(context)!.delete,
 
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             ),
           ],
@@ -694,15 +695,15 @@ class _RecyclePageState extends State<RecyclePage> {
 
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text("清空回收站"),
+          title: Text(AppLocalizations.of(context)!.emptyRecycleBin),
 
-          content: const Text("确定清空回收站？此操作不可恢复。"),
+          content: Text(AppLocalizations.of(context)!.confirmClearRecycleBin),
 
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
 
-              child: const Text("取消"),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
 
             TextButton(
@@ -714,7 +715,7 @@ class _RecyclePageState extends State<RecyclePage> {
                 Navigator.pop(dialogContext);
               },
 
-              child: const Text("清空", style: TextStyle(color: Colors.red)),
+              child: Text(AppLocalizations.of(context)!.clear, style: const TextStyle(color: Colors.red)),
             ),
           ],
         );

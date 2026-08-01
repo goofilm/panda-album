@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/private_album_provider.dart';
+import '../../providers/membership_provider.dart';
+import '../../services/membership_service.dart';
+import '../membership/membership_page.dart';
 import 'create_private_album_page.dart';
 import 'private_album_detail_page.dart';
 import 'private_settings_page.dart';
@@ -83,8 +86,50 @@ class _PrivateAlbumPageState extends State<PrivateAlbumPage>
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           final mediaType = _tabController.index;
+          final provider = context.read<PrivateAlbumProvider>();
+          final membership = context.read<MembershipProvider>();
+          
+          // 检查会员限制
+          final currentCount = mediaType == 0 
+              ? provider.photoAlbums.length 
+              : provider.videoAlbums.length;
+          final canCreate = await membership.canUseFeature('private_album', currentCount: currentCount);
+          
+          if (!canCreate) {
+            // 显示升级提示
+            if (mounted) {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('免费版限制'),
+                  content: Text('免费版最多创建 ${MembershipBenefits.freePrivateAlbumLimit} 个私密相册\n\n开通会员可创建无限私密相册'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('取消'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const MembershipPage()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber.shade700,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('开通会员'),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return;
+          }
 
           Navigator.push(
             context,

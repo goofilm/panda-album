@@ -4,8 +4,11 @@ import 'package:provider/provider.dart';
 import '../../data/database_helper.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
+import '../../providers/membership_provider.dart';
+import '../../services/membership_service.dart';
 import '../../widgets/morandi_color.dart';
 import '../private/private_lock_page.dart';
+import '../membership/membership_page.dart';
 import 'create_category_page.dart';
 import 'category_detail_page.dart';
 import 'kept_photos_page.dart';
@@ -369,7 +372,46 @@ class _CategoryPageState extends State<CategoryPage>
 
   Widget _buildAddCard() {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        // 检查会员限制
+        final membership = context.read<MembershipProvider>();
+        final categoryProvider = context.read<CategoryProvider>();
+        final currentCount = categoryProvider.categories.length;
+        
+        final canCreate = await membership.canUseFeature('category', currentCount: currentCount);
+        
+        if (!canCreate && mounted) {
+          // 显示升级提示
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('免费版限制'),
+              content: Text('免费版最多创建 ${MembershipBenefits.freeCategoryLimit} 个分类\n\n开通会员可创建无限分类'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('取消'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MembershipPage()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber.shade700,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('开通会员'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+        
         Navigator.push(
           context,
 

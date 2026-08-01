@@ -6,11 +6,13 @@ import 'package:provider/provider.dart';
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
+import '../../providers/membership_provider.dart';
 import '../swipe/swipe_page.dart';
 import '../categories/category_page.dart';
 import '../recycle/recycle_page.dart';
 import '../private/private_lock_page.dart';
 import '../search/search_page.dart';
+import '../membership/membership_page.dart';
 
 import '../../features/categories/kept_photos_page.dart';
 
@@ -104,10 +106,22 @@ class _HomePageState extends State<HomePage>
 
           IconButton(icon: const Icon(Icons.language), onPressed: () {}),
 
-          IconButton(
-            icon: const Icon(Icons.workspace_premium),
-
-            onPressed: () {},
+          // 会员入口
+          Consumer<MembershipProvider>(
+            builder: (context, membership, _) {
+              return IconButton(
+                icon: Icon(
+                  membership.isPremium ? Icons.workspace_premium : Icons.star_outline,
+                  color: membership.isPremium ? Colors.amber : null,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const MembershipPage()),
+                  );
+                },
+              );
+            },
           ),
         ],
       ),

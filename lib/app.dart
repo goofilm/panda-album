@@ -6,6 +6,7 @@ import 'features/home/home_page.dart';
 import 'providers/photo_provider.dart';
 import 'providers/category_provider.dart';
 import 'providers/private_album_provider.dart';
+import 'providers/membership_provider.dart';
 
 class PhotoOrganizerApp extends StatelessWidget {
   const PhotoOrganizerApp({super.key});
@@ -24,6 +25,9 @@ class PhotoOrganizerApp extends StatelessWidget {
 
         // 私密相册数据
         ChangeNotifierProvider(create: (_) => PrivateAlbumProvider()),
+
+        // 会员状态
+        ChangeNotifierProvider(create: (_) => MembershipProvider()..init()),
       ],
 
       child: MaterialApp(

@@ -961,6 +961,132 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'请输入分类名称'**
   String get enterCategoryName;
+
+  /// No description provided for @tapHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击查看 · 长按操作 · 全屏上下滑动切换'**
+  String get tapHint;
+
+  /// No description provided for @currentName.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前: {name}'**
+  String currentName(Object name);
+
+  /// No description provided for @changeCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改分类'**
+  String get changeCategory;
+
+  /// No description provided for @moveToPrivate.
+  ///
+  /// In zh, this message translates to:
+  /// **'移入私密相册'**
+  String get moveToPrivate;
+
+  /// No description provided for @removeFromCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'移出分类'**
+  String get removeFromCategory;
+
+  /// No description provided for @remove.
+  ///
+  /// In zh, this message translates to:
+  /// **'移出'**
+  String get remove;
+
+  /// No description provided for @selectedCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'已选 {count} 项'**
+  String selectedCount(Object count);
+
+  /// No description provided for @enterPhotoName.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入照片/视频名称'**
+  String get enterPhotoName;
+
+  /// No description provided for @noOtherCategories.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有其他可用的分类，请先创建'**
+  String get noOtherCategories;
+
+  /// No description provided for @moveToCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'移动到分类'**
+  String get moveToCategory;
+
+  /// No description provided for @photoCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 张'**
+  String photoCount(Object count);
+
+  /// No description provided for @movedTo.
+  ///
+  /// In zh, this message translates to:
+  /// **'已移动到「{name}」'**
+  String movedTo(Object name);
+
+  /// No description provided for @createPrivatePhotoAlbumFirst.
+  ///
+  /// In zh, this message translates to:
+  /// **'请先创建私密照片相册'**
+  String get createPrivatePhotoAlbumFirst;
+
+  /// No description provided for @createPrivateVideoAlbumFirst.
+  ///
+  /// In zh, this message translates to:
+  /// **'请先创建私密视频相册'**
+  String get createPrivateVideoAlbumFirst;
+
+  /// No description provided for @selectPrivateAlbum.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择私密相册'**
+  String get selectPrivateAlbum;
+
+  /// No description provided for @albumProtected.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个已保护'**
+  String albumProtected(Object count);
+
+  /// No description provided for @movedToPrivateAlbum.
+  ///
+  /// In zh, this message translates to:
+  /// **'已移入「{name}」私密相册'**
+  String movedToPrivateAlbum(Object name);
+
+  /// No description provided for @confirmRemoveFromCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定将选中的 {count} 张移出当前分类？\n移出后需要重新整理。'**
+  String confirmRemoveFromCategory(Object count);
+
+  /// No description provided for @confirmMoveToRecycleBinDetail.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定将选中的 {count} 张移到回收站？\n30天后将自动永久删除。'**
+  String confirmMoveToRecycleBinDetail(Object count);
+
+  /// No description provided for @preview.
+  ///
+  /// In zh, this message translates to:
+  /// **'预览'**
+  String get preview;
+
+  /// No description provided for @videoLoadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'视频加载失败'**
+  String get videoLoadFailed;
 }
 
 class _AppLocalizationsDelegate

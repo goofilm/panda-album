@@ -486,4 +486,83 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get enterCategoryName => '请输入分类名称';
+
+  @override
+  String get tapHint => '点击查看 · 长按操作 · 全屏上下滑动切换';
+
+  @override
+  String currentName(Object name) {
+    return '当前: $name';
+  }
+
+  @override
+  String get changeCategory => '修改分类';
+
+  @override
+  String get moveToPrivate => '移入私密相册';
+
+  @override
+  String get removeFromCategory => '移出分类';
+
+  @override
+  String get remove => '移出';
+
+  @override
+  String selectedCount(Object count) {
+    return '已选 $count 项';
+  }
+
+  @override
+  String get enterPhotoName => '输入照片/视频名称';
+
+  @override
+  String get noOtherCategories => '没有其他可用的分类，请先创建';
+
+  @override
+  String get moveToCategory => '移动到分类';
+
+  @override
+  String photoCount(Object count) {
+    return '$count 张';
+  }
+
+  @override
+  String movedTo(Object name) {
+    return '已移动到「$name」';
+  }
+
+  @override
+  String get createPrivatePhotoAlbumFirst => '请先创建私密照片相册';
+
+  @override
+  String get createPrivateVideoAlbumFirst => '请先创建私密视频相册';
+
+  @override
+  String get selectPrivateAlbum => '选择私密相册';
+
+  @override
+  String albumProtected(Object count) {
+    return '$count 个已保护';
+  }
+
+  @override
+  String movedToPrivateAlbum(Object name) {
+    return '已移入「$name」私密相册';
+  }
+
+  @override
+  String confirmRemoveFromCategory(Object count) {
+    return '确定将选中的 $count 张移出当前分类？\n移出后需要重新整理。';
+  }
+
+  @override
+  String confirmMoveToRecycleBinDetail(Object count) {
+    return '确定将选中的 $count 张移到回收站？\n30天后将自动永久删除。';
+  }
+
+  @override
+  String get preview => '预览';
+
+  @override
+  String get videoLoadFailed => '视频加载失败';
 }

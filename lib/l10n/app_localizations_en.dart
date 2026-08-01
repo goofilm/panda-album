@@ -491,4 +491,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterCategoryName => 'Please enter a category name';
+
+  @override
+  String get tapHint =>
+      'Tap to view · Long press for options · Swipe to switch';
+
+  @override
+  String currentName(Object name) {
+    return 'Current: $name';
+  }
+
+  @override
+  String get changeCategory => 'Change Category';
+
+  @override
+  String get moveToPrivate => 'Move to Private Album';
+
+  @override
+  String get removeFromCategory => 'Remove from Category';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String selectedCount(Object count) {
+    return '$count selected';
+  }
+
+  @override
+  String get enterPhotoName => 'Enter photo/video name';
+
+  @override
+  String get noOtherCategories =>
+      'No other categories available, please create one';
+
+  @override
+  String get moveToCategory => 'Move to Category';
+
+  @override
+  String photoCount(Object count) {
+    return '$count items';
+  }
+
+  @override
+  String movedTo(Object name) {
+    return 'Moved to \'$name\'';
+  }
+
+  @override
+  String get createPrivatePhotoAlbumFirst =>
+      'Please create a private photo album first';
+
+  @override
+  String get createPrivateVideoAlbumFirst =>
+      'Please create a private video album first';
+
+  @override
+  String get selectPrivateAlbum => 'Select Private Album';
+
+  @override
+  String albumProtected(Object count) {
+    return '$count protected';
+  }
+
+  @override
+  String movedToPrivateAlbum(Object name) {
+    return 'Moved to private album \'$name\'';
+  }
+
+  @override
+  String confirmRemoveFromCategory(Object count) {
+    return 'Remove $count selected items from this category?\nYou\'ll need to reorganize them.';
+  }
+
+  @override
+  String confirmMoveToRecycleBinDetail(Object count) {
+    return 'Move $count selected items to Recycle Bin?\nThey will be permanently deleted after 30 days.';
+  }
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get videoLoadFailed => 'Video load failed';
 }

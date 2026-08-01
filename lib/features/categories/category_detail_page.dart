@@ -11,6 +11,7 @@ import '../../data/database_helper.dart';
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
+import '../../l10n/app_localizations.dart';
 
 class CategoryDetailPage extends StatefulWidget {
   final Map<String, dynamic> category;
@@ -80,7 +81,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 });
               },
 
-              child: Text(_multiSelectMode ? "取消" : "选择"),
+              child: Text(_multiSelectMode ? AppLocalizations.of(context)!.cancel : AppLocalizations.of(context)!.select),
             ),
         ],
       ),
@@ -88,16 +89,16 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _photos.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-
+              
                     children: [
-                      Icon(Icons.photo_library_outlined, size: 80, color: Colors.grey),
-
-                      SizedBox(height: 16),
-
-                      Text("暂无照片", style: TextStyle(fontSize: 18, color: Colors.grey)),
+                      const Icon(Icons.photo_library_outlined, size: 80, color: Colors.grey),
+              
+                      const SizedBox(height: 16),
+              
+                      Text(AppLocalizations.of(context)!.noPhotos, style: const TextStyle(fontSize: 18, color: Colors.grey)),
                     ],
                   ),
                 )
@@ -117,7 +118,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                             Icon(Icons.touch_app, size: 14, color: Colors.grey.shade400),
                             const SizedBox(width: 4),
                             Text(
-                              '点击查看 · 长按操作 · 全屏上下滑动切换',
+                              AppLocalizations.of(context)!.tapHint,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey.shade400,
@@ -353,12 +354,12 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 ListTile(
                   leading: const Icon(Icons.edit, color: Colors.green),
 
-                  title: const Text("重命名"),
+                  title: Text(AppLocalizations.of(context)!.rename),
 
                   subtitle: Text(
                     (photo['name'] as String?)?.isNotEmpty == true
-                        ? '当前: ${photo['name']}'
-                        : '未命名',
+                        ? AppLocalizations.of(context)!.currentName(photo['name'] as String)
+                        : AppLocalizations.of(context)!.untitled,
                     style: const TextStyle(fontSize: 12),
                   ),
 
@@ -372,7 +373,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 ListTile(
                   leading: const Icon(Icons.swap_horiz, color: Colors.blue),
 
-                  title: const Text("修改分类"),
+                  title: Text(AppLocalizations.of(context)!.changeCategory),
 
                   onTap: () {
                     Navigator.pop(sheetContext);
@@ -384,7 +385,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 ListTile(
                   leading: const Icon(Icons.lock_outline, color: Colors.purple),
 
-                  title: const Text("移入私密相册"),
+                  title: Text(AppLocalizations.of(context)!.moveToPrivate),
 
                   onTap: () {
                     Navigator.pop(sheetContext);
@@ -396,7 +397,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 ListTile(
                   leading: const Icon(Icons.folder_off, color: Colors.orange),
 
-                  title: const Text("移出分类"),
+                  title: Text(AppLocalizations.of(context)!.removeFromCategory),
 
                   onTap: () {
                     Navigator.pop(sheetContext);
@@ -408,7 +409,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 ListTile(
                   leading: const Icon(Icons.delete_forever, color: Colors.red),
 
-                  title: const Text("移到回收站"),
+                  title: Text(AppLocalizations.of(context)!.moveToRecycleBin),
 
                   onTap: () {
                     Navigator.pop(sheetContext);
@@ -460,7 +461,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
               children: [
                 Text(
-                  "已选 ${_selectedIds.length} 项",
+                  AppLocalizations.of(context)!.selectedCount(_selectedIds.length.toString()),
 
                   style: const TextStyle(
                     fontSize: 16,
@@ -483,7 +484,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                   },
 
                   child: Text(
-                    _selectedIds.length == _photos.length ? "取消全选" : "全选",
+                    _selectedIds.length == _photos.length ? AppLocalizations.of(context)!.deselectAll : AppLocalizations.of(context)!.selectAllText,
                   ),
                 ),
               ],
@@ -503,7 +504,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
                     icon: const Icon(Icons.swap_horiz, size: 18),
 
-                    label: const Text("修改分类"),
+                    label: Text(AppLocalizations.of(context)!.changeCategory),
                   ),
                 ),
 
@@ -523,7 +524,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
                     icon: const Icon(Icons.folder_off, size: 18),
 
-                    label: const Text("移出"),
+                    label: Text(AppLocalizations.of(context)!.remove),
                   ),
                 ),
 
@@ -543,7 +544,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
                     icon: const Icon(Icons.delete_forever, size: 18),
 
-                    label: const Text("删除"),
+                    label: Text(AppLocalizations.of(context)!.delete),
                   ),
                 ),
               ],
@@ -585,19 +586,19 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('重命名'),
+          title: Text(AppLocalizations.of(context)!.rename),
           content: TextField(
             controller: nameController,
             autofocus: true,
-            decoration: const InputDecoration(
-              hintText: '输入照片/视频名称',
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context)!.enterPhotoName,
               border: OutlineInputBorder(),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('取消'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -608,7 +609,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 // 刷新列表
                 await _loadPhotos();
               },
-              child: const Text('保存'),
+              child: Text(AppLocalizations.of(context)!.save),
             ),
           ],
         );
@@ -637,7 +638,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
     if (otherCategories.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("没有其他可用的分类，请先创建")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.noOtherCategories)),
       );
 
       return;
@@ -662,7 +663,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 const SizedBox(height: 20),
 
                 Text(
-                  "移动到分类",
+                  AppLocalizations.of(context)!.moveToCategory,
 
                   style: TextStyle(
                     fontSize: 22,
@@ -674,7 +675,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 const SizedBox(height: 8),
 
                 Text(
-                  "${photoIds.length} 张",
+                  AppLocalizations.of(context)!.photoCount(photoIds.length.toString()),
 
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
@@ -738,7 +739,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text("已移动到「${item['name']}」"),
+                              content: Text(AppLocalizations.of(context)!.movedTo(item['name'] as String)),
 
                               duration: const Duration(seconds: 1),
                             ),
@@ -777,7 +778,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            mediaType == 1 ? '请先创建私密视频相册' : '请先创建私密照片相册',
+            mediaType == 1 ? AppLocalizations.of(context)!.createPrivateVideoAlbumFirst : AppLocalizations.of(context)!.createPrivatePhotoAlbumFirst,
           ),
         ),
       );
@@ -798,7 +799,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
               children: [
                 const SizedBox(height: 20),
                 Text(
-                  '🔒 选择私密相册',
+                  '🔒 ${AppLocalizations.of(context)!.selectPrivateAlbum}',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -829,7 +830,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                           ),
                         ),
                         title: Text(album['name'] as String),
-                        subtitle: Text('$count 个已保护'),
+                        subtitle: Text(AppLocalizations.of(context)!.albumProtected(count.toString())),
                         trailing:
                             const Icon(Icons.lock, color: Colors.purple, size: 20),
                         onTap: () async {
@@ -858,7 +859,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                           ScaffoldMessenger.of(this.context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                '已移入「${album['name']}」私密相册',
+                                AppLocalizations.of(context)!.movedToPrivateAlbum(album['name'] as String),
                               ),
                               duration: const Duration(seconds: 2),
                             ),
@@ -884,9 +885,9 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text("移出分类"),
+          title: Text(AppLocalizations.of(context)!.removeFromCategory),
 
-          content: Text("确定将选中的 ${photoIds.length} 张移出当前分类？\n移出后需要重新整理。"),
+          content: Text(AppLocalizations.of(context)!.confirmRemoveFromCategory(photoIds.length.toString())),
 
           actions: [
             TextButton(
@@ -918,7 +919,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
               style: TextButton.styleFrom(foregroundColor: Colors.orange),
 
-              child: const Text("移出"),
+              child: Text(AppLocalizations.of(context)!.remove),
             ),
           ],
         );
@@ -934,9 +935,9 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text("移到回收站"),
+          title: Text(AppLocalizations.of(context)!.moveToRecycleBin),
 
-          content: Text("确定将选中的 ${photoIds.length} 张移到回收站？\n30天后将自动永久删除。"),
+          content: Text(AppLocalizations.of(context)!.confirmMoveToRecycleBinDetail(photoIds.length.toString())),
 
           actions: [
             TextButton(
@@ -970,7 +971,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
               style: TextButton.styleFrom(foregroundColor: Colors.red),
 
-              child: const Text("删除"),
+              child: Text(AppLocalizations.of(context)!.delete),
             ),
           ],
         );
@@ -1031,7 +1032,7 @@ class _FullScreenMediaViewerState extends State<_FullScreenMediaViewer> {
         title: Column(
           children: [
             Text(
-              name.isEmpty ? '预览' : name,
+              name.isEmpty ? AppLocalizations.of(context)!.preview : name,
               style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
             Text(
@@ -1167,13 +1168,13 @@ class _VideoPlayerPageState extends State<_VideoPlayerPage> {
   @override
   Widget build(BuildContext context) {
     if (_hasError) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, color: Colors.white54, size: 64),
-            SizedBox(height: 16),
-            Text('视频加载失败', style: TextStyle(color: Colors.white54)),
+            const Icon(Icons.error_outline, color: Colors.white54, size: 64),
+            const SizedBox(height: 16),
+            Text(AppLocalizations.of(context)!.videoLoadFailed, style: const TextStyle(color: Colors.white54)),
           ],
         ),
       );

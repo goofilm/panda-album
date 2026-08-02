@@ -38,8 +38,8 @@ class AdData {
 /// 返回：{"image": "https://...", "link": "https://...", "title": "..."}
 /// 无广告时返回：{"image": ""} 或 404
 class AdService {
-  /// 广告服务器地址（部署后修改为实际地址）
-  static const String adServerUrl = 'https://your-domain.com';
+  /// 广告服务器地址
+  static const String adServerUrl = 'https://lightforever.net';
 
   /// 缓存键前缀
   static const String _cacheKeyPrefix = 'ad_cache_';
@@ -57,7 +57,7 @@ class AdService {
     // 从服务器获取
     try {
       final response = await http
-          .get(Uri.parse('$adServerUrl/api/ads?position=$position'))
+          .get(Uri.parse('$adServerUrl/api/ads.php?position=$position'))
           .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {

@@ -339,7 +339,7 @@ class _HomePageState extends State<HomePage>
                 ],
               ),
             ),
-            const AdBanner(),
+            const AdBanner(position: 'home_banner'),
           ],
         ),
       ),

@@ -280,7 +280,7 @@ class _SwipePageState extends State<SwipePage> {
                 ),
 
                 buildBottomButtons(),
-                const AdBanner(height: 50),
+                const AdBanner(position: 'swipe_banner', height: 50),
               ],
             ),
           ),

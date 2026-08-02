@@ -71,7 +71,7 @@ class _MembershipPageState extends State<MembershipPage> {
                 badge: AppLocalizations.of(context)!.savePercent,
                 badgeColor: Colors.orange,
                 selected: true,
-                onTap: () => _purchase(MembershipLevel.premiumYearly),
+                onTap: _showPurchaseQRDialog,
               ),
               SizedBox(height: w * 0.03),
               _buildPlanCard(
@@ -82,7 +82,7 @@ class _MembershipPageState extends State<MembershipPage> {
                 badge: null,
                 badgeColor: Colors.blue,
                 selected: false,
-                onTap: () => _purchase(MembershipLevel.premiumMonthly),
+                onTap: _showPurchaseQRDialog,
               ),
               SizedBox(height: w * 0.06),
 
@@ -93,7 +93,7 @@ class _MembershipPageState extends State<MembershipPage> {
                   width: double.infinity,
                   height: w * 0.13,
                   child: ElevatedButton(
-                    onPressed: _purchasing ? null : () => _purchase(MembershipLevel.premiumYearly),
+                    onPressed: _purchasing ? null : _showPurchaseQRDialog,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber.shade700,
                       foregroundColor: Colors.white,
@@ -563,7 +563,21 @@ class _MembershipPageState extends State<MembershipPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: Text(AppLocalizations.of(context)!.confirm),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              // 延迟一下再打开激活码对话框
+              Future.delayed(const Duration(milliseconds: 300), () {
+                _showActivationDialog();
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue.shade600,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(AppLocalizations.of(context)!.activateWithCode),
           ),
         ],
       ),

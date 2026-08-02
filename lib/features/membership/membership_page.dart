@@ -508,57 +508,64 @@ class _MembershipPageState extends State<MembershipPage> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.scanToPurchase),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              AppLocalizations.of(context)!.purchaseQRHint,
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/alipay_qr.jpg',
-                        width: 130,
-                        height: 130,
-                        fit: BoxFit.cover,
-                      ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.purchaseQRHint,
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            'assets/images/alipay_qr.jpg',
+                            width: 110,
+                            height: 110,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text('支付宝扫码', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                      ],
                     ),
-                    SizedBox(height: 8),
-                    Text('支付宝扫码', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                  ],
-                ),
-                Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/wechat_qr.jpg',
-                        width: 130,
-                        height: 130,
-                        fit: BoxFit.cover,
-                      ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            'assets/images/wechat_qr.jpg',
+                            width: 110,
+                            height: 110,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text('微信扫码', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                      ],
                     ),
-                    SizedBox(height: 8),
-                    Text('微信扫码', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              AppLocalizations.of(context)!.purchaseQRNote,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-              textAlign: TextAlign.center,
-            ),
-          ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Text(
+                AppLocalizations.of(context)!.purchaseQRNote,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(

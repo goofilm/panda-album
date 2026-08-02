@@ -12,6 +12,7 @@ import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
 import '../../services/membership_service.dart';
+import '../../widgets/ad_banner.dart';
 import '../categories/category_page.dart';
 
 class SwipePage extends StatefulWidget {
@@ -279,6 +280,7 @@ class _SwipePageState extends State<SwipePage> {
                 ),
 
                 buildBottomButtons(),
+                const AdBanner(height: 50),
               ],
             ),
           ),

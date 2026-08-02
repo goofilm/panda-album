@@ -140,6 +140,11 @@ class _MembershipPageState extends State<MembershipPage> {
 
             SizedBox(height: w * 0.06),
 
+            // 扫码购买入口
+            if (!isPremium) _buildPurchaseQRCodeEntry(w),
+
+            SizedBox(height: w * 0.04),
+
             // 激活码入口
             if (!isPremium) _buildActivationCodeEntry(w),
 
@@ -469,6 +474,110 @@ class _MembershipPageState extends State<MembershipPage> {
     } finally {
       if (mounted) setState(() { _purchasing = false; });
     }
+  }
+
+  Widget _buildPurchaseQRCodeEntry(double w) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: w * 0.08),
+      child: Column(
+        children: [
+          Container(
+            height: 1,
+            color: Colors.grey.shade200,
+          ),
+          SizedBox(height: w * 0.04),
+          TextButton.icon(
+            onPressed: _showPurchaseQRDialog,
+            icon: Icon(Icons.qr_code_2_outlined, size: w * 0.05, color: Colors.green.shade600),
+            label: Text(
+              AppLocalizations.of(context)!.scanToPurchase,
+              style: TextStyle(
+                fontSize: w * 0.038,
+                color: Colors.green.shade600,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPurchaseQRDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.scanToPurchase),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppLocalizations.of(context)!.purchaseQRHint,
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '支付宝',
+                          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text('支付宝扫码', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '微信',
+                          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text('微信扫码', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Text(
+              AppLocalizations.of(context)!.purchaseQRNote,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(AppLocalizations.of(context)!.confirm),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildActivationCodeEntry(double w) {

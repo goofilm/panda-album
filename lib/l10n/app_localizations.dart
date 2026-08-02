@@ -1189,6 +1189,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'激活码无效，请检查后重试'**
   String get activateInvalid;
+
+  /// No description provided for @scanToPurchase.
+  ///
+  /// In zh, this message translates to:
+  /// **'扫码购买会员'**
+  String get scanToPurchase;
+
+  /// No description provided for @purchaseQRHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请使用支付宝或微信扫码付款\n月卡 ¥3 · 年卡 ¥25'**
+  String get purchaseQRHint;
+
+  /// No description provided for @purchaseQRNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'付款后请将截图发送至 goofilm@163.com\n我们将尽快发送激活码'**
+  String get purchaseQRNote;
 }
 
 class _AppLocalizationsDelegate

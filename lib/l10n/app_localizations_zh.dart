@@ -616,4 +616,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get activateInvalid => '激活码无效，请检查后重试';
+
+  @override
+  String get scanToPurchase => '扫码购买会员';
+
+  @override
+  String get purchaseQRHint => '请使用支付宝或微信扫码付款\n月卡 ¥3 · 年卡 ¥25';
+
+  @override
+  String get purchaseQRNote => '付款后请将截图发送至 goofilm@163.com\n我们将尽快发送激活码';
 }

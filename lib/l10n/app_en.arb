@@ -183,5 +183,8 @@
   "activateAlreadyUsed": "This code has already been used",
   "activateInvalid": "Invalid code, please check and try again",
   "cancel": "Cancel",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "scanToPurchase": "Scan to Purchase",
+  "purchaseQRHint": "Scan QR code with Alipay or WeChat\nMonthly $1 · Yearly $8",
+  "purchaseQRNote": "After payment, send screenshot to goofilm@163.com\nWe will send you an activation code soon"
 }

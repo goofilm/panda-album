@@ -626,4 +626,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activateInvalid => 'Invalid code, please check and try again';
+
+  @override
+  String get scanToPurchase => 'Scan to Purchase';
+
+  @override
+  String get purchaseQRHint =>
+      'Scan QR code with Alipay or WeChat\nMonthly \$1 · Yearly \$8';
+
+  @override
+  String get purchaseQRNote =>
+      'After payment, send screenshot to goofilm@163.com\nWe will send you an activation code soon';
 }

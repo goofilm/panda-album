@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../data/database_helper.dart';
 import '../../providers/category_provider.dart';
+import '../../widgets/full_screen_media_viewer.dart';
 
 /// 已保留但未分类的照片页面
 class KeptPhotosPage extends StatefulWidget {
@@ -168,14 +169,14 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
             }
           });
         } else {
-          _showSingleActionSheet(photo);
+          // 非多选模式，点击全屏放大查看
+          _showFullScreenViewer(photo);
         }
       },
       onLongPress: () {
         if (!_multiSelectMode) {
           setState(() {
             _multiSelectMode = true;
-
             _selectedIds.add(photoId);
           });
         }
@@ -257,6 +258,24 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
     } catch (e) {
       return null;
     }
+  }
+
+  // 全屏查看（支持左右滑动）
+
+  void _showFullScreenViewer(Map<String, dynamic> photo) {
+    final initialIndex = _photos.indexWhere(
+      (p) => p['id'] == photo['id'],
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FullScreenMediaViewer(
+          mediaList: _photos,
+          initialIndex: initialIndex >= 0 ? initialIndex : 0,
+        ),
+      ),
+    );
   }
 
   // 单张操作菜单

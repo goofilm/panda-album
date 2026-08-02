@@ -660,9 +660,9 @@ class DatabaseHelper {
     final db = await database;
 
     final result = await db.rawQuery(
-      'SELECT COUNT(*) as cnt FROM photos WHERE status=?',
+      'SELECT COUNT(*) as cnt FROM photos WHERE status IN (?, ?)',
 
-      [1],
+      [1, 2],
     );
 
     return result.first['cnt'] as int? ?? 0;
@@ -674,9 +674,9 @@ class DatabaseHelper {
     final db = await database;
 
     final result = await db.rawQuery(
-      'SELECT COUNT(*) as cnt FROM photos WHERE status=? AND media_type=?',
+      'SELECT COUNT(*) as cnt FROM photos WHERE status IN (?, ?) AND media_type=?',
 
-      [1, mediaType],
+      [1, 2, mediaType],
     );
 
     return result.first['cnt'] as int? ?? 0;

@@ -57,7 +57,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cancel => '取消';
 
   @override
-  String get confirm => '确定';
+  String get confirm => '确认';
 
   @override
   String get delete => '删除';
@@ -182,10 +182,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get monthlyPlan => '月度会员';
 
   @override
-  String get yearlyPrice => '¥98';
+  String get yearlyPrice => '¥25';
 
   @override
-  String get monthlyPrice => '¥12';
+  String get monthlyPrice => '¥3';
 
   @override
   String get perYear => '/年';
@@ -194,7 +194,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get perMonth => '/月';
 
   @override
-  String get savePercent => '省 38%';
+  String get savePercent => '省 31%';
 
   @override
   String get autoRenew => '自动续费，随时取消';
@@ -601,4 +601,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get defaultCatScreenRecord => '录屏';
+
+  @override
+  String get activateWithCode => '使用激活码';
+
+  @override
+  String get activateCodeHint => '请输入您购买的激活码，格式：PANDA-XXXXXXXX-X';
+
+  @override
+  String get activateSuccess => '激活成功！会员已开通';
+
+  @override
+  String get activateAlreadyUsed => '该激活码已被使用';
+
+  @override
+  String get activateInvalid => '激活码无效，请检查后重试';
 }

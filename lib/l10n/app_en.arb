@@ -57,11 +57,11 @@
   "prioritySupportDesc": "Dedicated customer service",
   "yearlyPlan": "Yearly",
   "monthlyPlan": "Monthly",
-  "yearlyPrice": "$13.99",
-  "monthlyPrice": "$1.99",
+  "yearlyPrice": "$8",
+  "monthlyPrice": "$1",
   "perYear": "/year",
   "perMonth": "/month",
-  "savePercent": "Save 38%",
+  "savePercent": "Save 33%",
   "autoRenew": "Auto-renew, cancel anytime",
   "subscribeNow": "Subscribe Now",
   "restorePurchase": "Restore Purchase",
@@ -176,5 +176,12 @@
   "defaultCatPet": "Pet",
   "defaultCatSports": "Sports",
   "defaultCatMusic": "Music",
-  "defaultCatScreenRecord": "Screen Record"
+  "defaultCatScreenRecord": "Screen Record",
+  "activateWithCode": "Activate with Code",
+  "activateCodeHint": "Enter your activation code. Format: PANDA-XXXXXXXX-X",
+  "activateSuccess": "Activation successful! Premium unlocked",
+  "activateAlreadyUsed": "This code has already been used",
+  "activateInvalid": "Invalid code, please check and try again",
+  "cancel": "Cancel",
+  "confirm": "Confirm"
 }

@@ -197,7 +197,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirm.
   ///
   /// In zh, this message translates to:
-  /// **'确定'**
+  /// **'确认'**
   String get confirm;
 
   /// No description provided for @delete.
@@ -443,13 +443,13 @@ abstract class AppLocalizations {
   /// No description provided for @yearlyPrice.
   ///
   /// In zh, this message translates to:
-  /// **'¥98'**
+  /// **'¥25'**
   String get yearlyPrice;
 
   /// No description provided for @monthlyPrice.
   ///
   /// In zh, this message translates to:
-  /// **'¥12'**
+  /// **'¥3'**
   String get monthlyPrice;
 
   /// No description provided for @perYear.
@@ -467,7 +467,7 @@ abstract class AppLocalizations {
   /// No description provided for @savePercent.
   ///
   /// In zh, this message translates to:
-  /// **'省 38%'**
+  /// **'省 31%'**
   String get savePercent;
 
   /// No description provided for @autoRenew.
@@ -1159,6 +1159,36 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'录屏'**
   String get defaultCatScreenRecord;
+
+  /// No description provided for @activateWithCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用激活码'**
+  String get activateWithCode;
+
+  /// No description provided for @activateCodeHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入您购买的激活码，格式：PANDA-XXXXXXXX-X'**
+  String get activateCodeHint;
+
+  /// No description provided for @activateSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'激活成功！会员已开通'**
+  String get activateSuccess;
+
+  /// No description provided for @activateAlreadyUsed.
+  ///
+  /// In zh, this message translates to:
+  /// **'该激活码已被使用'**
+  String get activateAlreadyUsed;
+
+  /// No description provided for @activateInvalid.
+  ///
+  /// In zh, this message translates to:
+  /// **'激活码无效，请检查后重试'**
+  String get activateInvalid;
 }
 
 class _AppLocalizationsDelegate

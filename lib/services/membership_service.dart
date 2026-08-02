@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'activation_code.dart';
 
 /// 会员等级
 enum MembershipLevel {
@@ -132,6 +133,42 @@ class MembershipService {
     } catch (e) {
       debugPrint('恢复购买失败: $e');
       return false;
+    }
+  }
+
+  /// 使用激活码激活会员
+  /// 返回结果: 'success', 'invalid_code', 'already_used'
+  Future<String> activateWithCode(String code) async {
+    try {
+      final result = ActivationCode.validate(code);
+
+      if (result == 'invalid') {
+        return 'invalid_code';
+      }
+
+      // 检查是否已使用过该激活码
+      final prefs = await SharedPreferences.getInstance();
+      final usedCodes = prefs.getStringList('used_activation_codes') ?? [];
+      if (usedCodes.contains(code.trim().toUpperCase())) {
+        return 'already_used';
+      }
+
+      // 激活会员
+      final level = result == 'valid_yearly'
+          ? MembershipLevel.premiumYearly
+          : MembershipLevel.premiumMonthly;
+
+      await setMembershipLevel(level);
+
+      // 记录已使用的激活码
+      usedCodes.add(code.trim().toUpperCase());
+      await prefs.setStringList('used_activation_codes', usedCodes);
+
+      debugPrint('激活码激活成功: $code -> $level');
+      return 'success';
+    } catch (e) {
+      debugPrint('激活码激活失败: $e');
+      return 'invalid_code';
     }
   }
 

@@ -57,11 +57,11 @@
   "prioritySupportDesc": "专属客服快速响应",
   "yearlyPlan": "年度会员",
   "monthlyPlan": "月度会员",
-  "yearlyPrice": "¥98",
-  "monthlyPrice": "¥12",
+  "yearlyPrice": "¥25",
+  "monthlyPrice": "¥3",
   "perYear": "/年",
   "perMonth": "/月",
-  "savePercent": "省 38%",
+  "savePercent": "省 31%",
   "autoRenew": "自动续费，随时取消",
   "subscribeNow": "立即开通",
   "restorePurchase": "恢复购买",
@@ -176,5 +176,12 @@
   "defaultCatPet": "宠物",
   "defaultCatSports": "运动",
   "defaultCatMusic": "音乐",
-  "defaultCatScreenRecord": "录屏"
+  "defaultCatScreenRecord": "录屏",
+  "activateWithCode": "使用激活码",
+  "activateCodeHint": "请输入您购买的激活码，格式：PANDA-XXXXXXXX-X",
+  "activateSuccess": "激活成功！会员已开通",
+  "activateAlreadyUsed": "该激活码已被使用",
+  "activateInvalid": "激活码无效，请检查后重试",
+  "cancel": "取消",
+  "confirm": "确认"
 }

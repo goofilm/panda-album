@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -14,6 +15,8 @@ class MembershipPage extends StatefulWidget {
 
 class _MembershipPageState extends State<MembershipPage> {
   bool _purchasing = false;
+  bool _activating = false;
+  final _activationCodeController = TextEditingController();
 
   @override
   void initState() {
@@ -134,6 +137,11 @@ class _MembershipPageState extends State<MembershipPage> {
 
             // 订阅说明
             if (!isPremium) _buildSubscriptionNote(w),
+
+            SizedBox(height: w * 0.06),
+
+            // 激活码入口
+            if (!isPremium) _buildActivationCodeEntry(w),
 
             SizedBox(height: w * 0.06),
           ],
@@ -461,6 +469,148 @@ class _MembershipPageState extends State<MembershipPage> {
     } finally {
       if (mounted) setState(() { _purchasing = false; });
     }
+  }
+
+  Widget _buildActivationCodeEntry(double w) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: w * 0.08),
+      child: Column(
+        children: [
+          Container(
+            height: 1,
+            color: Colors.grey.shade200,
+          ),
+          SizedBox(height: w * 0.04),
+          TextButton.icon(
+            onPressed: _showActivationDialog,
+            icon: Icon(Icons.key_outlined, size: w * 0.05, color: Colors.blue.shade600),
+            label: Text(
+              AppLocalizations.of(context)!.activateWithCode,
+              style: TextStyle(
+                fontSize: w * 0.038,
+                color: Colors.blue.shade600,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showActivationDialog() {
+    _activationCodeController.clear();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.activateWithCode),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppLocalizations.of(context)!.activateCodeHint,
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: _activationCodeController,
+              decoration: InputDecoration(
+                hintText: 'PANDA-XXXXXXXX-X',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+              textCapitalization: TextCapitalization.characters,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.5,
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9\-]')),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          ElevatedButton(
+            onPressed: _activating ? null : _activateCode,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue.shade600,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: _activating
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(AppLocalizations.of(context)!.confirm),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _activateCode() async {
+    final code = _activationCodeController.text.trim();
+    if (code.isEmpty) return;
+
+    setState(() { _activating = true; });
+
+    try {
+      final service = MembershipService();
+      final result = await service.activateWithCode(code);
+
+      if (!mounted) return;
+      Navigator.pop(context); // 关闭对话框
+
+      final l10n = AppLocalizations.of(context)!;
+      String message;
+      Color color;
+
+      switch (result) {
+        case 'success':
+          message = l10n.activateSuccess;
+          color = Colors.green;
+          break;
+        case 'already_used':
+          message = l10n.activateAlreadyUsed;
+          color = Colors.orange;
+          break;
+        default:
+          message = l10n.activateInvalid;
+          color = Colors.red;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: color,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() { _activating = false; });
+    }
+  }
+
+  @override
+  void dispose() {
+    _activationCodeController.dispose();
+    super.dispose();
   }
 
   Future<void> _restorePurchases() async {

@@ -184,10 +184,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get monthlyPlan => 'Monthly';
 
   @override
-  String get yearlyPrice => '\$13.99';
+  String get yearlyPrice => '\$8';
 
   @override
-  String get monthlyPrice => '\$1.99';
+  String get monthlyPrice => '\$1';
 
   @override
   String get perYear => '/year';
@@ -196,7 +196,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get perMonth => '/month';
 
   @override
-  String get savePercent => 'Save 38%';
+  String get savePercent => 'Save 33%';
 
   @override
   String get autoRenew => 'Auto-renew, cancel anytime';
@@ -610,4 +610,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get defaultCatScreenRecord => 'Screen Record';
+
+  @override
+  String get activateWithCode => 'Activate with Code';
+
+  @override
+  String get activateCodeHint =>
+      'Enter your activation code. Format: PANDA-XXXXXXXX-X';
+
+  @override
+  String get activateSuccess => 'Activation successful! Premium unlocked';
+
+  @override
+  String get activateAlreadyUsed => 'This code has already been used';
+
+  @override
+  String get activateInvalid => 'Invalid code, please check and try again';
 }

@@ -11,6 +11,7 @@ import '../../l10n/app_localizations.dart';
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
+import '../../services/membership_service.dart';
 import '../categories/category_page.dart';
 
 class SwipePage extends StatefulWidget {
@@ -878,6 +879,27 @@ class _SwipePageState extends State<SwipePage> {
                         title: Text(DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!)),
 
                         onTap: () async {
+                          // 检查会员状态
+                          final membershipService = MembershipService();
+                          final isPremium = await membershipService.isPremium();
+                          if (!isPremium) {
+                            if (!context.mounted) return;
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: Text(AppLocalizations.of(context)!.membershipExpired),
+                                content: Text(AppLocalizations.of(context)!.categoryPremiumRequired),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx),
+                                    child: Text(AppLocalizations.of(context)!.cancel),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return;
+                          }
+
                           final list = _getList(provider);
 
                           if (list.isEmpty) return;

@@ -1207,6 +1207,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'付款后请将截图发送至 goofilm@163.com\n我们将尽快发送激活码'**
   String get purchaseQRNote;
+
+  /// No description provided for @membershipExpired.
+  ///
+  /// In zh, this message translates to:
+  /// **'会员已过期'**
+  String get membershipExpired;
+
+  /// No description provided for @categoryPremiumRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'分类整理功能需要会员，请续费后继续使用'**
+  String get categoryPremiumRequired;
 }
 
 class _AppLocalizationsDelegate

@@ -186,5 +186,7 @@
   "confirm": "确认",
   "scanToPurchase": "扫码购买会员",
   "purchaseQRHint": "请使用支付宝或微信扫码付款\n月卡 ¥3 · 年卡 ¥25",
-  "purchaseQRNote": "付款后请将截图发送至 goofilm@163.com\n我们将尽快发送激活码"
+  "purchaseQRNote": "付款后请将截图发送至 goofilm@163.com\n我们将尽快发送激活码",
+  "membershipExpired": "会员已过期",
+  "categoryPremiumRequired": "分类整理功能需要会员，请续费后继续使用"
 }

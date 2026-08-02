@@ -186,5 +186,7 @@
   "confirm": "Confirm",
   "scanToPurchase": "Scan to Purchase",
   "purchaseQRHint": "Scan QR code with Alipay or WeChat\nMonthly $1 · Yearly $8",
-  "purchaseQRNote": "After payment, send screenshot to goofilm@163.com\nWe will send you an activation code soon"
+  "purchaseQRNote": "After payment, send screenshot to goofilm@163.com\nWe will send you an activation code soon",
+  "membershipExpired": "Membership Expired",
+  "categoryPremiumRequired": "Category organization requires premium membership. Please renew to continue."
 }

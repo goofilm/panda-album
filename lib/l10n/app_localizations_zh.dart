@@ -625,4 +625,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get purchaseQRNote => '付款后请将截图发送至 goofilm@163.com\n我们将尽快发送激活码';
+
+  @override
+  String get membershipExpired => '会员已过期';
+
+  @override
+  String get categoryPremiumRequired => '分类整理功能需要会员，请续费后继续使用';
 }

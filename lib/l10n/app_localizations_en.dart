@@ -637,4 +637,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get purchaseQRNote =>
       'After payment, send screenshot to goofilm@163.com\nWe will send you an activation code soon';
+
+  @override
+  String get membershipExpired => 'Membership Expired';
+
+  @override
+  String get categoryPremiumRequired =>
+      'Category organization requires premium membership. Please renew to continue.';
 }

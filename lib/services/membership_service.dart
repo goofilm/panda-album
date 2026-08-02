@@ -184,7 +184,8 @@ class MembershipService {
     
     switch (feature) {
       case 'category':
-        return isPremiumUser || currentCount < MembershipBenefits.freeCategoryLimit;
+        // 免费用户不能新建分类，只能使用默认分类
+        return isPremiumUser;
       case 'private_album':
         return isPremiumUser || currentCount < MembershipBenefits.freePrivateAlbumLimit;
       default:

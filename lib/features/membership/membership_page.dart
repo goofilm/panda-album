@@ -522,18 +522,13 @@ class _MembershipPageState extends State<MembershipPage> {
               children: [
                 Column(
                   children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '支付宝',
-                          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                        ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        'assets/images/alipay_qr.jpg',
+                        width: 130,
+                        height: 130,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -542,18 +537,13 @@ class _MembershipPageState extends State<MembershipPage> {
                 ),
                 Column(
                   children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '微信',
-                          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                        ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        'assets/images/wechat_qr.jpg',
+                        width: 130,
+                        height: 130,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     SizedBox(height: 8),

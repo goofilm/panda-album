@@ -206,6 +206,12 @@ abstract class AppLocalizations {
   /// **'删除'**
   String get delete;
 
+  /// No description provided for @share.
+  ///
+  /// In zh, this message translates to:
+  /// **'分享'**
+  String get share;
+
   /// No description provided for @restore.
   ///
   /// In zh, this message translates to:

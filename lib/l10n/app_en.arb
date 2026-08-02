@@ -18,6 +18,7 @@
   "cancel": "Cancel",
   "confirm": "Confirm",
   "delete": "Delete",
+    "share": "Share",
   "restore": "Restore",
   "moveToRecycleBin": "Move to Recycle Bin",
   "confirmMoveToRecycleBin": "Move {count} selected items to Recycle Bin?",

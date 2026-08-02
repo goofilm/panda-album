@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../data/database_helper.dart';
@@ -494,10 +495,30 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
             const SizedBox(height: 8),
 
-            // 第二行：三个操作按钮
+            // 第二行：四个操作按钮
 
             Row(
               children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _selectedIds.isEmpty
+                        ? null
+                        : () => _shareSelectedPhotos(_selectedIds.toList()),
+
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+
+                      foregroundColor: Colors.white,
+                    ),
+
+                    icon: const Icon(Icons.share, size: 18),
+
+                    label: Text(AppLocalizations.of(context)!.share),
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _selectedIds.isEmpty
@@ -555,6 +576,35 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
         ),
       ),
     );
+  }
+
+  // 分享选中的照片
+
+  Future<void> _shareSelectedPhotos(List<int> ids) async {
+    final photos = _photos.where((p) => ids.contains(p['id'] as int)).toList();
+    final List<XFile> files = [];
+
+    for (final photo in photos) {
+      final assetId = photo['asset_id'] as String;
+      final entity = await AssetEntity.fromId(assetId);
+      if (entity != null) {
+        final file = await entity.file;
+        if (file != null) {
+          files.add(XFile(file.path));
+        }
+      }
+    }
+
+    if (files.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('无法获取文件')),
+        );
+      }
+      return;
+    }
+
+    await Share.shareXFiles(files);
   }
 
   // 全屏查看（支持左右滑动）

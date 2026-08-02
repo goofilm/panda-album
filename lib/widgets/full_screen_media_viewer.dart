@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -39,6 +40,23 @@ class _FullScreenMediaViewerState extends State<FullScreenMediaViewer> {
     super.dispose();
   }
 
+  Future<void> _shareCurrentMedia(Map<String, dynamic> media) async {
+    final assetId = media['asset_id'] as String;
+    final entity = await AssetEntity.fromId(assetId);
+    if (entity == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('无法获取文件')),
+        );
+      }
+      return;
+    }
+    final file = await entity.file;
+    if (file != null && mounted) {
+      await Share.shareXFiles([XFile(file.path)]);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentMedia = widget.mediaList[_currentIndex];
@@ -61,6 +79,12 @@ class _FullScreenMediaViewerState extends State<FullScreenMediaViewer> {
           ],
         ),
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () => _shareCurrentMedia(currentMedia),
+          ),
+        ],
       ),
       body: PageView.builder(
         scrollDirection: Axis.vertical,

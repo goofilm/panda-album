@@ -37,14 +37,6 @@ class _SwipePageState extends State<SwipePage> {
 
   bool isFlying = false;
 
-  /// 上一次移除的照片（用于撤销）
-
-  AssetEntity? _lastRemovedPhoto;
-
-  /// 上一次操作类型：keep / delete / category
-
-  String? _lastAction;
-
   /// 本次整理统计
 
   int _keptCount = 0;
@@ -754,10 +746,6 @@ class _SwipePageState extends State<SwipePage> {
 
     final photo = list.first;
 
-    _lastRemovedPhoto = photo;
-
-    _lastAction = 'keep';
-
     _keptCount++;
 
     final mediaType = widget.isVideo ? 1 : 0;
@@ -773,10 +761,6 @@ class _SwipePageState extends State<SwipePage> {
     if (list.isEmpty) return;
 
     final photo = list.first;
-
-    _lastRemovedPhoto = photo;
-
-    _lastAction = 'delete';
 
     _deletedCount++;
 
@@ -824,22 +808,6 @@ class _SwipePageState extends State<SwipePage> {
 
         isFlying = false;
       });
-
-      // 显示撤销 SnackBar
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("已操作"),
-
-          duration: const Duration(seconds: 3),
-
-          action: SnackBarAction(
-            label: "撤销",
-
-            onPressed: _undoLastAction,
-          ),
-        ),
-      );
     });
   }
 
@@ -851,66 +819,6 @@ class _SwipePageState extends State<SwipePage> {
 
       rotation = 0;
     });
-  }
-
-  /// 撤销上一次操作
-
-  Future<void> _undoLastAction() async {
-    if (_lastRemovedPhoto == null || _lastAction == null) return;
-
-    final photo = _lastRemovedPhoto!;
-
-    final action = _lastAction!;
-
-    _lastRemovedPhoto = null;
-
-    _lastAction = null;
-
-    final provider = context.read<PhotoProvider>();
-
-    // 撤销数据库操作
-
-    if (action == 'delete') {
-      // 删除→回收站：恢复为待整理状态
-
-      await _db.addPhoto(
-        assetId: photo.id,
-
-        status: 0,
-
-        mediaType: widget.isVideo ? 1 : 0,
-      );
-    } else if (action == 'private') {
-      // 私密相册：从私密相册移除，恢复为待整理状态
-
-      await context
-          .read<PrivateAlbumProvider>()
-          .removePhotoFromAlbum(photo.id);
-
-      await _db.addPhoto(
-        assetId: photo.id,
-
-        status: 0,
-
-        mediaType: widget.isVideo ? 1 : 0,
-      );
-    } else {
-      // 保留或分类：重置为待整理状态
-
-      await _db.addPhoto(
-        assetId: photo.id,
-
-        status: 0,
-
-        mediaType: widget.isVideo ? 1 : 0,
-      );
-    }
-
-    // 重新插入列表头部
-
-    provider.reinsertPhoto(photo, isVideo: widget.isVideo);
-
-    await provider.refreshStats();
   }
 
   void showCategory(PhotoProvider provider) {
@@ -975,10 +883,6 @@ class _SwipePageState extends State<SwipePage> {
                           if (list.isEmpty) return;
 
                           final photo = list.first;
-
-                          _lastRemovedPhoto = photo;
-
-                          _lastAction = 'category';
 
                           final categoryName = DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!);
 
@@ -1058,10 +962,6 @@ class _SwipePageState extends State<SwipePage> {
                           if (list.isEmpty) return;
 
                           final photo = list.first;
-
-                          _lastRemovedPhoto = photo;
-
-                          _lastAction = 'private';
 
                           final albumName = album['name'] as String;
                           final albumId = album['id'] as int;

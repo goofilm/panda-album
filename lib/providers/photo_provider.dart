@@ -337,20 +337,6 @@ class PhotoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 将照片重新插入列表头部（用于撤销操作）
-
-  void reinsertPhoto(AssetEntity photo, {bool isVideo = false}) {
-    if (isVideo) {
-      videos.insert(0, photo);
-    } else {
-      photos.insert(0, photo);
-    }
-
-    _processedIds.remove(photo.id);
-
-    notifyListeners();
-  }
-
   /// 是否已注册的相册变化监听
 
   bool _changeCallbackRegistered = false;

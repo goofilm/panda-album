@@ -203,88 +203,92 @@ class _SwipePageState extends State<SwipePage> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.isVideo ? "整理视频" : "整理照片")),
+    return ScaffoldMessenger(
+      child: Builder(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: Text(widget.isVideo ? "整理视频" : "整理照片")),
 
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                alignment: Alignment.center,
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                    alignment: Alignment.center,
 
-                children: [
-                  if (list.length > 1)
-                    AnimatedScale(
-                      duration: const Duration(milliseconds: 200),
+                    children: [
+                      if (list.length > 1)
+                        AnimatedScale(
+                          duration: const Duration(milliseconds: 200),
 
-                      scale: offsetX.abs() > 30 ? 1 : 0.93,
+                          scale: offsetX.abs() > 30 ? 1 : 0.93,
 
-                      child: Transform.translate(
-                        offset: const Offset(0, 25),
+                          child: Transform.translate(
+                            offset: const Offset(0, 25),
 
-                        child: buildCard(list[1], opacity: 0.8),
+                            child: buildCard(list[1], opacity: 0.8),
+                          ),
+                        ),
+
+                      GestureDetector(
+                        onPanStart: (detail) {
+                          if (isFlying) return;
+
+                          startOffset = detail.globalPosition;
+                        },
+
+                        onPanUpdate: (detail) {
+                          if (isFlying) return;
+
+                          final current = detail.globalPosition;
+
+                          setState(() {
+                            offsetX = current.dx - startOffset.dx;
+
+                            offsetY = current.dy - startOffset.dy;
+
+                            rotation = offsetX / 850;
+                          });
+                        },
+
+                        onPanEnd: (detail) {
+                          if (isFlying) return;
+
+                          final speedX = detail.velocity.pixelsPerSecond.dx;
+
+                          final speedY = detail.velocity.pixelsPerSecond.dy;
+
+                          if ((offsetX < -80 && offsetY.abs() < 50) ||
+                              speedX < -800) {
+                            keepPhoto(provider);
+                          } else if ((offsetX > 80 && offsetY.abs() < 50) ||
+                              speedX > 800) {
+                            deletePhoto(provider);
+                          } else if ((offsetY > 100 && offsetX.abs() < 50) ||
+                              (speedY > 900 && offsetX.abs() < 50)) {
+                            showCategory(provider);
+                          } else {
+                            resetCard();
+                          }
+                        },
+
+                        child: Transform.translate(
+                          offset: Offset(offsetX, offsetY),
+
+                          child: Transform.rotate(
+                            angle: rotation,
+
+                            child: buildCard(list[0]),
+                          ),
+                        ),
                       ),
-                    ),
-
-                  GestureDetector(
-                    onPanStart: (detail) {
-                      if (isFlying) return;
-
-                      startOffset = detail.globalPosition;
-                    },
-
-                    onPanUpdate: (detail) {
-                      if (isFlying) return;
-
-                      final current = detail.globalPosition;
-
-                      setState(() {
-                        offsetX = current.dx - startOffset.dx;
-
-                        offsetY = current.dy - startOffset.dy;
-
-                        rotation = offsetX / 850;
-                      });
-                    },
-
-                    onPanEnd: (detail) {
-                      if (isFlying) return;
-
-                      final speedX = detail.velocity.pixelsPerSecond.dx;
-
-                      final speedY = detail.velocity.pixelsPerSecond.dy;
-
-                      if ((offsetX < -80 && offsetY.abs() < 50) ||
-                          speedX < -800) {
-                        keepPhoto(provider);
-                      } else if ((offsetX > 80 && offsetY.abs() < 50) ||
-                          speedX > 800) {
-                        deletePhoto(provider);
-                      } else if ((offsetY > 100 && offsetX.abs() < 50) ||
-                          (speedY > 900 && offsetX.abs() < 50)) {
-                        showCategory(provider);
-                      } else {
-                        resetCard();
-                      }
-                    },
-
-                    child: Transform.translate(
-                      offset: Offset(offsetX, offsetY),
-
-                      child: Transform.rotate(
-                        angle: rotation,
-
-                        child: buildCard(list[0]),
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
 
-            buildBottomButtons(),
-          ],
+                buildBottomButtons(),
+              ],
+            ),
+          ),
         ),
       ),
     );

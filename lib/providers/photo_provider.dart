@@ -152,10 +152,15 @@ class PhotoProvider extends ChangeNotifier {
     startListeningToChanges();
   }
 
+  // 默认排序选项（按创建时间倒序，最新在前）
+  final _defaultFilter = FilterOptionGroup(
+    orders: const [OrderOption()],
+  );
+
   // 加载指定类型的资产
 
   Future<void> _loadAssets(RequestType type, {required bool isPhoto}) async {
-    final albums = await PhotoManager.getAssetPathList(type: type);
+    final albums = await PhotoManager.getAssetPathList(type: type, filterOption: _defaultFilter);
 
     if (albums.isNotEmpty) {
       final album = albums.first;
@@ -180,7 +185,7 @@ class PhotoProvider extends ChangeNotifier {
     final isVideo = mediaFilter == MediaTypeFilter.video;
     final requestType = isVideo ? RequestType.video : RequestType.image;
 
-    final albums = await PhotoManager.getAssetPathList(type: requestType);
+    final albums = await PhotoManager.getAssetPathList(type: requestType, filterOption: _defaultFilter);
     if (albums.isEmpty) return;
 
     _currentPage++;

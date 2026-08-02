@@ -16,6 +16,7 @@ class MembershipPage extends StatefulWidget {
 class _MembershipPageState extends State<MembershipPage> {
   bool _purchasing = false;
   bool _activating = false;
+  bool _isYearlySelected = true; // 默认选中年卡
   final _activationCodeController = TextEditingController();
 
   @override
@@ -70,8 +71,8 @@ class _MembershipPageState extends State<MembershipPage> {
                 period: AppLocalizations.of(context)!.perYear,
                 badge: AppLocalizations.of(context)!.savePercent,
                 badgeColor: Colors.orange,
-                selected: true,
-                onTap: _showPurchaseQRDialog,
+                selected: _isYearlySelected,
+                onTap: () => setState(() => _isYearlySelected = true),
               ),
               SizedBox(height: w * 0.03),
               _buildPlanCard(
@@ -81,8 +82,8 @@ class _MembershipPageState extends State<MembershipPage> {
                 period: AppLocalizations.of(context)!.perMonth,
                 badge: null,
                 badgeColor: Colors.blue,
-                selected: false,
-                onTap: _showPurchaseQRDialog,
+                selected: !_isYearlySelected,
+                onTap: () => setState(() => _isYearlySelected = false),
               ),
               SizedBox(height: w * 0.06),
 

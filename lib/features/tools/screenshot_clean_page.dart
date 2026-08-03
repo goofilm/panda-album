@@ -247,6 +247,27 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
                         },
                       ),
                     ),
+                    // 操作提示
+                    if (!_multiSelectMode)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        color: Colors.grey.shade50,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.touch_app, size: 14, color: Colors.grey.shade400),
+                            const SizedBox(width: 4),
+                            Text(
+                              l10n.tapHint,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     // 多选模式底部工具栏
                     if (_multiSelectMode) _buildBottomToolbar(),
                   ],

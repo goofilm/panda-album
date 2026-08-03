@@ -134,18 +134,8 @@ class _MediaPageState extends State<MediaPage> {
     }
     _isVideo = entity.type == AssetType.video;
 
-    // 视频优先使用 originFile（原始文件，避免缓存版本质量降低）
-    File? file;
-    if (_isVideo) {
-      try {
-        final originFile = await entity.originFile;
-        if (originFile != null && await originFile.exists()) {
-          file = originFile;
-        }
-      } catch (_) {}
-    }
-    // 回退：使用 entity.file
-    file ??= await entity.file;
+    // 使用 entity.file（兼容鸿蒙/Android所有版本）
+    final file = await entity.file;
 
     if (mounted) {
       setState(() {

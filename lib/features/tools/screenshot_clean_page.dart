@@ -5,6 +5,7 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../widgets/full_screen_media_viewer.dart';
 
 class ScreenshotCleanPage extends StatefulWidget {
   const ScreenshotCleanPage({super.key});
@@ -155,6 +156,23 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
     }
   }
 
+  void _showFullScreenViewer(AssetEntity entity) {
+    final mediaList = _screenshots
+        .map((e) => {'asset_id': e.id} as Map<String, dynamic>)
+        .toList();
+    final initialIndex = _screenshots.indexWhere((e) => e.id == entity.id);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FullScreenMediaViewer(
+          mediaList: mediaList,
+          initialIndex: initialIndex >= 0 ? initialIndex : 0,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -252,6 +270,8 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
                   _selectedIds.add(entity.id);
                 }
               });
+            } else {
+              _showFullScreenViewer(entity);
             }
           },
           onLongPress: () {

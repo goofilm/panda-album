@@ -1225,6 +1225,54 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'分类整理功能需要会员，请续费后继续使用'**
   String get categoryPremiumRequired;
+
+  /// No description provided for @screenshotCleanup.
+  ///
+  /// In zh, this message translates to:
+  /// **'截图清理'**
+  String get screenshotCleanup;
+
+  /// No description provided for @screenshotTotal.
+  ///
+  /// In zh, this message translates to:
+  /// **'共 {count} 张截图'**
+  String screenshotTotal(Object count);
+
+  /// No description provided for @screenshotNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有找到截图'**
+  String get screenshotNotFound;
+
+  /// No description provided for @screenshotSelected.
+  ///
+  /// In zh, this message translates to:
+  /// **'已选 {count} 项'**
+  String screenshotSelected(Object count);
+
+  /// No description provided for @screenshotSelectAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全选'**
+  String get screenshotSelectAll;
+
+  /// No description provided for @screenshotDeselectAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消全选'**
+  String get screenshotDeselectAll;
+
+  /// No description provided for @screenshotConfirmDelete.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要删除选中的 {count} 张截图吗？'**
+  String screenshotConfirmDelete(Object count);
+
+  /// No description provided for @screenshotDeleted.
+  ///
+  /// In zh, this message translates to:
+  /// **'已删除 {count} 张截图'**
+  String screenshotDeleted(Object count);
 }
 
 class _AppLocalizationsDelegate

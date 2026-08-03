@@ -94,20 +94,23 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('确认删除'),
-        content: Text('确定要删除选中的 ${_selectedIds.length} 张截图吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('删除', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
+        return AlertDialog(
+          title: Text(l10n.confirm),
+          content: Text(l10n.screenshotConfirmDelete(_selectedIds.length)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed != true || !mounted) return;
@@ -124,9 +127,10 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
     await _loadScreenshots();
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('已删除 ${idsToDelete.length} 张截图'),
+          content: Text(l10n.screenshotDeleted(idsToDelete.length)),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -153,9 +157,10 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('截图清理'),
+        title: Text(l10n.screenshotCleanup),
         actions: [
           if (_screenshots.isNotEmpty)
             TextButton(
@@ -165,7 +170,7 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
                   _selectedIds.clear();
                 });
               },
-              child: Text(_multiSelectMode ? '取消' : '选择'),
+              child: Text(_multiSelectMode ? l10n.cancel : l10n.select),
             ),
         ],
       ),
@@ -182,9 +187,9 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
                         color: Colors.green.shade300,
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        '没有找到截图',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      Text(
+                        l10n.screenshotNotFound,
+                        style: const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -200,7 +205,7 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
                       ),
                       color: Colors.orange.withValues(alpha: 0.06),
                       child: Text(
-                        '共 ${_screenshots.length} 张截图',
+                        l10n.screenshotTotal(_screenshots.length),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey.shade600,
@@ -307,6 +312,7 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
   }
 
   Widget _buildBottomToolbar() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
@@ -329,7 +335,7 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '已选 ${_selectedIds.length} 项',
+                  l10n.screenshotSelected(_selectedIds.length),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -349,8 +355,8 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
                   },
                   child: Text(
                     _selectedIds.length == _screenshots.length
-                        ? '取消全选'
-                        : '全选',
+                        ? l10n.screenshotDeselectAll
+                        : l10n.screenshotSelectAll,
                   ),
                 ),
               ],
@@ -368,7 +374,7 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
                       foregroundColor: Colors.white,
                     ),
                     icon: const Icon(Icons.share, size: 18),
-                    label: const Text('分享'),
+                    label: Text(l10n.share),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -381,7 +387,7 @@ class _ScreenshotCleanPageState extends State<ScreenshotCleanPage> {
                       foregroundColor: Colors.white,
                     ),
                     icon: const Icon(Icons.delete, size: 18),
-                    label: const Text('删除'),
+                    label: Text(l10n.delete),
                   ),
                 ),
               ],

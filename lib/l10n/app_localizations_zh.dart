@@ -634,4 +634,36 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get categoryPremiumRequired => '分类整理功能需要会员，请续费后继续使用';
+
+  @override
+  String get screenshotCleanup => '截图清理';
+
+  @override
+  String screenshotTotal(Object count) {
+    return '共 $count 张截图';
+  }
+
+  @override
+  String get screenshotNotFound => '没有找到截图';
+
+  @override
+  String screenshotSelected(Object count) {
+    return '已选 $count 项';
+  }
+
+  @override
+  String get screenshotSelectAll => '全选';
+
+  @override
+  String get screenshotDeselectAll => '取消全选';
+
+  @override
+  String screenshotConfirmDelete(Object count) {
+    return '确定要删除选中的 $count 张截图吗？';
+  }
+
+  @override
+  String screenshotDeleted(Object count) {
+    return '已删除 $count 张截图';
+  }
 }

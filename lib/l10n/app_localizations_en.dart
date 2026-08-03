@@ -647,4 +647,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get categoryPremiumRequired =>
       'Category organization requires premium membership. Please renew to continue.';
+
+  @override
+  String get screenshotCleanup => 'Screenshot Cleanup';
+
+  @override
+  String screenshotTotal(Object count) {
+    return '$count screenshots';
+  }
+
+  @override
+  String get screenshotNotFound => 'No screenshots found';
+
+  @override
+  String screenshotSelected(Object count) {
+    return '$count selected';
+  }
+
+  @override
+  String get screenshotSelectAll => 'Select All';
+
+  @override
+  String get screenshotDeselectAll => 'Deselect All';
+
+  @override
+  String screenshotConfirmDelete(Object count) {
+    return 'Delete $count selected screenshots?';
+  }
+
+  @override
+  String screenshotDeleted(Object count) {
+    return '$count screenshots deleted';
+  }
 }

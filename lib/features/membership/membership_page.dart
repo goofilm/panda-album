@@ -210,7 +210,6 @@ class _MembershipPageState extends State<MembershipPage> {
     final l10n = AppLocalizations.of(context)!;
     final benefits = [
       {'icon': Icons.category_outlined, 'title': l10n.unlimitedCategory, 'desc': l10n.unlimitedCategoryDesc},
-      {'icon': Icons.lock_outline, 'title': l10n.unlimitedPrivate, 'desc': l10n.unlimitedPrivateDesc},
       {'icon': Icons.delete_sweep_outlined, 'title': l10n.permanentRecycle, 'desc': l10n.permanentRecycleDesc},
       {'icon': Icons.headset_outlined, 'title': l10n.prioritySupport, 'desc': l10n.prioritySupportDesc},
     ];

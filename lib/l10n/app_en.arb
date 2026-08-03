@@ -189,5 +189,13 @@
   "purchaseQRHint": "Scan QR code with Alipay or WeChat\nMonthly $1 · Yearly $8",
   "purchaseQRNote": "After payment, send screenshot to goofilm@163.com\nWe will send you an activation code soon",
   "membershipExpired": "Membership Expired",
-  "categoryPremiumRequired": "Category organization requires premium membership. Please renew to continue."
+  "categoryPremiumRequired": "Category organization requires premium membership. Please renew to continue.",
+  "screenshotCleanup": "Screenshot Cleanup",
+  "screenshotTotal": "{count} screenshots",
+  "screenshotNotFound": "No screenshots found",
+  "screenshotSelected": "{count} selected",
+  "screenshotSelectAll": "Select All",
+  "screenshotDeselectAll": "Deselect All",
+  "screenshotConfirmDelete": "Delete {count} selected screenshots?",
+  "screenshotDeleted": "{count} screenshots deleted"
 }

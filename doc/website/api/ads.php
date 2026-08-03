@@ -20,14 +20,14 @@ $position = $_GET['position'] ?? '';
 // 广告配置 - 修改这里的广告内容
 $ads = [
     'home_banner' => [
-        'image' => '',  // 广告图片 URL，留空表示无广告
-        'link' => '',   // 点击跳转链接
-        'title' => ''   // 广告标题
+        'image' => 'https://lightforever.net/ads/banner_test.png',
+        'link' => 'https://lightforever.net',
+        'title' => '熊猫相册 - 你的照片整理助手'
     ],
     'swipe_banner' => [
-        'image' => '',
-        'link' => '',
-        'title' => ''
+        'image' => 'https://lightforever.net/ads/banner_test.png',
+        'link' => 'https://lightforever.net',
+        'title' => '熊猫相册 - 你的照片整理助手'
     ]
 ];
 

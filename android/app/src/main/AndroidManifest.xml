@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- 网络权限（广告加载） -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- Android 13+ 图片权限 -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>

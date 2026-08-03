@@ -143,6 +143,13 @@ class CategoryProvider extends ChangeNotifier {
     await loadCategories();
   }
 
+  // 更新分类排序
+
+  Future<void> updateSortOrder(List<int> categoryIds) async {
+    await _db.updateCategorySortOrder(categoryIds);
+    await loadCategories();
+  }
+
   // 根据ID查找分类
 
   Map<String, dynamic>? getCategoryById(int id) {

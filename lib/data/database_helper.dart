@@ -27,7 +27,7 @@ class DatabaseHelper {
     return await openDatabase(
       path,
 
-      version: 7,
+      version: 8,
 
       onCreate: _createDB,
 
@@ -79,6 +79,23 @@ class DatabaseHelper {
       // 为已有的默认分类设置 name_key
       await _setDefaultCategoryNameKeys(db);
     }
+
+    if (oldVersion < 8) {
+      // categories表添加 sort_order 字段（用于自定义排序）
+      await db.execute(
+        'ALTER TABLE categories ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0',
+      );
+      // 为已有分类设置默认排序（按创建时间）
+      final categories = await db.query('categories', orderBy: 'create_time ASC');
+      for (int i = 0; i < categories.length; i++) {
+        await db.update(
+          'categories',
+          {'sort_order': i},
+          where: 'id=?',
+          whereArgs: [categories[i]['id']],
+        );
+      }
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -99,6 +116,8 @@ class DatabaseHelper {
       media_type INTEGER NOT NULL DEFAULT 0,
 
       name_key TEXT DEFAULT '',
+
+      sort_order INTEGER NOT NULL DEFAULT 0,
 
       create_time INTEGER NOT NULL
 
@@ -293,11 +312,11 @@ class DatabaseHelper {
 
         whereArgs: [mediaType],
 
-        orderBy: 'id ASC',
+        orderBy: 'sort_order ASC, id ASC',
       );
     }
 
-    return await db.query('categories', orderBy: 'id ASC');
+    return await db.query('categories', orderBy: 'sort_order ASC, id ASC');
   }
 
   Future<int> addCategory({
@@ -346,6 +365,19 @@ class DatabaseHelper {
 
       whereArgs: [id],
     );
+  }
+
+  /// 更新分类排序
+  Future<void> updateCategorySortOrder(List<int> categoryIds) async {
+    final db = await database;
+    for (int i = 0; i < categoryIds.length; i++) {
+      await db.update(
+        'categories',
+        {'sort_order': i},
+        where: 'id=?',
+        whereArgs: [categoryIds[i]],
+      );
+    }
   }
 
   Future<int> deleteCategory(int id) async {

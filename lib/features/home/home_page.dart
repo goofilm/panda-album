@@ -12,7 +12,7 @@ import '../../providers/locale_provider.dart';
 import '../swipe/swipe_page.dart';
 import '../categories/category_page.dart';
 import '../recycle/recycle_page.dart';
-import '../private/private_lock_page.dart';
+import '../tools/screenshot_clean_page.dart';
 import '../search/search_page.dart';
 import '../membership/membership_page.dart';
 import '../../widgets/ad_banner.dart';
@@ -300,18 +300,18 @@ class _HomePageState extends State<HomePage>
                   ),
 
                   _glassButton(
-                    Icons.lock_outline,
+                    Icons.cut,
 
-                    AppLocalizations.of(context)!.private,
+                    '截图清理',
 
-                    privateProvider.totalPrivateCount,
+                    0,
 
                     () {
                       Navigator.push(
                         context,
 
                         MaterialPageRoute(
-                          builder: (_) => const PrivateLockPage(),
+                          builder: (_) => const ScreenshotCleanPage(),
                         ),
                       );
                     },

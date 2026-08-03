@@ -10,6 +10,7 @@ import '../../services/membership_service.dart';
 import '../../widgets/morandi_color.dart';
 import '../private/private_lock_page.dart';
 import '../membership/membership_page.dart';
+import '../tools/screenshot_clean_page.dart';
 import 'create_category_page.dart';
 import 'category_detail_page.dart';
 import 'kept_photos_page.dart';
@@ -34,6 +35,8 @@ class _CategoryPageState extends State<CategoryPage>
 
     vsync: this,
   );
+
+  bool _sortMode = false;
 
   @override
   void initState() {
@@ -85,6 +88,15 @@ class _CategoryPageState extends State<CategoryPage>
         title: Text(AppLocalizations.of(context)!.myCategories),
 
         actions: [
+          // 排序按钮
+          IconButton(
+            icon: Icon(_sortMode ? Icons.check : Icons.sort),
+            onPressed: () {
+              setState(() {
+                _sortMode = !_sortMode;
+              });
+            },
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 12),
 
@@ -214,7 +226,9 @@ class _CategoryPageState extends State<CategoryPage>
                 // 分类网格
 
                 Expanded(
-                  child: _buildCategoryGrid(provider),
+                  child: _sortMode
+                      ? _buildSortList(provider)
+                      : _buildCategoryGrid(provider),
                 ),
 
                 // 底部私密相册入口
@@ -254,6 +268,49 @@ class _CategoryPageState extends State<CategoryPage>
         final item = currentCategories[index - 1];
 
         return _buildCategoryCard(item, provider);
+      },
+    );
+  }
+
+  /// 排序模式列表
+  Widget _buildSortList(CategoryProvider provider) {
+    final currentCategories = _selectedTab == 0
+        ? provider.photoCategories
+        : provider.videoCategories;
+
+    return ReorderableListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: currentCategories.length,
+      onReorder: (oldIndex, newIndex) async {
+        if (oldIndex < newIndex) newIndex--;
+        final list = List<Map<String, dynamic>>.from(currentCategories);
+        final item = list.removeAt(oldIndex);
+        list.insert(newIndex, item);
+        final ids = list.map((c) => c['id'] as int).toList();
+        await provider.updateSortOrder(ids);
+      },
+      itemBuilder: (context, index) {
+        final item = currentCategories[index];
+        final color = morandiFromHex(item['color']);
+        final count = provider.categoryCounts[item['id']] ?? 0;
+
+        return Container(
+          key: ValueKey(item['id']),
+          margin: const EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: ListTile(
+            leading: Text(item['icon'], style: const TextStyle(fontSize: 24)),
+            title: Text(
+              DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(AppLocalizations.of(context)!.itemsCount(count.toString())),
+            trailing: const Icon(Icons.drag_handle, color: Colors.grey),
+          ),
+        );
       },
     );
   }
@@ -324,12 +381,6 @@ class _CategoryPageState extends State<CategoryPage>
   }
 
   Widget _buildPrivateEntry() {
-    final privateProvider = context.watch<PrivateAlbumProvider>();
-
-    final count = privateProvider.totalPrivateCount;
-
-    final isVideo = _selectedTab == 1;
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -342,16 +393,16 @@ class _CategoryPageState extends State<CategoryPage>
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const PrivateLockPage()),
+            MaterialPageRoute(builder: (_) => const ScreenshotCleanPage()),
           );
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.blue.shade50,
+            color: Colors.orange.shade50,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.blue.shade200,
+              color: Colors.orange.shade200,
             ),
           ),
           child: Row(
@@ -360,12 +411,12 @@ class _CategoryPageState extends State<CategoryPage>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade100,
+                  color: Colors.orange.shade100,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
-                  Icons.lock_outline,
-                  color: Colors.blue.shade700,
+                  Icons.cut,
+                  color: Colors.orange.shade700,
                   size: 22,
                 ),
               ),
@@ -375,20 +426,18 @@ class _CategoryPageState extends State<CategoryPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isVideo ? AppLocalizations.of(context)!.privateVideoAlbum : AppLocalizations.of(context)!.privatePhotoAlbum,
+                      '截图清理',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade900,
+                        color: Colors.orange.shade900,
                       ),
                     ),
                     Text(
-                      count > 0
-                          ? AppLocalizations.of(context)!.privateProtected(count.toString(), isVideo ? AppLocalizations.of(context)!.video : AppLocalizations.of(context)!.photo)
-                          : AppLocalizations.of(context)!.enterPrivateSpace,
+                      '清理不需要的截图，释放存储空间',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.blue.shade600,
+                        color: Colors.orange.shade600,
                       ),
                     ),
                   ],
@@ -396,7 +445,7 @@ class _CategoryPageState extends State<CategoryPage>
               ),
               Icon(
                 Icons.chevron_right,
-                color: Colors.blue.shade400,
+                color: Colors.orange.shade400,
               ),
             ],
           ),

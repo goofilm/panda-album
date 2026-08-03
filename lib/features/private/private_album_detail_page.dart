@@ -4,9 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../providers/private_album_provider.dart';
+import '../../widgets/full_screen_media_viewer.dart';
 
 class PrivateAlbumDetailPage extends StatefulWidget {
   final int albumId;
@@ -35,6 +37,10 @@ class _PrivateAlbumDetailPageState extends State<PrivateAlbumDetailPage> {
   bool _loading = true;
 
   final Map<String, Uint8List> _imageCache = {};
+
+  final Set<String> _selectedAssetIds = {};
+
+  bool _multiSelectMode = false;
 
   @override
   void initState() {
@@ -94,6 +100,18 @@ class _PrivateAlbumDetailPageState extends State<PrivateAlbumDetailPage> {
           ],
         ),
         centerTitle: true,
+        actions: [
+          if (_photos.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _multiSelectMode = !_multiSelectMode;
+                  _selectedAssetIds.clear();
+                });
+              },
+              child: Text(_multiSelectMode ? '取消' : '选择'),
+            ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -159,18 +177,39 @@ class _PrivateAlbumDetailPageState extends State<PrivateAlbumDetailPage> {
                         },
                       ),
                     ),
+
+                    // 多选模式底部工具栏
+                    if (_multiSelectMode) _buildBottomToolbar(),
                   ],
                 ),
     );
   }
 
   Widget _buildPhotoGrid(String assetId, int mediaType) {
+    final isSelected = _selectedAssetIds.contains(assetId);
+
     return FutureBuilder<Uint8List?>(
       future: _loadThumbnail(assetId),
       builder: (context, snapshot) {
         return GestureDetector(
-          onLongPress: () => _showPhotoOptions(assetId),
-          onTap: () => _showPhotoPreview(assetId, mediaType),
+          onTap: () {
+            if (_multiSelectMode) {
+              setState(() {
+                if (isSelected) {
+                  _selectedAssetIds.remove(assetId);
+                } else {
+                  _selectedAssetIds.add(assetId);
+                }
+              });
+            } else {
+              _showPhotoPreview(assetId, mediaType);
+            }
+          },
+          onLongPress: () {
+            if (!_multiSelectMode) {
+              _showPhotoOptions(assetId, mediaType);
+            }
+          },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Stack(
@@ -212,6 +251,24 @@ class _PrivateAlbumDetailPageState extends State<PrivateAlbumDetailPage> {
                       ),
                     ),
                   ),
+                // 多选模式选中标记
+                if (_multiSelectMode)
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.blue : Colors.white.withValues(alpha: 0.7),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5),
+                      ),
+                      child: isSelected
+                          ? const Icon(Icons.check, size: 14, color: Colors.white)
+                          : null,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -220,53 +277,22 @@ class _PrivateAlbumDetailPageState extends State<PrivateAlbumDetailPage> {
     );
   }
 
-  void _showPhotoPreview(String assetId, int mediaType) async {
-    final entity = await AssetEntity.fromId(assetId);
+  void _showPhotoPreview(String assetId, int mediaType) {
+    // 找到当前照片在列表中的索引
+    final index = _photos.indexWhere((p) => p['asset_id'] == assetId);
 
-    if (entity == null || !mounted) return;
-
-    final file = await entity.file;
-
-    if (file == null || !mounted) return;
-
-    if (mediaType == 1) {
-      // 视频播放
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => _VideoPlayerPage(file: file, title: widget.albumName),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FullScreenMediaViewer(
+          mediaList: _photos,
+          initialIndex: index >= 0 ? index : 0,
         ),
-      );
-    } else {
-      // 照片预览
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return Dialog(
-            backgroundColor: Colors.black,
-            child: Stack(
-              alignment: Alignment.topRight,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.file(file, fit: BoxFit.contain),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
-                    onPressed: () => Navigator.pop(ctx),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    }
+      ),
+    );
   }
 
-  void _showPhotoOptions(String assetId) {
+  void _showPhotoOptions(String assetId, int mediaType) {
     showModalBottomSheet(
       context: context,
       builder: (ctx) {
@@ -275,6 +301,14 @@ class _PrivateAlbumDetailPageState extends State<PrivateAlbumDetailPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.share, color: Colors.blue),
+                title: const Text('分享'),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  await _shareSinglePhoto(assetId);
+                },
+              ),
               ListTile(
                 leading:
                     const Icon(Icons.logout, color: Colors.orange),
@@ -298,66 +332,135 @@ class _PrivateAlbumDetailPageState extends State<PrivateAlbumDetailPage> {
     );
   }
 
+  Future<void> _shareSinglePhoto(String assetId) async {
+    final entity = await AssetEntity.fromId(assetId);
+    if (entity == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('无法获取文件')),
+        );
+      }
+      return;
+    }
+    final file = await entity.file;
+    if (file != null && mounted) {
+      await Share.shareXFiles([XFile(file.path)]);
+    }
+  }
+
+  Future<void> _shareSelectedPhotos() async {
+    final List<XFile> files = [];
+    for (final assetId in _selectedAssetIds) {
+      final entity = await AssetEntity.fromId(assetId);
+      if (entity != null) {
+        final file = await entity.file;
+        if (file != null) {
+          files.add(XFile(file.path));
+        }
+      }
+    }
+    if (files.isNotEmpty) {
+      await Share.shareXFiles(files);
+    }
+  }
+
+  Future<void> _removeSelectedPhotos() async {
+    final provider = context.read<PrivateAlbumProvider>();
+    for (final assetId in _selectedAssetIds.toList()) {
+      await provider.removePhotoFromAlbum(assetId);
+    }
+    setState(() {
+      _selectedAssetIds.clear();
+      _multiSelectMode = false;
+    });
+    await _loadPhotos();
+  }
+
+  Widget _buildBottomToolbar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.05),
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 已选数量 + 全选
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '已选 ${_selectedAssetIds.length} 项',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      final allIds = _photos.map((p) => p['asset_id'] as String).toSet();
+                      if (_selectedAssetIds.length == allIds.length) {
+                        _selectedAssetIds.clear();
+                      } else {
+                        _selectedAssetIds.addAll(allIds);
+                      }
+                    });
+                  },
+                  child: Text(
+                    _selectedAssetIds.length == _photos.length ? '取消全选' : '全选',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // 操作按钮
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _selectedAssetIds.isEmpty ? null : _shareSelectedPhotos,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.share, size: 18),
+                    label: const Text('分享'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _selectedAssetIds.isEmpty ? null : _removeSelectedPhotos,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.logout, size: 18),
+                    label: const Text('移出私密'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _imageCache.clear();
 
     super.dispose();
-  }
-}
-
-// 视频播放页面
-
-class _VideoPlayerPage extends StatefulWidget {
-  final File file;
-  final String title;
-
-  const _VideoPlayerPage({required this.file, required this.title});
-
-  @override
-  State<_VideoPlayerPage> createState() => _VideoPlayerPageState();
-}
-
-class _VideoPlayerPageState extends State<_VideoPlayerPage> {
-  late VideoPlayerController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = VideoPlayerController.file(widget.file);
-
-    _controller.initialize().then((_) {
-      _controller.play();
-
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text(widget.title, style: const TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: Center(
-        child: _controller.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
-            : const CircularProgressIndicator(color: Colors.white),
-      ),
-    );
   }
 }

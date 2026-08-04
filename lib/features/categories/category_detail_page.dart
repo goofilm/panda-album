@@ -13,7 +13,6 @@ import '../../widgets/full_screen_media_viewer.dart';
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
-import '../../services/membership_service.dart';
 import '../../l10n/app_localizations.dart';
 
 class CategoryDetailPage extends StatefulWidget {
@@ -672,30 +671,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   // 选择目标分类
 
   void _showCategoryPicker(List<int> photoIds) async {
-    // 检查会员状态：非默认分类需要会员
-    final isDefault = widget.category['is_default'] == 1;
-    if (!isDefault) {
-      final membershipService = MembershipService();
-      final isPremium = await membershipService.isPremium();
-      if (!isPremium) {
-        if (!mounted) return;
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(AppLocalizations.of(context)!.membershipExpired),
-            content: Text(AppLocalizations.of(context)!.categoryPremiumRequired),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(AppLocalizations.of(context)!.cancel),
-              ),
-            ],
-          ),
-        );
-        return;
-      }
-    }
-
+    // 所有功能已对全部用户开放，无需会员检查
     final categoryProvider = context.read<CategoryProvider>();
 
     // 根据当前分类的媒体类型获取目标分类列表

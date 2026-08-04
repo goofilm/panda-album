@@ -5,11 +5,8 @@ import '../../l10n/app_localizations.dart';
 import '../../data/database_helper.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
-import '../../providers/membership_provider.dart';
-import '../../services/membership_service.dart';
 import '../../widgets/morandi_color.dart';
 import '../private/private_lock_page.dart';
-import '../membership/membership_page.dart';
 import '../tools/screenshot_clean_page.dart';
 import 'create_category_page.dart';
 import 'category_detail_page.dart';
@@ -102,40 +99,7 @@ class _CategoryPageState extends State<CategoryPage>
 
             child: GestureDetector(
               onTap: () async {
-                // 检查会员状态
-                final membershipService = MembershipService();
-                final isPremium = await membershipService.isPremium();
-                if (!isPremium) {
-                  if (!mounted) return;
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: Text(AppLocalizations.of(context)!.freeLimit),
-                      content: Text(AppLocalizations.of(context)!.categoryPremiumRequired),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx),
-                          child: Text(AppLocalizations.of(context)!.cancel),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const MembershipPage()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber.shade700,
-                            foregroundColor: Colors.white,
-                          ),
-                          child: Text(AppLocalizations.of(context)!.openMembership),
-                        ),
-                      ],
-                    ),
-                  );
-                  return;
-                }
+                // 所有功能已对全部用户开放，无需会员检查
                 Navigator.push(
                   context,
 
@@ -457,45 +421,7 @@ class _CategoryPageState extends State<CategoryPage>
   Widget _buildAddCard() {
     return GestureDetector(
       onTap: () async {
-        // 检查会员限制
-        final membership = context.read<MembershipProvider>();
-        final categoryProvider = context.read<CategoryProvider>();
-        final currentCount = categoryProvider.categories.length;
-        
-        final canCreate = await membership.canUseFeature('category', currentCount: currentCount);
-        
-        if (!canCreate && mounted) {
-          // 显示升级提示
-          showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: Text(AppLocalizations.of(context)!.freeLimit),
-              content: Text('${AppLocalizations.of(context)!.freeCategoryLimit(MembershipBenefits.freeCategoryLimit.toString())}\n\n${AppLocalizations.of(context)!.upgradeToPremium}'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: Text(AppLocalizations.of(context)!.cancel),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const MembershipPage()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber.shade700,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(AppLocalizations.of(context)!.openMembership),
-                ),
-              ],
-            ),
-          );
-          return;
-        }
-        
+        // 所有功能已对全部用户开放，无需会员检查
         Navigator.push(
           context,
 

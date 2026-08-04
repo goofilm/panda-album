@@ -209,8 +209,8 @@ class _MembershipPageState extends State<MembershipPage> {
   Widget _buildBenefits(double w) {
     final l10n = AppLocalizations.of(context)!;
     final benefits = [
-      {'icon': Icons.category_outlined, 'title': l10n.unlimitedCategory, 'desc': l10n.unlimitedCategoryDesc},
-      {'icon': Icons.delete_sweep_outlined, 'title': l10n.permanentRecycle, 'desc': l10n.permanentRecycleDesc},
+      {'icon': Icons.block_outlined, 'title': l10n.adFreeBenefit, 'desc': l10n.adFreeBenefitDesc},
+      {'icon': Icons.rocket_launch_outlined, 'title': l10n.splashAdBenefit, 'desc': l10n.splashAdBenefitDesc},
       {'icon': Icons.headset_outlined, 'title': l10n.prioritySupport, 'desc': l10n.prioritySupportDesc},
     ];
 

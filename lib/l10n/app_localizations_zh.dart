@@ -149,28 +149,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get thankSupport => '感谢您的支持';
 
   @override
-  String get unlockAll => '解锁全部功能，畅享完整体验';
+  String get unlockAll => '免广告，畅享完整体验';
 
   @override
   String get premiumBenefits => '会员专享权益';
 
   @override
-  String get unlimitedCategory => '无限分类';
+  String get adFreeBenefit => '全程免广告';
 
   @override
-  String get unlimitedCategoryDesc => '自由创建任意数量分类';
+  String get adFreeBenefitDesc => '免开屏、Banner等所有广告';
 
   @override
-  String get unlimitedPrivate => '无限私密';
+  String get splashAdBenefit => '免开屏广告';
 
   @override
-  String get unlimitedPrivateDesc => '私密相册不再受限';
-
-  @override
-  String get permanentRecycle => '永久回收站';
-
-  @override
-  String get permanentRecycleDesc => '回收站照片不会被自动清理';
+  String get splashAdBenefitDesc => '打开App直达首页，无需等待';
 
   @override
   String get prioritySupport => '优先客服';
@@ -185,7 +179,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get monthlyPlan => '月度会员';
 
   @override
-  String get yearlyPrice => '¥25';
+  String get yearlyPrice => '¥15';
 
   @override
   String get monthlyPrice => '¥3';
@@ -197,10 +191,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get perMonth => '/月';
 
   @override
-  String get savePercent => '省 31%';
+  String get savePercent => '省 58%';
 
   @override
-  String get autoRenew => '自动续费，随时取消';
+  String get autoRenew => '到期后不自动续费';
 
   @override
   String get subscribeNow => '立即开通';
@@ -210,7 +204,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get subscriptionNote =>
-      '订阅说明：\n• 订阅到期后自动续费，可在应用商店随时取消\n• 取消后当前周期内仍可使用会员功能\n• 到期后未续费将恢复免费版\n• 所有价格均含税';
+      '开通说明：\n• 会员权益：免除App内所有广告\n• 到期后自动恢复免费版\n• 激活码可在下方输入激活\n• 所有价格均含税';
+
+  @override
+  String skipAd(Object seconds) {
+    return '跳过 ${seconds}s';
+  }
 
   @override
   String get freeLimit => '免费版限制';

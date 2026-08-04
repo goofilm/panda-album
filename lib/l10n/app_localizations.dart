@@ -377,7 +377,7 @@ abstract class AppLocalizations {
   /// No description provided for @unlockAll.
   ///
   /// In zh, this message translates to:
-  /// **'解锁全部功能，畅享完整体验'**
+  /// **'免广告，畅享完整体验'**
   String get unlockAll;
 
   /// No description provided for @premiumBenefits.
@@ -386,41 +386,29 @@ abstract class AppLocalizations {
   /// **'会员专享权益'**
   String get premiumBenefits;
 
-  /// No description provided for @unlimitedCategory.
+  /// No description provided for @adFreeBenefit.
   ///
   /// In zh, this message translates to:
-  /// **'无限分类'**
-  String get unlimitedCategory;
+  /// **'全程免广告'**
+  String get adFreeBenefit;
 
-  /// No description provided for @unlimitedCategoryDesc.
+  /// No description provided for @adFreeBenefitDesc.
   ///
   /// In zh, this message translates to:
-  /// **'自由创建任意数量分类'**
-  String get unlimitedCategoryDesc;
+  /// **'免开屏、Banner等所有广告'**
+  String get adFreeBenefitDesc;
 
-  /// No description provided for @unlimitedPrivate.
+  /// No description provided for @splashAdBenefit.
   ///
   /// In zh, this message translates to:
-  /// **'无限私密'**
-  String get unlimitedPrivate;
+  /// **'免开屏广告'**
+  String get splashAdBenefit;
 
-  /// No description provided for @unlimitedPrivateDesc.
+  /// No description provided for @splashAdBenefitDesc.
   ///
   /// In zh, this message translates to:
-  /// **'私密相册不再受限'**
-  String get unlimitedPrivateDesc;
-
-  /// No description provided for @permanentRecycle.
-  ///
-  /// In zh, this message translates to:
-  /// **'永久回收站'**
-  String get permanentRecycle;
-
-  /// No description provided for @permanentRecycleDesc.
-  ///
-  /// In zh, this message translates to:
-  /// **'回收站照片不会被自动清理'**
-  String get permanentRecycleDesc;
+  /// **'打开App直达首页，无需等待'**
+  String get splashAdBenefitDesc;
 
   /// No description provided for @prioritySupport.
   ///
@@ -449,7 +437,7 @@ abstract class AppLocalizations {
   /// No description provided for @yearlyPrice.
   ///
   /// In zh, this message translates to:
-  /// **'¥25'**
+  /// **'¥15'**
   String get yearlyPrice;
 
   /// No description provided for @monthlyPrice.
@@ -473,13 +461,13 @@ abstract class AppLocalizations {
   /// No description provided for @savePercent.
   ///
   /// In zh, this message translates to:
-  /// **'省 31%'**
+  /// **'省 58%'**
   String get savePercent;
 
   /// No description provided for @autoRenew.
   ///
   /// In zh, this message translates to:
-  /// **'自动续费，随时取消'**
+  /// **'到期后不自动续费'**
   String get autoRenew;
 
   /// No description provided for @subscribeNow.
@@ -497,8 +485,14 @@ abstract class AppLocalizations {
   /// No description provided for @subscriptionNote.
   ///
   /// In zh, this message translates to:
-  /// **'订阅说明：\n• 订阅到期后自动续费，可在应用商店随时取消\n• 取消后当前周期内仍可使用会员功能\n• 到期后未续费将恢复免费版\n• 所有价格均含税'**
+  /// **'开通说明：\n• 会员权益：免除App内所有广告\n• 到期后自动恢复免费版\n• 激活码可在下方输入激活\n• 所有价格均含税'**
   String get subscriptionNote;
+
+  /// No description provided for @skipAd.
+  ///
+  /// In zh, this message translates to:
+  /// **'跳过 {seconds}s'**
+  String skipAd(Object seconds);
 
   /// No description provided for @freeLimit.
   ///

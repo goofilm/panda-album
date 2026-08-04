@@ -150,29 +150,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thankSupport => 'Thank you for your support';
 
   @override
-  String get unlockAll => 'Unlock all features, enjoy the full experience';
+  String get unlockAll => 'Ad-free, enjoy the full experience';
 
   @override
   String get premiumBenefits => 'Premium Benefits';
 
   @override
-  String get unlimitedCategory => 'Unlimited Categories';
+  String get adFreeBenefit => 'Completely Ad-Free';
 
   @override
-  String get unlimitedCategoryDesc => 'Create as many categories as you want';
+  String get adFreeBenefitDesc => 'No splash, banner or any ads';
 
   @override
-  String get unlimitedPrivate => 'Unlimited Private Albums';
+  String get splashAdBenefit => 'No Splash Ads';
 
   @override
-  String get unlimitedPrivateDesc => 'No limit on private albums';
-
-  @override
-  String get permanentRecycle => 'Permanent Recycle Bin';
-
-  @override
-  String get permanentRecycleDesc =>
-      'Photos in recycle bin are never auto-deleted';
+  String get splashAdBenefitDesc => 'Open the app and go straight to home';
 
   @override
   String get prioritySupport => 'Priority Support';
@@ -187,7 +180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get monthlyPlan => 'Monthly';
 
   @override
-  String get yearlyPrice => '\$8';
+  String get yearlyPrice => '\$3';
 
   @override
   String get monthlyPrice => '\$1';
@@ -199,10 +192,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get perMonth => '/month';
 
   @override
-  String get savePercent => 'Save 33%';
+  String get savePercent => 'Save 58%';
 
   @override
-  String get autoRenew => 'Auto-renew, cancel anytime';
+  String get autoRenew => 'No auto-renewal after expiration';
 
   @override
   String get subscribeNow => 'Subscribe Now';
@@ -212,7 +205,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subscriptionNote =>
-      'Subscription Info:\n• Auto-renews, cancel anytime in App Store\n• Full access during current period\n• Reverts to free after expiration\n• All prices include tax';
+      'Membership Info:\n• Benefit: remove all ads in the app\n• Reverts to free after expiration\n• Activation codes can be entered below\n• All prices include tax';
+
+  @override
+  String skipAd(Object seconds) {
+    return 'Skip ${seconds}s';
+  }
 
   @override
   String get freeLimit => 'Free Version Limit';

@@ -11,7 +11,6 @@ import '../../l10n/app_localizations.dart';
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/private_album_provider.dart';
-import '../../services/membership_service.dart';
 import '../../widgets/ad_banner.dart';
 import '../categories/category_page.dart';
 
@@ -881,30 +880,7 @@ class _SwipePageState extends State<SwipePage> {
                         title: Text(DatabaseHelper.getCategoryName(item, AppLocalizations.of(context)!)),
 
                         onTap: () async {
-                          // 检查会员状态：非默认分类需要会员
-                          final isDefault = item['is_default'] == 1;
-                          if (!isDefault) {
-                            final membershipService = MembershipService();
-                            final isPremium = await membershipService.isPremium();
-                            if (!isPremium) {
-                              if (!context.mounted) return;
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: Text(AppLocalizations.of(context)!.membershipExpired),
-                                  content: Text(AppLocalizations.of(context)!.categoryPremiumRequired),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(ctx),
-                                      child: Text(AppLocalizations.of(context)!.cancel),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              return;
-                            }
-                          }
-
+                          // 所有功能已对全部用户开放，无需会员检查
                           final list = _getList(provider);
 
                           if (list.isEmpty) return;

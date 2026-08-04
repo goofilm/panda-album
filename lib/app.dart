@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 
-import 'features/home/home_page.dart';
+import 'features/splash/splash_ad_page.dart';
 
 import 'providers/photo_provider.dart';
 import 'providers/category_provider.dart';
@@ -64,7 +64,7 @@ class PhotoOrganizerApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
             ),
 
-            home: const HomePage(),
+            home: const SplashAdPage(),
           );
         },
       ),

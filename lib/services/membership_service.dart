@@ -178,18 +178,9 @@ class MembershipService {
     return level != MembershipLevel.free;
   }
 
-  /// 检查是否可以使用某功能（免费版限制检查）
+  /// 检查是否可以使用某功能
+  /// 所有功能已对全部用户免费开放，会员仅提供免广告权益
   Future<bool> canUseFeature(String feature, {int currentCount = 0}) async {
-    final isPremiumUser = await isPremium();
-    
-    switch (feature) {
-      case 'category':
-        // 免费用户不能新建分类，只能使用默认分类
-        return isPremiumUser;
-      case 'private_album':
-        return isPremiumUser || currentCount < MembershipBenefits.freePrivateAlbumLimit;
-      default:
-        return true;
-    }
+    return true;
   }
 }

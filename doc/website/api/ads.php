@@ -6,6 +6,7 @@
  * 返回：JSON 格式广告数据
  * 
  * 广告位标识：
+ * - splash: 开屏广告
  * - home_banner: 首页底部广告
  * - swipe_banner: 整理页底部广告
  */
@@ -19,6 +20,11 @@ $position = $_GET['position'] ?? '';
 
 // 广告配置 - 修改这里的广告内容
 $ads = [
+    'splash' => [
+        'image' => 'https://lightforever.net/ads/banner_test.png',
+        'link' => 'https://lightforever.net',
+        'title' => '熊猫相册 - 你的照片整理助手'
+    ],
     'home_banner' => [
         'image' => 'https://lightforever.net/ads/banner_test.png',
         'link' => 'https://lightforever.net',

@@ -27,7 +27,7 @@ class _RecyclePageState extends State<RecyclePage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PhotoProvider>().loadRecyclePhotos();
+      context.read<PhotoProvider>().loadRecyclePhotos(mediaType: 0);
     });
   }
 
@@ -58,39 +58,109 @@ class _RecyclePageState extends State<RecyclePage> {
         ],
       ),
 
-      body: photos.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: Column(
+        children: [
+          // 照片/视频切换标签
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 4),
+            child: _buildMediaTypeToggle(),
+          ),
 
-                children: [
-                  const Icon(Icons.delete_outline, size: 80, color: Colors.grey),
+          Expanded(
+            child: photos.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
 
-                  const SizedBox(height: 16),
+                      children: [
+                        const Icon(Icons.delete_outline, size: 80, color: Colors.grey),
 
-                  Text(AppLocalizations.of(context)!.recycleBinEmpty, style: const TextStyle(fontSize: 18, color: Colors.grey)),
-                ],
-              ),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(12),
+                        const SizedBox(height: 16),
 
-                    itemCount: groups.length,
+                        Text(AppLocalizations.of(context)!.recycleBinEmpty, style: const TextStyle(fontSize: 18, color: Colors.grey)),
+                      ],
+                    ),
+                  )
+                : Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(12),
 
-                    itemBuilder: (context, index) {
-                      final entry = groups.entries.elementAt(index);
+                          itemCount: groups.length,
 
-                      return _buildGroup(entry.key, entry.value);
-                    },
+                          itemBuilder: (context, index) {
+                            final entry = groups.entries.elementAt(index);
+
+                            return _buildGroup(entry.key, entry.value);
+                          },
+                        ),
+                      ),
+
+                      _buildBottomToolbar(provider),
+                    ],
                   ),
-                ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                _buildBottomToolbar(provider),
-              ],
+  // 照片/视频切换标签
+  Widget _buildMediaTypeToggle() {
+    final isVideo = context.watch<PhotoProvider>().recycleMediaType == 1;
+
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _toggleTab(Icons.photo, AppLocalizations.of(context)!.photo, !isVideo, 0),
+          _toggleTab(Icons.videocam, AppLocalizations.of(context)!.video, isVideo, 1),
+        ],
+      ),
+    );
+  }
+
+  Widget _toggleTab(IconData icon, String label, bool selected, int type) {
+    return GestureDetector(
+      onTap: () {
+        if (selected) return;
+
+        setState(() {
+          _selectedIds.clear();
+
+          _multiSelectMode = false;
+        });
+
+        context.read<PhotoProvider>().loadRecyclePhotos(mediaType: type);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: selected ? Colors.blue : Colors.grey.shade600),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                color: selected ? Colors.blue : Colors.grey.shade600,
+                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -237,6 +307,22 @@ class _RecyclePageState extends State<RecyclePage> {
               child: _buildThumbnailImage(assetId),
             ),
           ),
+
+                // 视频播放角标
+
+                if ((photo['media_type'] as int? ?? 0) == 1)
+                  const Positioned(
+                    left: 6,
+
+                    bottom: 6,
+
+                    child: Icon(
+                      Icons.play_circle_fill,
+                      color: Colors.white,
+                      size: 20,
+                      shadows: [Shadow(blurRadius: 4, color: Colors.black54)],
+                    ),
+                  ),
 
                 // 红色倒计时标签
 

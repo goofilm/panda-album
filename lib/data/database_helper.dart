@@ -496,15 +496,15 @@ class DatabaseHelper {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getRecyclePhotos() async {
+  Future<List<Map<String, dynamic>>> getRecyclePhotos({int? mediaType}) async {
     final db = await database;
 
     return await db.query(
       'photos',
 
-      where: 'status=?',
+      where: mediaType == null ? 'status=?' : 'status=? AND media_type=?',
 
-      whereArgs: [2],
+      whereArgs: mediaType == null ? [2] : [2, mediaType],
 
       orderBy: 'delete_time DESC',
     );

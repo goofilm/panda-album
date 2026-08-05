@@ -253,11 +253,15 @@ class PhotoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 加载回收站照片
+  // 加载回收站照片（mediaType: 0=照片, 1=视频，不传则沿用上次的筛选）
 
-  Future<void> loadRecyclePhotos() async {
-    recyclePhotos = await _db.getRecyclePhotos();
-    recycleBinCount = recyclePhotos.length;
+  /// 回收站当前筛选类型（0=照片，1=视频）
+  int recycleMediaType = 0;
+
+  Future<void> loadRecyclePhotos({int? mediaType}) async {
+    if (mediaType != null) recycleMediaType = mediaType;
+    recyclePhotos = await _db.getRecyclePhotos(mediaType: recycleMediaType);
+    recycleBinCount = await _db.getRecycleBinCount();
     notifyListeners();
   }
 

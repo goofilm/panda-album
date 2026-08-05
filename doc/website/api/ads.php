@@ -21,7 +21,7 @@ $position = $_GET['position'] ?? '';
 // 广告配置 - 修改这里的广告内容
 $ads = [
     'splash' => [
-        'image' => 'https://lightforever.net/ads/splash.png',
+        'image' => 'https://lightforever.net/ads/splash.jpg',
         'link' => 'https://lightforever.net',
         'title' => '熊猫相册 - 你的照片整理助手'
     ],

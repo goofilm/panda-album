@@ -45,7 +45,7 @@ class _SplashAdPageState extends State<SplashAdPage> {
       return;
     }
 
-    // 获取开屏广告（使用缓存数据，避免阻塞启动）
+    // 获取开屏广告（优先使用本地缓存）
     final ad = await AdService.getAd(position: 'splash');
     if (!mounted) return;
 
@@ -54,6 +54,20 @@ class _SplashAdPageState extends State<SplashAdPage> {
       return;
     }
 
+    // 预加载广告图片，加载完成后再展示广告并开始倒计时
+    // 避免图片还在下载时倒计时已走完导致"闪过去"
+    try {
+      await precacheImage(NetworkImage(ad.imageUrl), context).timeout(
+        const Duration(seconds: 8),
+      );
+    } catch (_) {
+      // 图片预加载失败/超时，直接进首页
+      if (!mounted) return;
+      _goHome();
+      return;
+    }
+
+    if (!mounted) return;
     setState(() => _ad = ad);
     _startCountdown();
   }

@@ -58,7 +58,7 @@ class AdService {
     try {
       final response = await http
           .get(Uri.parse('$adServerUrl/api/ads.php?position=$position'))
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;

@@ -551,6 +551,14 @@ class _MembershipPageState extends State<MembershipPage> {
           message = l10n.activateAlreadyUsed;
           color = Colors.orange;
           break;
+        case 'network_error':
+          message = l10n.activateNetworkError;
+          color = Colors.orange;
+          break;
+        case 'device_limit':
+          message = l10n.activateDeviceLimit;
+          color = Colors.red;
+          break;
         default:
           message = l10n.activateInvalid;
           color = Colors.red;

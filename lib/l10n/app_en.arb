@@ -182,6 +182,8 @@
   "activateSuccess": "Activation successful! Premium unlocked",
   "activateAlreadyUsed": "This code has already been used",
   "activateInvalid": "Invalid code, please check and try again",
+    "activateNetworkError": "Network error, unable to verify the code. Please check your connection and retry",
+    "activateDeviceLimit": "This code has reached its device limit",
   "cancel": "Cancel",
   "confirm": "Confirm",
   "scanToPurchase": "Purchase Membership",

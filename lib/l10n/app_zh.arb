@@ -182,6 +182,8 @@
   "activateSuccess": "激活成功！会员已开通",
   "activateAlreadyUsed": "该激活码已被使用",
   "activateInvalid": "激活码无效，请检查后重试",
+    "activateNetworkError": "网络异常，无法验证激活码，请检查网络后重试",
+    "activateDeviceLimit": "该激活码已达设备上限",
   "cancel": "取消",
   "confirm": "确认",
   "scanToPurchase": "购买会员",

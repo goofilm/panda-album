@@ -302,7 +302,7 @@ class _HomePageState extends State<HomePage>
                   _glassButton(
                     Icons.cut,
 
-                    '截图清理',
+                    AppLocalizations.of(context)!.screenshotCleanup,
 
                     0,
 

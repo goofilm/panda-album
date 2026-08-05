@@ -629,6 +629,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activateInvalid => 'Invalid code, please check and try again';
 
   @override
+  String get activateNetworkError =>
+      'Network error, unable to verify the code. Please check your connection and retry';
+
+  @override
+  String get activateDeviceLimit => 'This code has reached its device limit';
+
+  @override
   String get scanToPurchase => 'Purchase Membership';
 
   @override

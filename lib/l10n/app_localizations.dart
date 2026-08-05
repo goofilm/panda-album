@@ -1190,6 +1190,18 @@ abstract class AppLocalizations {
   /// **'激活码无效，请检查后重试'**
   String get activateInvalid;
 
+  /// No description provided for @activateNetworkError.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络异常，无法验证激活码，请检查网络后重试'**
+  String get activateNetworkError;
+
+  /// No description provided for @activateDeviceLimit.
+  ///
+  /// In zh, this message translates to:
+  /// **'该激活码已达设备上限'**
+  String get activateDeviceLimit;
+
   /// No description provided for @scanToPurchase.
   ///
   /// In zh, this message translates to:

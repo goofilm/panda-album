@@ -620,6 +620,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get activateInvalid => '激活码无效，请检查后重试';
 
   @override
+  String get activateNetworkError => '网络异常，无法验证激活码，请检查网络后重试';
+
+  @override
+  String get activateDeviceLimit => '该激活码已达设备上限';
+
+  @override
   String get scanToPurchase => '购买会员';
 
   @override

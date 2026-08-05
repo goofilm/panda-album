@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'activation_code.dart';
 
@@ -29,6 +33,9 @@ class MembershipService {
   static const String _keyLevel = 'membership_level';
   static const String _keyExpireTime = 'membership_expire_time';
   static const String _keyPurchaseTime = 'membership_purchase_time';
+
+  /// 激活码联网校验接口
+  static const String _activateUrl = 'https://lightforever.net/api/activate.php';
 
   /// 获取当前会员等级
   Future<MembershipLevel> getMembershipLevel() async {
@@ -137,7 +144,7 @@ class MembershipService {
   }
 
   /// 使用激活码激活会员
-  /// 返回结果: 'success', 'invalid_code', 'already_used'
+  /// 返回结果: 'success', 'invalid_code', 'already_used', 'network_error'
   Future<String> activateWithCode(String code) async {
     try {
       final result = ActivationCode.validate(code);
@@ -151,6 +158,15 @@ class MembershipService {
       final usedCodes = prefs.getStringList('used_activation_codes') ?? [];
       if (usedCodes.contains(code.trim().toUpperCase())) {
         return 'already_used';
+      }
+
+      // 联网校验（每码限2台设备，超限自动挤掉最早设备）
+      final serverResult = await _verifyOnServer(code.trim().toUpperCase(), prefs);
+      if (serverResult == 'network_error') {
+        return 'network_error';
+      }
+      if (serverResult == 'invalid_code') {
+        return 'invalid_code';
       }
 
       // 激活会员
@@ -170,6 +186,42 @@ class MembershipService {
       debugPrint('激活码激活失败: $e');
       return 'invalid_code';
     }
+  }
+
+  /// 服务器端校验激活码
+  /// 返回: 'ok', 'invalid_code', 'network_error'
+  Future<String> _verifyOnServer(String code, SharedPreferences prefs) async {
+    try {
+      final deviceId = await _getDeviceId(prefs);
+      final uri = Uri.parse(
+        '$_activateUrl?action=activate&code=$code&device_id=$deviceId',
+      );
+      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) return 'network_error';
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      if (data['ok'] == true) return 'ok';
+      return 'invalid_code';
+    } catch (e) {
+      debugPrint('激活码联网校验失败: $e');
+      return 'network_error';
+    }
+  }
+
+  /// 获取匿名设备ID（与活跃统计共用）
+  Future<String> _getDeviceId(SharedPreferences prefs) async {
+    String deviceId = prefs.getString('stats_device_id') ?? '';
+    if (deviceId.isEmpty) {
+      final random = Random.secure();
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      deviceId = List.generate(
+        16,
+        (_) => chars[random.nextInt(chars.length)],
+      ).join();
+      await prefs.setString('stats_device_id', deviceId);
+    }
+    return deviceId;
   }
 
   /// 检查是否是会员

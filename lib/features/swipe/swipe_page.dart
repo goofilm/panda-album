@@ -26,6 +26,17 @@ class SwipePage extends StatefulWidget {
 class _SwipePageState extends State<SwipePage> {
   final Map<String, Uint8List> imageCache = {};
 
+  /// 缩略图缓存上限（防止长时间整理内存持续增长）
+  static const int _maxCacheSize = 30;
+
+  /// 写入缓存，超出上限时清除最旧的条目
+  void _putCache(String id, Uint8List data) {
+    if (imageCache.length >= _maxCacheSize && imageCache.isNotEmpty) {
+      imageCache.remove(imageCache.keys.first);
+    }
+    imageCache[id] = data;
+  }
+
   final DatabaseHelper _db = DatabaseHelper.instance;
 
   double offsetX = 0;
@@ -483,7 +494,7 @@ class _SwipePageState extends State<SwipePage> {
     );
 
     if (data != null) {
-      imageCache[photo.id] = data;
+      _putCache(photo.id, data);
     }
 
     return data;
@@ -497,7 +508,7 @@ class _SwipePageState extends State<SwipePage> {
     );
 
     if (data != null) {
-      imageCache[photo.id] = data;
+      _putCache(photo.id, data);
     }
   }
 

@@ -11,7 +11,6 @@ import '../../data/database_helper.dart';
 import '../../widgets/full_screen_media_viewer.dart';
 import '../../providers/photo_provider.dart';
 import '../../providers/category_provider.dart';
-import '../../providers/private_album_provider.dart';
 import '../../l10n/app_localizations.dart';
 
 class CategoryDetailPage extends StatefulWidget {
@@ -378,18 +377,6 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                     Navigator.pop(sheetContext);
 
                     _showCategoryPicker([photoId]);
-                  },
-                ),
-
-                ListTile(
-                  leading: const Icon(Icons.lock_outline, color: Colors.purple),
-
-                  title: Text(AppLocalizations.of(context)!.moveToPrivate),
-
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-
-                    _showPrivateAlbumPicker(photo);
                   },
                 ),
 
@@ -791,126 +778,6 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                               content: Text(AppLocalizations.of(context)!.movedTo(item['name'] as String)),
 
                               duration: const Duration(seconds: 1),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  // 移入私密相册选择器
-
-  void _showPrivateAlbumPicker(Map<String, dynamic> photo) async {
-    final privateProvider = context.read<PrivateAlbumProvider>();
-
-    // 先加载相册数据（确保重启后也能获取到）
-    await privateProvider.loadAlbums();
-
-    if (!mounted) return;
-
-    // 根据当前媒体的类型获取对应的私密相册
-    final mediaType = _mediaType;
-
-    final albums = mediaType == 1
-        ? privateProvider.videoAlbums
-        : privateProvider.photoAlbums;
-
-    if (albums.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mediaType == 1 ? AppLocalizations.of(context)!.createPrivateVideoAlbumFirst : AppLocalizations.of(context)!.createPrivatePhotoAlbumFirst,
-          ),
-        ),
-      );
-      return;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-      ),
-      builder: (sheetContext) {
-        return SafeArea(
-          child: SizedBox(
-            height: 400,
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                Text(
-                  '🔒 ${AppLocalizations.of(context)!.selectPrivateAlbum}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: albums.length,
-                    itemBuilder: (context, index) {
-                      final album = albums[index];
-                      final count =
-                          privateProvider.albumCounts[album['id']] ?? 0;
-                      return ListTile(
-                        leading: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: _parseColor(album['color'] as String)
-                                .withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              album['icon'] as String,
-                              style: const TextStyle(fontSize: 22),
-                            ),
-                          ),
-                        ),
-                        title: Text(album['name'] as String),
-                        subtitle: Text(AppLocalizations.of(context)!.albumProtected(count.toString())),
-                        trailing:
-                            const Icon(Icons.lock, color: Colors.purple, size: 20),
-                        onTap: () async {
-                          final assetId = photo['asset_id'] as String;
-                          final albumId = album['id'] as int;
-
-                          // 添加到私密相册
-                          await privateProvider.addPhotoToAlbum(
-                            assetId: assetId,
-                            albumId: albumId,
-                            mediaType: mediaType,
-                          );
-
-                          // 从当前分类移除
-                          final photoId = photo['id'] as int;
-                          await _db.moveToPrivate(photoId);
-
-                          if (!sheetContext.mounted) return;
-                          Navigator.pop(sheetContext);
-
-                          await _loadPhotos();
-
-                          if (!mounted) return;
-                          this.context.read<PhotoProvider>().refreshStats();
-
-                          ScaffoldMessenger.of(this.context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                AppLocalizations.of(context)!.movedToPrivateAlbum(album['name'] as String),
-                              ),
-                              duration: const Duration(seconds: 2),
                             ),
                           );
                         },

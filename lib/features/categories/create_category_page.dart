@@ -23,12 +23,19 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
   final List<String> photoIcons = [
     "📷", "👶", "🐶", "🐱", "🚗", "🏠",
     "💼", "✈️", "🍔", "🎮", "📚", "🎵",
-    "❤️", "⭐", "🌈", "📱",
+    "❤️", "⭐", "🌈", "📱", "🌸", "🎂",
+    "🍜", "🏔️", "🏖️", "🌊", "🎓", "💍",
+    "👪", "🐰", "🐦", "🌺", "🍕", "☕",
+    "🎨", "⚽", "🎣", "🌙", "🔥", "🎁",
+    "🧸", "🏆", "🌴", "🍉",
   ];
 
   final List<String> videoIcons = [
     "🎬", "📝", "🐾", "⚽", "🎵", "📹",
     "🎤", "🎮", "👶", "🏖️", "🚗", "🍳",
+    "🎂", "🌸", "✈️", "🏠", "💼", "📚",
+    "❤️", "🎨", "🌈", "⭐", "🍔", "🎓",
+    "🐱", "🐶", "🏔️", "🎣", "🔥", "🎁",
   ];
 
   List<String> get icons => widget.mediaType == 1 ? videoIcons : photoIcons;

@@ -116,27 +116,16 @@ class _MembershipPageState extends State<MembershipPage> {
                   ),
                 ),
               ),
-              SizedBox(height: w * 0.03),
+              SizedBox(height: w * 0.05),
 
-              // 恢复购买
-              TextButton(
-                onPressed: _restorePurchases,
-                child: Text(
-                  AppLocalizations.of(context)!.restorePurchase,
-                  style: TextStyle(fontSize: w * 0.035, color: Colors.grey.shade500),
-                ),
-              ),
+              // 激活码入口（紧跟购买按钮）
+              _buildActivationCodeEntry(w),
             ],
 
             SizedBox(height: w * 0.04),
 
             // 订阅说明
             if (!isPremium) _buildSubscriptionNote(w),
-
-            SizedBox(height: w * 0.06),
-
-            // 激活码入口
-            if (!isPremium) _buildActivationCodeEntry(w),
 
             SizedBox(height: w * 0.06),
           ],

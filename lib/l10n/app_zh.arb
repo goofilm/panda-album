@@ -196,5 +196,21 @@
   "screenshotSelectAll": "全选",
   "screenshotDeselectAll": "取消全选",
   "screenshotConfirmDelete": "确定要删除选中的 {count} 张截图吗？",
-  "screenshotDeleted": "已删除 {count} 张截图"
+  "screenshotDeleted": "已删除 {count} 张截图",
+  "screenshotCleanDesc": "清理不需要的截图，释放存储空间",
+  "keptPhotosTitle": "已保留照片",
+  "keptVideosTitle": "已保留视频",
+  "keptEmptyPhotos": "暂无已保留的照片",
+  "keptEmptyVideos": "暂无已保留的视频",
+  "keptEmptyHint": "左滑保留的照片会显示在这里",
+  "keptStatsPhotos": "共 {count} 个照片已保留，尚未分类",
+  "keptStatsVideos": "共 {count} 个视频已保留，尚未分类",
+  "assignToCategory": "分配到分类",
+  "restoreToUnorganized": "恢复为待整理",
+  "restoreToUnorganizedHint": "回到整理队列重新处理",
+  "cannotGetFile": "无法获取文件",
+  "createCategoryFirst": "请先创建分类",
+  "assignedToCategory": "已分配到「{name}」",
+  "confirmRestoreKept": "确定将选中的 {count} 个恢复为待整理状态？\n恢复后需要重新处理。",
+  "confirmMoveKeptToRecycle": "确定将选中的 {count} 个移到回收站？\n30天后将自动永久删除。"
 }

@@ -677,4 +677,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String screenshotDeleted(Object count) {
     return '$count screenshots deleted';
   }
+
+  @override
+  String get screenshotCleanDesc =>
+      'Clean up unwanted screenshots to free up storage';
+
+  @override
+  String get keptPhotosTitle => 'Kept Photos';
+
+  @override
+  String get keptVideosTitle => 'Kept Videos';
+
+  @override
+  String get keptEmptyPhotos => 'No kept photos yet';
+
+  @override
+  String get keptEmptyVideos => 'No kept videos yet';
+
+  @override
+  String get keptEmptyHint => 'Photos kept by swiping left will appear here';
+
+  @override
+  String keptStatsPhotos(Object count) {
+    return '$count photos kept, not categorized yet';
+  }
+
+  @override
+  String keptStatsVideos(Object count) {
+    return '$count videos kept, not categorized yet';
+  }
+
+  @override
+  String get assignToCategory => 'Assign to Category';
+
+  @override
+  String get restoreToUnorganized => 'Restore to Unsorted';
+
+  @override
+  String get restoreToUnorganizedHint => 'Return to the organizing queue';
+
+  @override
+  String get cannotGetFile => 'Unable to get file';
+
+  @override
+  String get createCategoryFirst => 'Please create a category first';
+
+  @override
+  String assignedToCategory(Object name) {
+    return 'Assigned to \"$name\"';
+  }
+
+  @override
+  String confirmRestoreKept(Object count) {
+    return 'Restore $count selected items to unsorted?\nThey will need to be processed again.';
+  }
+
+  @override
+  String confirmMoveKeptToRecycle(Object count) {
+    return 'Move $count selected items to the recycle bin?\nThey will be permanently deleted after 30 days.';
+  }
 }

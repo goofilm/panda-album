@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../data/database_helper.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/category_provider.dart';
 import '../../widgets/full_screen_media_viewer.dart';
 
@@ -55,7 +56,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.mediaType == 0 ? '已保留照片' : '已保留视频'),
+        title: Text(widget.mediaType == 0 ? AppLocalizations.of(context)!.keptPhotosTitle : AppLocalizations.of(context)!.keptVideosTitle),
         actions: [
           if (_photos.isNotEmpty)
             TextButton(
@@ -66,7 +67,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                   _selectedIds.clear();
                 });
               },
-              child: Text(_multiSelectMode ? '取消' : '选择'),
+              child: Text(_multiSelectMode ? AppLocalizations.of(context)!.cancel : AppLocalizations.of(context)!.select),
             ),
         ],
       ),
@@ -84,7 +85,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        '暂无已保留的${widget.mediaType == 0 ? "照片" : "视频"}',
+                        widget.mediaType == 0 ? AppLocalizations.of(context)!.keptEmptyPhotos : AppLocalizations.of(context)!.keptEmptyVideos,
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey.shade500,
@@ -92,7 +93,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '左滑保留的照片会显示在这里',
+                        AppLocalizations.of(context)!.keptEmptyHint,
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey.shade400,
@@ -112,7 +113,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                       ),
                       color: Colors.green.withValues(alpha: 0.06),
                       child: Text(
-                        '共 ${_photos.length} 个${widget.mediaType == 0 ? "照片" : "视频"}已保留，尚未分类',
+                        widget.mediaType == 0 ? AppLocalizations.of(context)!.keptStatsPhotos(_photos.length) : AppLocalizations.of(context)!.keptStatsVideos(_photos.length),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey.shade600,
@@ -308,7 +309,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
               const SizedBox(height: 16),
               ListTile(
                 leading: const Icon(Icons.category, color: Colors.blue),
-                title: const Text('分配到分类'),
+                title: Text(AppLocalizations.of(context)!.assignToCategory),
                 onTap: () {
                   Navigator.pop(sheetContext);
 
@@ -317,8 +318,8 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.undo, color: Colors.orange),
-                title: const Text('恢复为待整理'),
-                subtitle: const Text('回到整理队列重新处理'),
+                title: Text(AppLocalizations.of(context)!.restoreToUnorganized),
+                subtitle: Text(AppLocalizations.of(context)!.restoreToUnorganizedHint),
                 onTap: () {
                   Navigator.pop(sheetContext);
 
@@ -327,7 +328,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.delete_forever, color: Colors.red),
-                title: const Text('移到回收站'),
+                title: Text(AppLocalizations.of(context)!.moveToRecycleBin),
                 onTap: () {
                   Navigator.pop(sheetContext);
 
@@ -366,7 +367,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '已选 ${_selectedIds.length} 项',
+                  AppLocalizations.of(context)!.selectedCount(_selectedIds.length),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -385,7 +386,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                     });
                   },
                   child: Text(
-                    _selectedIds.length == _photos.length ? '取消全选' : '全选',
+                    _selectedIds.length == _photos.length ? AppLocalizations.of(context)!.deselectAll : AppLocalizations.of(context)!.selectAllText,
                   ),
                 ),
               ],
@@ -403,7 +404,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                       foregroundColor: Colors.white,
                     ),
                     icon: const Icon(Icons.share, size: 18),
-                    label: const Text('分享'),
+                    label: Text(AppLocalizations.of(context)!.share),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -413,7 +414,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                         ? null
                         : () => _showCategoryPicker(_selectedIds.toList()),
                     icon: const Icon(Icons.category, size: 18),
-                    label: const Text('分配分类'),
+                    label: Text(AppLocalizations.of(context)!.assignToCategory),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -427,7 +428,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                       foregroundColor: Colors.white,
                     ),
                     icon: const Icon(Icons.undo, size: 18),
-                    label: const Text('恢复'),
+                    label: Text(AppLocalizations.of(context)!.restore),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -441,7 +442,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                       foregroundColor: Colors.white,
                     ),
                     icon: const Icon(Icons.delete_forever, size: 18),
-                    label: const Text('删除'),
+                    label: Text(AppLocalizations.of(context)!.delete),
                   ),
                 ),
               ],
@@ -472,7 +473,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
     if (files.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('无法获取文件')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.cannotGetFile)),
         );
       }
       return;
@@ -492,7 +493,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
 
     if (categories.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请先创建分类')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.createCategoryFirst)),
       );
 
       return;
@@ -512,7 +513,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
               children: [
                 const SizedBox(height: 20),
                 Text(
-                  '分配到分类',
+                  AppLocalizations.of(context)!.assignToCategory,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -520,7 +521,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${photoIds.length} 个',
+                  AppLocalizations.of(context)!.itemsCount(photoIds.length),
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
                 Expanded(
@@ -573,7 +574,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
 
                           ScaffoldMessenger.of(this.context).showSnackBar(
                             SnackBar(
-                              content: Text('已分配到「${item['name']}」'),
+                              content: Text(AppLocalizations.of(this.context)!.assignedToCategory(item['name'])),
                               duration: const Duration(seconds: 1),
                             ),
                           );
@@ -597,12 +598,12 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('恢复为待整理'),
-          content: Text('确定将选中的 ${photoIds.length} 个恢复为待整理状态？\n恢复后需要重新处理。'),
+          title: Text(AppLocalizations.of(context)!.restoreToUnorganized),
+          content: Text(AppLocalizations.of(context)!.confirmRestoreKept(photoIds.length)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('取消'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () async {
@@ -621,7 +622,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                 await _loadPhotos();
               },
               style: TextButton.styleFrom(foregroundColor: Colors.orange),
-              child: const Text('恢复'),
+              child: Text(AppLocalizations.of(context)!.restore),
             ),
           ],
         );
@@ -636,12 +637,12 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('移到回收站'),
-          content: Text('确定将选中的 ${photoIds.length} 个移到回收站？\n30天后将自动永久删除。'),
+          title: Text(AppLocalizations.of(context)!.moveToRecycleBin),
+          content: Text(AppLocalizations.of(context)!.confirmMoveToRecycleBinDetail(photoIds.length)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('取消'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () async {
@@ -662,7 +663,7 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
                 await _loadPhotos();
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('删除'),
+              child: Text(AppLocalizations.of(context)!.delete),
             ),
           ],
         );

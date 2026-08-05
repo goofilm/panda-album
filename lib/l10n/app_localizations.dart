@@ -1267,6 +1267,102 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'已删除 {count} 张截图'**
   String screenshotDeleted(Object count);
+
+  /// No description provided for @screenshotCleanDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'清理不需要的截图，释放存储空间'**
+  String get screenshotCleanDesc;
+
+  /// No description provided for @keptPhotosTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'已保留照片'**
+  String get keptPhotosTitle;
+
+  /// No description provided for @keptVideosTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'已保留视频'**
+  String get keptVideosTitle;
+
+  /// No description provided for @keptEmptyPhotos.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无已保留的照片'**
+  String get keptEmptyPhotos;
+
+  /// No description provided for @keptEmptyVideos.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无已保留的视频'**
+  String get keptEmptyVideos;
+
+  /// No description provided for @keptEmptyHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'左滑保留的照片会显示在这里'**
+  String get keptEmptyHint;
+
+  /// No description provided for @keptStatsPhotos.
+  ///
+  /// In zh, this message translates to:
+  /// **'共 {count} 个照片已保留，尚未分类'**
+  String keptStatsPhotos(Object count);
+
+  /// No description provided for @keptStatsVideos.
+  ///
+  /// In zh, this message translates to:
+  /// **'共 {count} 个视频已保留，尚未分类'**
+  String keptStatsVideos(Object count);
+
+  /// No description provided for @assignToCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'分配到分类'**
+  String get assignToCategory;
+
+  /// No description provided for @restoreToUnorganized.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复为待整理'**
+  String get restoreToUnorganized;
+
+  /// No description provided for @restoreToUnorganizedHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'回到整理队列重新处理'**
+  String get restoreToUnorganizedHint;
+
+  /// No description provided for @cannotGetFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法获取文件'**
+  String get cannotGetFile;
+
+  /// No description provided for @createCategoryFirst.
+  ///
+  /// In zh, this message translates to:
+  /// **'请先创建分类'**
+  String get createCategoryFirst;
+
+  /// No description provided for @assignedToCategory.
+  ///
+  /// In zh, this message translates to:
+  /// **'已分配到「{name}」'**
+  String assignedToCategory(Object name);
+
+  /// No description provided for @confirmRestoreKept.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定将选中的 {count} 个恢复为待整理状态？\n恢复后需要重新处理。'**
+  String confirmRestoreKept(Object count);
+
+  /// No description provided for @confirmMoveKeptToRecycle.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定将选中的 {count} 个移到回收站？\n30天后将自动永久删除。'**
+  String confirmMoveKeptToRecycle(Object count);
 }
 
 class _AppLocalizationsDelegate

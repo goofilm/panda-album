@@ -196,5 +196,21 @@
   "screenshotSelectAll": "Select All",
   "screenshotDeselectAll": "Deselect All",
   "screenshotConfirmDelete": "Delete {count} selected screenshots?",
-  "screenshotDeleted": "{count} screenshots deleted"
+  "screenshotDeleted": "{count} screenshots deleted",
+  "screenshotCleanDesc": "Clean up unwanted screenshots to free up storage",
+  "keptPhotosTitle": "Kept Photos",
+  "keptVideosTitle": "Kept Videos",
+  "keptEmptyPhotos": "No kept photos yet",
+  "keptEmptyVideos": "No kept videos yet",
+  "keptEmptyHint": "Photos kept by swiping left will appear here",
+  "keptStatsPhotos": "{count} photos kept, not categorized yet",
+  "keptStatsVideos": "{count} videos kept, not categorized yet",
+  "assignToCategory": "Assign to Category",
+  "restoreToUnorganized": "Restore to Unsorted",
+  "restoreToUnorganizedHint": "Return to the organizing queue",
+  "cannotGetFile": "Unable to get file",
+  "createCategoryFirst": "Please create a category first",
+  "assignedToCategory": "Assigned to \"{name}\"",
+  "confirmRestoreKept": "Restore {count} selected items to unsorted?\nThey will need to be processed again.",
+  "confirmMoveKeptToRecycle": "Move {count} selected items to the recycle bin?\nThey will be permanently deleted after 30 days."
 }

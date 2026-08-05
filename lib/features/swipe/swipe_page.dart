@@ -63,8 +63,10 @@ class _SwipePageState extends State<SwipePage> {
 
       final list = _getList(provider);
 
-      if (list.isEmpty && provider.hasMore) {
-        provider.loadMorePhotos();
+      final hasMore = widget.isVideo ? provider.hasMoreVideos : provider.hasMorePhotos;
+
+      if (list.isEmpty && hasMore) {
+        provider.loadMorePhotos(isVideo: widget.isVideo);
       }
     });
   }
@@ -80,12 +82,14 @@ class _SwipePageState extends State<SwipePage> {
     }
 
     if (list.isEmpty) {
-      // 还有更多照片未加载，显示加载中并自动加载更多
+      // 还有更多媒体未加载，显示加载中并自动加载更多
 
-      if (provider.hasMore) {
+      final hasMore = widget.isVideo ? provider.hasMoreVideos : provider.hasMorePhotos;
+
+      if (hasMore) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            context.read<PhotoProvider>().loadMorePhotos();
+            context.read<PhotoProvider>().loadMorePhotos(isVideo: widget.isVideo);
           }
         });
 

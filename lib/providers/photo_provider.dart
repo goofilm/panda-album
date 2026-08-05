@@ -43,13 +43,25 @@ class PhotoProvider extends ChangeNotifier {
 
   int recycleBinCount = 0;
 
-  /// 当前已加载的页数
+  /// 当前已加载的页数（照片/视频分开计数）
 
-  int _currentPage = 0;
+  int _currentPhotoPage = 0;
+
+  int _currentVideoPage = 0;
 
   static const int _pageSize = 50;
 
-  bool hasMore = true;
+  /// 是否还有更多照片
+
+  bool hasMorePhotos = true;
+
+  /// 是否还有更多视频
+
+  bool hasMoreVideos = true;
+
+  /// 兼容旧字段：任一类型还有更多即为 true
+
+  bool get hasMore => hasMorePhotos || hasMoreVideos;
 
   /// 当前筛选类型
 
@@ -177,30 +189,41 @@ class PhotoProvider extends ChangeNotifier {
     }
   }
 
-  // 加载更多（分页）
+  // 加载更多（分页，isVideo指定加载视频，默认按当前筛选）
 
-  Future<void> loadMorePhotos() async {
-    if (!hasMore || loading) return;
+  Future<void> loadMorePhotos({bool? isVideo}) async {
+    if (loading) return;
 
-    final isVideo = mediaFilter == MediaTypeFilter.video;
-    final requestType = isVideo ? RequestType.video : RequestType.image;
+    final loadVideo = isVideo ?? (mediaFilter == MediaTypeFilter.video);
+
+    if (loadVideo ? !hasMoreVideos : !hasMorePhotos) return;
+
+    final requestType = loadVideo ? RequestType.video : RequestType.image;
 
     final albums = await PhotoManager.getAssetPathList(type: requestType, filterOption: _defaultFilter);
     if (albums.isEmpty) return;
 
-    _currentPage++;
+    final nextPage = (loadVideo ? _currentVideoPage : _currentPhotoPage) + 1;
     final list = await albums.first.getAssetListPaged(
-      page: _currentPage,
+      page: nextPage,
       size: _pageSize,
     );
 
-    if (list.isEmpty || list.length < _pageSize) {
-      hasMore = false;
+    if (loadVideo) {
+      _currentVideoPage = nextPage;
+      if (list.isEmpty || list.length < _pageSize) {
+        hasMoreVideos = false;
+      }
+    } else {
+      _currentPhotoPage = nextPage;
+      if (list.isEmpty || list.length < _pageSize) {
+        hasMorePhotos = false;
+      }
     }
 
     final filtered = list.where((a) => !_processedIds.contains(a.id)).toList();
 
-    if (isVideo) {
+    if (loadVideo) {
       videos.addAll(filtered);
     } else {
       photos.addAll(filtered);
@@ -333,9 +356,9 @@ class PhotoProvider extends ChangeNotifier {
       _processedIds.add(removed.id);
     }
 
-    // 剩余少于5张时自动加载更多
-    if (list.length < 5 && hasMore) {
-      await loadMorePhotos();
+    // 剩余少于5张时自动加载更多（同类型）
+    if (list.length < 5 && (isVideo ? hasMoreVideos : hasMorePhotos)) {
+      await loadMorePhotos(isVideo: isVideo);
     }
 
     notifyListeners();
@@ -360,8 +383,10 @@ class PhotoProvider extends ChangeNotifier {
     _videoInitialized = false;
     photos.clear();
     videos.clear();
-    _currentPage = 0;
-    hasMore = true;
+    _currentPhotoPage = 0;
+    _currentVideoPage = 0;
+    hasMorePhotos = true;
+    hasMoreVideos = true;
     await loadPhotos();
   }
 

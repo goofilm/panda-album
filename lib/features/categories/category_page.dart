@@ -390,7 +390,7 @@ class _CategoryPageState extends State<CategoryPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '截图清理',
+                      AppLocalizations.of(context)!.screenshotCleanup,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -398,7 +398,7 @@ class _CategoryPageState extends State<CategoryPage>
                       ),
                     ),
                     Text(
-                      '清理不需要的截图，释放存储空间',
+                      AppLocalizations.of(context)!.screenshotCleanDesc,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.orange.shade600,

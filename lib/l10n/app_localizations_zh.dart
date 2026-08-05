@@ -665,4 +665,62 @@ class AppLocalizationsZh extends AppLocalizations {
   String screenshotDeleted(Object count) {
     return '已删除 $count 张截图';
   }
+
+  @override
+  String get screenshotCleanDesc => '清理不需要的截图，释放存储空间';
+
+  @override
+  String get keptPhotosTitle => '已保留照片';
+
+  @override
+  String get keptVideosTitle => '已保留视频';
+
+  @override
+  String get keptEmptyPhotos => '暂无已保留的照片';
+
+  @override
+  String get keptEmptyVideos => '暂无已保留的视频';
+
+  @override
+  String get keptEmptyHint => '左滑保留的照片会显示在这里';
+
+  @override
+  String keptStatsPhotos(Object count) {
+    return '共 $count 个照片已保留，尚未分类';
+  }
+
+  @override
+  String keptStatsVideos(Object count) {
+    return '共 $count 个视频已保留，尚未分类';
+  }
+
+  @override
+  String get assignToCategory => '分配到分类';
+
+  @override
+  String get restoreToUnorganized => '恢复为待整理';
+
+  @override
+  String get restoreToUnorganizedHint => '回到整理队列重新处理';
+
+  @override
+  String get cannotGetFile => '无法获取文件';
+
+  @override
+  String get createCategoryFirst => '请先创建分类';
+
+  @override
+  String assignedToCategory(Object name) {
+    return '已分配到「$name」';
+  }
+
+  @override
+  String confirmRestoreKept(Object count) {
+    return '确定将选中的 $count 个恢复为待整理状态？\n恢复后需要重新处理。';
+  }
+
+  @override
+  String confirmMoveKeptToRecycle(Object count) {
+    return '确定将选中的 $count 个移到回收站？\n30天后将自动永久删除。';
+  }
 }

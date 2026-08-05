@@ -155,20 +155,21 @@ class _RecyclePageState extends State<RecyclePage> {
           ),
         ),
 
-        SizedBox(
-          height: 120,
-
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-
-            itemCount: photos.length,
-
-            separatorBuilder: (_, _) => const SizedBox(width: 10),
-
-            itemBuilder: (context, index) {
-              return _buildThumbnail(photos[index]);
-            },
+        // 3列网格布局，自动换行
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 6,
+            mainAxisSpacing: 6,
+            childAspectRatio: 1.0,
           ),
+          itemCount: photos.length,
+          itemBuilder: (context, index) {
+            return _buildThumbnail(photos[index]);
+          },
         ),
 
         const SizedBox(height: 16),
@@ -213,34 +214,29 @@ class _RecyclePageState extends State<RecyclePage> {
         }
       },
 
-      child: SizedBox(
-        width: 120,
+      child: Stack(
+        children: [
+          Container(
+            width: double.infinity,
 
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                Container(
-                  width: 120,
+            height: double.infinity,
 
-                  height: 90,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
 
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+              color: Colors.grey.shade300,
 
-                    color: Colors.grey.shade300,
+              border: isSelected
+                  ? Border.all(color: Colors.blue, width: 3)
+                  : null,
+            ),
 
-                    border: isSelected
-                        ? Border.all(color: Colors.blue, width: 3)
-                        : null,
-                  ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
 
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-
-                    child: _buildThumbnailImage(assetId),
-                  ),
-                ),
+              child: _buildThumbnailImage(assetId),
+            ),
+          ),
 
                 // 红色倒计时标签
 
@@ -304,10 +300,7 @@ class _RecyclePageState extends State<RecyclePage> {
                       ),
                     ),
                   ),
-              ],
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

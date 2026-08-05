@@ -205,7 +205,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subscriptionNote =>
-      'Membership Info:\n• Benefit: remove all ads in the app\n• Reverts to free after expiration\n• Activation codes can be entered below\n• All prices include tax';
+      'How to subscribe:\n• Tap Subscribe to visit our official store\n• Activation code is delivered automatically after payment\n• Enter the code below to remove all ads\n• Reverts to free version after expiration';
 
   @override
   String skipAd(Object seconds) {
@@ -629,15 +629,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activateInvalid => 'Invalid code, please check and try again';
 
   @override
-  String get scanToPurchase => 'Scan to Purchase';
+  String get scanToPurchase => 'Purchase Membership';
 
   @override
   String get purchaseQRHint =>
-      'Scan QR code with Alipay or WeChat\nMonthly \$1 · Yearly \$8';
+      'Tap Subscribe to visit our official store\nMonthly \$1 · Yearly \$3';
 
   @override
   String get purchaseQRNote =>
-      'After payment, send screenshot to goofilm@163.com\nWe will send you an activation code soon';
+      'Activation code is delivered automatically after payment';
 
   @override
   String get membershipExpired => 'Membership Expired';

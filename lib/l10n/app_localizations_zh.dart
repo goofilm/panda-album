@@ -204,7 +204,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get subscriptionNote =>
-      '开通说明：\n• 会员权益：免除App内所有广告\n• 到期后自动恢复免费版\n• 激活码可在下方输入激活\n• 所有价格均含税';
+      '开通说明：\n• 点击开通进入官方微店购买\n• 付款后自动发放激活码\n• 在下方输入激活码即可免广告\n• 到期后自动恢复免费版';
 
   @override
   String skipAd(Object seconds) {
@@ -620,13 +620,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get activateInvalid => '激活码无效，请检查后重试';
 
   @override
-  String get scanToPurchase => '扫码购买会员';
+  String get scanToPurchase => '购买会员';
 
   @override
-  String get purchaseQRHint => '请使用支付宝或微信扫码付款\n月卡 ¥3 · 年卡 ¥25';
+  String get purchaseQRHint => '点击开通按钮前往官方微店购买\n月卡 ¥3 · 年卡 ¥15';
 
   @override
-  String get purchaseQRNote => '付款后请将截图发送至 goofilm@163.com\n我们将尽快发送激活码';
+  String get purchaseQRNote => '付款后自动发放激活码';
 
   @override
   String get membershipExpired => '会员已过期';

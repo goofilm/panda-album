@@ -485,7 +485,7 @@ abstract class AppLocalizations {
   /// No description provided for @subscriptionNote.
   ///
   /// In zh, this message translates to:
-  /// **'开通说明：\n• 会员权益：免除App内所有广告\n• 到期后自动恢复免费版\n• 激活码可在下方输入激活\n• 所有价格均含税'**
+  /// **'开通说明：\n• 点击开通进入官方微店购买\n• 付款后自动发放激活码\n• 在下方输入激活码即可免广告\n• 到期后自动恢复免费版'**
   String get subscriptionNote;
 
   /// No description provided for @skipAd.
@@ -1193,19 +1193,19 @@ abstract class AppLocalizations {
   /// No description provided for @scanToPurchase.
   ///
   /// In zh, this message translates to:
-  /// **'扫码购买会员'**
+  /// **'购买会员'**
   String get scanToPurchase;
 
   /// No description provided for @purchaseQRHint.
   ///
   /// In zh, this message translates to:
-  /// **'请使用支付宝或微信扫码付款\n月卡 ¥3 · 年卡 ¥25'**
+  /// **'点击开通按钮前往官方微店购买\n月卡 ¥3 · 年卡 ¥15'**
   String get purchaseQRHint;
 
   /// No description provided for @purchaseQRNote.
   ///
   /// In zh, this message translates to:
-  /// **'付款后请将截图发送至 goofilm@163.com\n我们将尽快发送激活码'**
+  /// **'付款后自动发放激活码'**
   String get purchaseQRNote;
 
   /// No description provided for @membershipExpired.

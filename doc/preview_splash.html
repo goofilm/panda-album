@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>开屏广告预览</title>
+<style>
+  body {
+    background: #e8ecf3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: "Microsoft YaHei", sans-serif;
+  }
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: #000;
+    border-radius: 48px;
+    padding: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    position: relative;
+  }
+  .screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+    background: #fff;
+  }
+  .screen img.ad {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 24px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    z-index: 3;
+  }
+  .skip-btn {
+    position: absolute;
+    top: 44px;
+    right: 16px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 3;
+  }
+  .ad-tag {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.4);
+    color: rgba(255,255,255,0.9);
+    font-size: 11px;
+    padding: 3px 12px;
+    border-radius: 10px;
+    z-index: 3;
+  }
+  .notch {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 26px;
+    background: #000;
+    border-radius: 0 0 18px 18px;
+    z-index: 4;
+  }
+  .caption {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #666;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="status-bar"><span>14:18</span><span>📶 🔋 89%</span></div>
+      <img class="ad" src="file:///C:/Users/1/.qoder-cn/vibe_images/panda_splash_ad_1785912031.png" alt="开屏广告">
+      <div class="skip-btn">跳过 3s</div>
+      <div class="ad-tag">广告</div>
+    </div>
+  </div>
+  <div class="caption">开屏广告预览 · 3秒倒计时可跳过 · 会员直接跳过</div>
+</body>
+</html>

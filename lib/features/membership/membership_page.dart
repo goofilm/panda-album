@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../l10n/app_localizations.dart';
 
 import '../../providers/membership_provider.dart';
@@ -14,7 +15,9 @@ class MembershipPage extends StatefulWidget {
 }
 
 class _MembershipPageState extends State<MembershipPage> {
-  bool _purchasing = false;
+  /// 微店店铺地址（自动发卡）
+  static const String _storeUrl = 'https://weidian.com/?userid=1753790775';
+
   bool _activating = false;
   bool _isYearlySelected = true; // 默认选中年卡
   final _activationCodeController = TextEditingController();
@@ -94,7 +97,7 @@ class _MembershipPageState extends State<MembershipPage> {
                   width: double.infinity,
                   height: w * 0.13,
                   child: ElevatedButton(
-                    onPressed: _purchasing ? null : _showPurchaseQRDialog,
+                    onPressed: _openStore,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber.shade700,
                       foregroundColor: Colors.white,
@@ -103,22 +106,13 @@ class _MembershipPageState extends State<MembershipPage> {
                       ),
                       elevation: 4,
                     ),
-                    child: _purchasing
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(
-                            AppLocalizations.of(context)!.subscribeNow,
-                            style: TextStyle(
-                              fontSize: w * 0.045,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                    child: Text(
+                      AppLocalizations.of(context)!.subscribeNow,
+                      style: TextStyle(
+                        fontSize: w * 0.045,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -140,11 +134,6 @@ class _MembershipPageState extends State<MembershipPage> {
             if (!isPremium) _buildSubscriptionNote(w),
 
             SizedBox(height: w * 0.06),
-
-            // 扫码购买入口
-            if (!isPremium) _buildPurchaseQRCodeEntry(w),
-
-            SizedBox(height: w * 0.04),
 
             // 激活码入口
             if (!isPremium) _buildActivationCodeEntry(w),
@@ -438,157 +427,20 @@ class _MembershipPageState extends State<MembershipPage> {
     );
   }
 
-  Future<void> _purchase(MembershipLevel level) async {
-    setState(() { _purchasing = true; });
-
+  /// 打开微店店铺（自动发卡），用户购买后获得激活码
+  Future<void> _openStore() async {
+    final uri = Uri.parse(_storeUrl);
     try {
-      final provider = context.read<MembershipProvider>();
-      bool success;
-
-      if (level == MembershipLevel.premiumYearly) {
-        success = await provider.purchaseYearly();
-      } else {
-        success = await provider.purchaseMonthly();
-      }
-
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
       if (!mounted) return;
-
-      if (success) {
-        final l10n = AppLocalizations.of(context)!;
-        final levelName = level == MembershipLevel.premiumYearly ? l10n.yearly : l10n.monthly;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.purchaseSuccess(levelName)),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.purchaseFailed),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() { _purchasing = false; });
-    }
-  }
-
-  Widget _buildPurchaseQRCodeEntry(double w) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: w * 0.08),
-      child: Column(
-        children: [
-          Container(
-            height: 1,
-            color: Colors.grey.shade200,
-          ),
-          SizedBox(height: w * 0.04),
-          TextButton.icon(
-            onPressed: _showPurchaseQRDialog,
-            icon: Icon(Icons.qr_code_2_outlined, size: w * 0.05, color: Colors.green.shade600),
-            label: Text(
-              AppLocalizations.of(context)!.scanToPurchase,
-              style: TextStyle(
-                fontSize: w * 0.038,
-                color: Colors.green.shade600,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showPurchaseQRDialog() {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.scanToPurchase),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                AppLocalizations.of(context)!.purchaseQRHint,
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            'assets/images/alipay_qr.jpg',
-                            width: 110,
-                            height: 110,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text('支付宝扫码', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            'assets/images/wechat_qr.jpg',
-                            width: 110,
-                            height: 110,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text('微信扫码', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Text(
-                AppLocalizations.of(context)!.purchaseQRNote,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.purchaseFailed),
+          backgroundColor: Colors.red,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(AppLocalizations.of(context)!.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              // 延迟一下再打开激活码对话框
-              Future.delayed(const Duration(milliseconds: 300), () {
-                _showActivationDialog();
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue.shade600,
-              foregroundColor: Colors.white,
-            ),
-            child: Text(AppLocalizations.of(context)!.activateWithCode),
-          ),
-        ],
-      ),
-    );
+      );
+    }
   }
 
   Widget _buildActivationCodeEntry(double w) {
@@ -734,8 +586,6 @@ class _MembershipPageState extends State<MembershipPage> {
   }
 
   Future<void> _restorePurchases() async {
-    setState(() { _purchasing = true; });
-
     try {
       final provider = context.read<MembershipProvider>();
       final success = await provider.restorePurchases();
@@ -757,8 +607,8 @@ class _MembershipPageState extends State<MembershipPage> {
           ),
         );
       }
-    } finally {
-      if (mounted) setState(() { _purchasing = false; });
+    } catch (_) {
+      // 恢复失败不提示，保持静默
     }
   }
 }

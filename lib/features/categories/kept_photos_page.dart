@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -134,14 +133,20 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.all(8),
-          sliver: SliverMasonryGrid.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childCount: _photos.length,
-            itemBuilder: (context, index) {
-              return _buildPhotoCard(_photos[index]);
-            },
+          // 3列正方形网格，整齐排列
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 6,
+              mainAxisSpacing: 6,
+              childAspectRatio: 1.0,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return _buildPhotoCard(_photos[index]);
+              },
+              childCount: _photos.length,
+            ),
           ),
         ),
       ],
@@ -154,10 +159,6 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
     final photoId = photo['id'] as int;
 
     final isSelected = _selectedIds.contains(photoId);
-
-    final heights = [180.0, 220.0, 260.0, 200.0, 240.0];
-
-    final height = heights[photoId % heights.length];
 
     return GestureDetector(
       onTap: () {
@@ -183,7 +184,8 @@ class _KeptPhotosPageState extends State<KeptPhotosPage> {
         }
       },
       child: Container(
-        height: height,
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: Colors.grey.shade300,

@@ -44,11 +44,11 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# ç½‘ç«™æ‰“åŒ…ä¸´æ—¶æ–‡ä»¶
+# Website package temp file
 lightforever_website.zip
 
-# æ„å»ºäº§ç‰©ä¸å…¥åº“
+# Build artifacts (APK too large for git)
 doc/website/download/*.apk
 
-# IDE ÄÚ²¿ÎÄµµ²»¹«¿ª
+# IDE internal docs
 .qoder/

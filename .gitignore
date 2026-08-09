@@ -49,3 +49,6 @@ lightforever_website.zip
 
 # æ„å»ºäº§ç‰©ä¸å…¥åº“
 doc/website/download/*.apk
+
+# IDE ÄÚ²¿ÎÄµµ²»¹«¿ª
+.qoder/

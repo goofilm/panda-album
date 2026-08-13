@@ -52,3 +52,9 @@ doc/website/download/*.apk
 
 # IDE internal docs
 .qoder/
+
+# RTS demo staging files
+tools_src/
+
+# Activation codes (never publish)
+activation_codes*.txt
